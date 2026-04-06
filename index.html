@@ -581,6 +581,7 @@
                         showToast("Login realizado com sucesso!", "success");
                     }
                 } catch (err) {
+                    console.error("ERRO FIREBASE (EMAIL):", err);
                     if(err.code === 'auth/invalid-credential' || err.code === 'auth/user-not-found' || err.code === 'auth/wrong-password') {
                         setAuthError('E-mail ou senha incorretos.');
                     } else if(err.code === 'auth/email-already-in-use') {
@@ -588,7 +589,7 @@
                     } else if(err.code === 'auth/weak-password') {
                         setAuthError('A senha deve ter pelo menos 6 caracteres.');
                     } else {
-                        setAuthError('Erro na autenticação. Verifique os dados.');
+                        setAuthError(`Falha: ${err.message}`);
                     }
                 }
             };
@@ -600,11 +601,12 @@
                     await auth.signInWithPopup(provider);
                     showToast("Login com Google realizado!", "success");
                 } catch (err) {
+                    console.error("ERRO FIREBASE (GOOGLE):", err);
                     if (err.code === 'auth/popup-closed-by-user') {
                         // Ignora se o usuário apenas fechou o popup
                         return;
                     }
-                    setAuthError('Erro ao entrar com Google. Tente novamente.');
+                    setAuthError(`Falha Google: ${err.message}`);
                 }
             };
 
