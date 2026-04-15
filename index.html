@@ -6,10 +6,10 @@
     
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="theme-color" content="#0f172a">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="theme-color" content="#f8fafc">
     
-    <link rel="manifest" href='data:application/manifest+json,%7B%22name%22%3A%22CONTROLE%20DE%20RECEITAS%22%2C%22short_name%22%3A%22Receitas%22%2C%22start_url%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%230f172a%22%2C%22theme_color%22%3A%22%230f172a%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22https%3A%2F%2Ffarmacia.kaioadriel.com.br%2Ficone%2Fimages.png%22%2C%22sizes%22%3A%22512x512%22%2C%22type%22%3A%22image%2Fpng%22%7D%5D%7D'>
+    <link rel="manifest" href='data:application/manifest+json,%7B%22name%22%3A%22CONTROLE%20DE%20RECEITAS%22%2C%22short_name%22%3A%22Receitas%22%2C%22start_url%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%23f8fafc%22%2C%22theme_color%22%3A%22%23f8fafc%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22https%3A%2F%2Fcdn-icons-png.flaticon.com%2F512%2F2966%2F2966327.png%22%2C%22sizes%22%3A%22512x512%22%2C%22type%22%3A%22image%2Fpng%22%7D%2C%7B%22src%22%3A%22https%3A%2F%2Fcdn-icons-png.flaticon.com%2F512%2F2966%2F2966327.png%22%2C%22sizes%22%3A%22192x192%22%2C%22type%22%3A%22image%2Fpng%22%7D%5D%7D'>
     
     <title>CONTROLE DE RECEITAS</title>
     
@@ -33,16 +33,18 @@
         .scrollbar-hide::-webkit-scrollbar { display: none; }
         input[type="number"]::-webkit-inner-spin-button, 
         input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
-        .tab-active { transform: scale(1.1); color: #0f172a; font-weight: 900; }
+        .tab-active { color: #0d9488; transform: scale(1.1); }
         .animate-fade { animation: fadeIn 0.3s ease-out forwards; }
         .animate-slide-up { animation: slideUp 0.3s ease-out forwards; }
+        .animate-slide-left { animation: slideLeft 0.3s ease-out forwards; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        select { -webkit-appearance: none; -moz-appearance: none; appearance: none; background-image: url("data:image/svg+xml;utf8,<svg fill='black' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/><path d='M0 0h24v24H0z' fill='none'/></svg>"); background-repeat: no-repeat; background-position-x: 95%; background-position-y: 50%; }
+        @keyframes slideLeft { from { opacity: 0; transform: translateX(100%); } to { opacity: 1; transform: translateX(0); } }
+        select { -webkit-appearance: none; -moz-appearance: none; appearance: none; background-image: url("data:image/svg+xml;utf8,<svg fill='%2394a3b8' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/><path d='M0 0h24v24H0z' fill='none'/></svg>"); background-repeat: no-repeat; background-position-x: 95%; background-position-y: 50%; }
         html { scroll-behavior: smooth; }
     </style>
 </head>
-<body class="text-slate-900 pb-20">
+<body class="text-slate-700 pb-20">
     <div id="root"></div>
 
     <script>
@@ -76,27 +78,24 @@
             auth = firebase.auth();
         }
 
-        // --- COMPONENTES DE ÍCONE ---
-        const AppIcon = ({ className }) => (
-            <div className={`overflow-hidden rounded-full flex items-center justify-center bg-white border-2 border-emerald-400/30 shadow-sm ${className}`}>
-                <img src="https://farmacia.kaioadriel.com.br/icone/images.png" className="w-full h-full object-contain p-1.5" alt="Logo" />
-            </div>
-        );
-        const IconHome = () => <svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>;
-        const IconPlus = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>;
+        // Ícones em SVG
+        const IconHome = () => <svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" strokeWidth="2.5" fill="none" strokeLinecap="round" strokeLinejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>;
+        const IconPlus = () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>;
         const IconCheck = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>;
         const IconTrash = () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>;
         const IconX = () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>;
-        const IconBag = () => <svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"></path><path d="M3 6h18"></path><path d="M16 10a4 4 0 0 1-8 0"></path></svg>;
+        const IconBag = () => <svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" strokeWidth="2.5" fill="none" strokeLinecap="round" strokeLinejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"></path><path d="M3 6h18"></path><path d="M16 10a4 4 0 0 1-8 0"></path></svg>;
         const IconPencil = () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path></svg>;
-        const IconDownload = () => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>;
-        const IconUpload = () => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>;
+        const IconDownload = () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>;
+        const IconUpload = () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>;
+        const IconLock = () => <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>;
         const IconLogout = () => <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2.5" fill="none" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>;
         const IconDevice = () => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>;
-        const IconUserSmall = () => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>;
-        const IconBuilding = () => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"></rect><path d="M9 22v-4h6v4"></path><path d="M8 6h.01"></path><path d="M16 6h.01"></path><path d="M12 6h.01"></path><path d="M12 10h.01"></path><path d="M12 14h.01"></path><path d="M16 10h.01"></path><path d="M16 14h.01"></path><path d="M8 10h.01"></path><path d="M8 14h.01"></path></svg>;
-        const IconHospital = () => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"></rect><path d="M12 7v6"></path><path d="M9 10h6"></path><path d="M12 22v-4"></path></svg>;
-        const IconHeartBeat = () => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"></path></svg>;
+        const IconUser = () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>;
+        const IconUserSmall = () => <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>;
+        const IconBuilding = () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"></rect><path d="M9 22v-4h6v4"></path><path d="M8 6h.01"></path><path d="M16 6h.01"></path><path d="M12 6h.01"></path><path d="M12 10h.01"></path><path d="M12 14h.01"></path><path d="M16 10h.01"></path><path d="M16 14h.01"></path><path d="M8 10h.01"></path><path d="M8 14h.01"></path></svg>;
+        const IconHospital = () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"></rect><path d="M12 7v6"></path><path d="M9 10h6"></path><path d="M12 22v-4"></path></svg>;
+        const IconHeartBeat = () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"></path></svg>;
         const IconTrophy = () => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"></path><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"></path><path d="M4 22h16"></path><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"></path><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"></path><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"></path></svg>;
         const IconAlertCircle = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>;
         const IconGoogle = () => <svg viewBox="0 0 24 24" width="18" height="18" xmlns="http://www.w3.org/2000/svg"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>;
@@ -104,9 +103,13 @@
         const IconEye = () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>;
         const IconFilePlus = () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="12" y1="18" x2="12" y2="12"></line><line x1="9" y1="15" x2="15" y2="15"></line></svg>;
         const IconCloud = () => <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" strokeWidth="2" fill="none"><path d="M17.5 19c2.5 0 4.5-2 4.5-4.5 0-2.4-1.9-4.3-4.2-4.5C17.3 6.6 14.4 4 11 4 7.6 4 4.8 6.6 4.2 10.1 1.9 10.3 0 12.3 0 14.7 0 17.1 1.9 19 4.3 19h13.2Z"/></svg>;
+        const IconSettings = () => <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>;
         const IconCopy = () => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>;
         const IconExternalLink = () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>;
-        const IconCalendar = () => <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>;
+        const IconSearch = () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>;
+        const IconFileText = () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>;
+        const IconMenu = () => <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>;
+        const IconLockStatic = () => <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>;
 
         const formatCurrency = (value) => {
             return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value || 0);
@@ -158,11 +161,11 @@
             return (
                 <div className="flex items-end justify-between h-full pt-6 pb-2 px-1 overflow-x-auto scrollbar-hide">
                     {data.map((d, i) => (
-                        <div key={i} className="flex flex-col items-center justify-end h-full min-w-[22px] sm:min-w-[28px] flex-1">
-                            <span className="text-[8px] sm:text-[9px] font-black text-slate-800 mb-1 truncate w-full text-center px-0.5">
-                                {d.Total > 0 ? (mode === 'qty' ? d.Total : d.Total.toLocaleString('pt-BR', {minimumFractionDigits: 2})) : ''}
+                        <div key={i} className="flex flex-col items-center justify-end h-full min-w-[32px] sm:min-w-[40px] flex-1">
+                            <span className="text-[7px] sm:text-[8px] font-black text-slate-500 mb-1 text-center px-0.5 overflow-visible whitespace-nowrap tracking-tighter" title={mode === 'qty' ? d.Total : d.Total.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}>
+                                {d.Total > 0 ? (mode === 'qty' ? d.Total : d.Total.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })) : ''}
                             </span>
-                            <div className={`w-full max-w-[16px] sm:max-w-[20px] rounded-t-md transition-all duration-500 ${d.name === '<' ? 'bg-slate-300' : 'bg-emerald-500'}`}
+                            <div className={`w-full max-w-[16px] sm:max-w-[20px] rounded-t-md transition-all duration-500 ${i === 0 ? 'bg-slate-200' : 'bg-teal-400'}`}
                                 style={{ height: `${(d.Total / maxVal) * 100}%`, minHeight: d.Total > 0 ? '6px' : '3px' }}>
                             </div>
                             <span className="text-[7px] sm:text-[8px] font-bold text-slate-400 mt-2">{d.name}</span>
@@ -193,18 +196,24 @@
             const [medicaments, setMedicaments] = useState(() => JSON.parse(localStorage.getItem('farmacia_app_medicaments') || '[]'));
 
             // --- ESTADOS DE UI & MODAIS ---
-            const [manageListType, setManageListType] = useState(null); 
-            const [insightTab, setInsightTab] = useState('medicamento');
-            const [insightMode, setInsightMode] = useState('recent');
+            const [insightTab, setInsightTab] = useState('patient');
+            const [insightMode, setInsightMode] = useState('top');
             const [chartMode, setChartMode] = useState('qty');
+            const [searchTerm, setSearchTerm] = useState('');
+
+            const [manageListType, setManageListType] = useState(null); 
+            const [manageItemInput, setManageItemInput] = useState('');
+            const [editingItemId, setEditingItemId] = useState(null);
 
             const [quickAdd, setQuickAdd] = useState(null);
             const [quickAddValue, setQuickAddValue] = useState('');
             
             const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
             const [forceShowNav, setForceShowNav] = useState(false);
+            const [isMenuOpen, setIsMenuOpen] = useState(false);
             
             const [toast, setToast] = useState(null);
+            const [showSettings, setShowSettings] = useState(false);
             
             const [showEntityModal, setShowEntityModal] = useState(false);
             const [entityData, setEntityData] = useState({});
@@ -212,7 +221,7 @@
 
             const [showSupplyModal, setShowSupplyModal] = useState(false);
             const [selectedPurchase, setSelectedPurchase] = useState(null);
-            const [supplyData, setSupplyData] = useState({ id: null, date: '', medicamento: '', amount: '', patient: '', pharmacy: '', clinic: '', doctor: '', pagamento: '', valorString: '', isScheduled: false });
+            const [supplyData, setSupplyData] = useState({ id: null, date: '', medicamento: '', amount: '', patient: '', pharmacy: '', clinic: '', doctor: '', pagamento: '', valorString: '', observacoes: '', statusCompra: 'Confirmado' });
             
             const [viewingImage, setViewingImage] = useState(null);
             const [deferredPrompt, setDeferredPrompt] = useState(null);
@@ -241,21 +250,26 @@
                 toastTimeout.current = setTimeout(() => setToast(null), 3000);
             };
 
+            const ToastComponent = () => {
+                if (!toast) return null;
+                const isError = toast.type === 'error';
+                return (
+                    <div className="fixed top-6 left-1/2 -translate-x-1/2 z-[200] animate-slide-up w-full max-w-xs px-4">
+                        <div className={`flex items-center p-4 rounded-2xl shadow-xl border ${isError ? 'bg-rose-50 border-rose-200 text-rose-600' : 'bg-teal-50 border-teal-200 text-teal-700'}`}>
+                            {isError ? <IconAlertCircle /> : <IconCheck />}
+                            <span className="ml-3 font-bold text-sm leading-tight">{toast.message}</span>
+                        </div>
+                    </div>
+                );
+            };
+
             const fallbackCopyTextToClipboard = (text) => {
                 const textArea = document.createElement("textarea");
                 textArea.value = text;
-                textArea.style.top = "0";
-                textArea.style.left = "0";
-                textArea.style.position = "fixed";
+                textArea.style.top = "0"; textArea.style.left = "0"; textArea.style.position = "fixed";
                 document.body.appendChild(textArea);
-                textArea.focus();
-                textArea.select();
-                try {
-                    document.execCommand('copy');
-                    showToast("CRM copiado com sucesso!");
-                } catch (err) {
-                    showToast("Erro ao copiar.", "error");
-                }
+                textArea.focus(); textArea.select();
+                try { document.execCommand('copy'); showToast("CRM copiado com sucesso!"); } catch (err) { showToast("Erro ao copiar.", "error"); }
                 document.body.removeChild(textArea);
             };
 
@@ -267,20 +281,19 @@
             const onInputFocus = () => {
                 if (!isMobileDevice()) return;
                 if (keyboardTimeoutRef.current) clearTimeout(keyboardTimeoutRef.current);
-                setIsKeyboardVisible(true);
-                setForceShowNav(false);
+                setIsKeyboardVisible(true); setForceShowNav(false);
             };
 
             const onInputBlur = () => {
                 if (!isMobileDevice()) return;
                 if (keyboardTimeoutRef.current) clearTimeout(keyboardTimeoutRef.current);
-                keyboardTimeoutRef.current = setTimeout(() => {
-                    setIsKeyboardVisible(false);
-                    setForceShowNav(false);
-                }, 2000);
+                keyboardTimeoutRef.current = setTimeout(() => { setIsKeyboardVisible(false); setForceShowNav(false); }, 2000);
             };
 
-            // --- EFEITOS ---
+            // Resetar Busca ao trocar de aba
+            useEffect(() => { setSearchTerm(''); }, [activeTab]);
+
+            // --- EFEITOS DE SISTEMA ---
             useEffect(() => {
                 const handleBeforeInstallPrompt = (e) => { e.preventDefault(); setDeferredPrompt(e); };
                 window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
@@ -293,13 +306,10 @@
                     if (window.visualViewport) {
                         if (window.visualViewport.height < window.screen.height * 0.7) {
                             if (keyboardTimeoutRef.current) clearTimeout(keyboardTimeoutRef.current);
-                            setIsKeyboardVisible(true);
-                            setForceShowNav(false);
+                            setIsKeyboardVisible(true); setForceShowNav(false);
                         } else {
                             if (keyboardTimeoutRef.current) clearTimeout(keyboardTimeoutRef.current);
-                            keyboardTimeoutRef.current = setTimeout(() => {
-                                setIsKeyboardVisible(false); setForceShowNav(false);
-                            }, 2000); 
+                            keyboardTimeoutRef.current = setTimeout(() => { setIsKeyboardVisible(false); setForceShowNav(false); }, 2000); 
                         }
                     }
                 };
@@ -311,9 +321,7 @@
             }, []);
 
             useEffect(() => {
-                const unsubscribe = auth.onAuthStateChanged(u => {
-                    setUser(u); setAuthLoading(false);
-                });
+                const unsubscribe = auth.onAuthStateChanged(u => { setUser(u); setAuthLoading(false); });
                 return () => unsubscribe();
             }, []);
 
@@ -345,8 +353,7 @@
                         db.collection('farmacia_users').doc(user.uid).set({ replenishments, patients, pharmacies, clinics, doctors, medicaments });
                     }
                 }, (error) => {
-                    console.error("Erro Firebase:", error);
-                    setStatus('Erro Cloud');
+                    console.error("Erro Firebase:", error); setStatus('Erro Cloud');
                 });
                 return () => unsub();
             }, [user]);
@@ -375,7 +382,7 @@
 
             const getLastPurchaseData = (entityType, name) => {
                  if (!name) return { daysAgo: null, text: "Sem compras" };
-                 const purchases = replenishments.filter(r => r[entityType] === name && !r.isScheduled);
+                 const purchases = replenishments.filter(r => r[entityType] === name && r.statusCompra !== 'Pendente');
                  if (purchases.length === 0) return { daysAgo: null, text: "Sem compras" };
                  const latest = purchases.reduce((a, b) => new Date(a.date) > new Date(b.date) ? a : b);
                  const days = calculateDaysAgo(latest.date);
@@ -385,9 +392,7 @@
                  return { daysAgo: days, text };
             };
 
-            const isMissingInfo = (item) => {
-                return Object.keys(item).length <= 4; 
-            };
+            const isMissingInfo = (item) => { return Object.keys(item).length <= 4; };
 
             const sortEntitiesByPurchase = (list, type) => {
                 return [...list].sort((a, b) => {
@@ -400,12 +405,16 @@
                 });
             };
 
-            // --- LÓGICA DO DASHBOARD ---
-            const confirmedReplenishments = useMemo(() => replenishments.filter(r => !r.isScheduled), [replenishments]);
+            // --- LÓGICA DO DASHBOARD (ÚLTIMOS 6 MESES) ---
+            const getSixMonthsLimit = () => {
+                const d = new Date();
+                return new Date(d.getFullYear(), d.getMonth() - 5, 1); 
+            };
 
             const insightData = useMemo(() => {
                 const stats = {};
-                confirmedReplenishments.forEach(r => {
+                const validPurchases = replenishments.filter(r => r.statusCompra !== 'Pendente');
+                validPurchases.forEach(r => {
                     let typeMap = { 'medicamento': 'medicamento', 'pharmacy': 'pharmacy', 'patient': 'patient', 'clinic': 'clinic', 'doctor': 'doctor' };
                     const name = r[typeMap[insightTab]];
                     if (name) {
@@ -425,48 +434,56 @@
                 } else {
                     return dataArray.sort((a, b) => new Date(b.latestDate) - new Date(a.latestDate)).slice(0, 5);
                 }
-            }, [confirmedReplenishments, insightTab, insightMode]);
+            }, [replenishments, insightTab, insightMode]);
 
             const dashStats = useMemo(() => {
-                const today = new Date();
-                const sixMonthsAgo = new Date(today.getFullYear(), today.getMonth() - 5, 1);
-                
-                const recentPurchases = confirmedReplenishments.filter(r => new Date(r.date + 'T12:00:00') >= sixMonthsAgo);
-                const gastoPeriodo = recentPurchases.reduce((acc, curr) => acc + (Number(curr.valor) || 0), 0);
-                return { gastoPeriodo, totalComprasPeriodo: recentPurchases.length };
-            }, [confirmedReplenishments]);
+                const limit = getSixMonthsLimit();
+                const validPurchases = replenishments.filter(r => r.statusCompra !== 'Pendente' && new Date(r.date + 'T12:00:00') >= limit);
+                const gasto6Meses = validPurchases.reduce((acc, curr) => acc + (Number(curr.valor) || 0), 0);
+                return { gasto6Meses, totalCompras6Meses: validPurchases.length };
+            }, [replenishments]);
 
             const dashChartData = useMemo(() => {
                 const data = [];
-                const monthNames = ['JAN', 'FEV', 'MAR', 'ABR', 'MAI', 'JUN', 'JUL', 'AGO', 'SET', 'OUT', 'NOV', 'DEZ'];
-                const today = new Date();
+                const validPurchases = replenishments.filter(r => r.statusCompra !== 'Pendente');
+                const limit = getSixMonthsLimit();
                 
-                const sixMonthsAgoLimit = new Date(today.getFullYear(), today.getMonth() - 5, 1);
-                const olderPurchases = confirmedReplenishments.filter(r => new Date(r.date + 'T12:00:00') < sixMonthsAgoLimit);
-                const olderTotal = chartMode === 'qty' ? olderPurchases.length : olderPurchases.reduce((acc, curr) => acc + (Number(curr.valor) || 0), 0);
-                data.push({ name: '<', Total: olderTotal });
+                // Barra 1: < (Menor que 6 meses)
+                const olderPurchases = validPurchases.filter(r => new Date(r.date + 'T12:00:00') < limit);
+                const prevTotal = chartMode === 'qty' ? olderPurchases.length : olderPurchases.reduce((acc, curr) => acc + (Number(curr.valor) || 0), 0);
+                data.push({ name: '<', Total: prevTotal });
 
+                // Barras 2-7: Últimos 6 meses
+                const monthNames = ['JAN', 'FEV', 'MAR', 'ABR', 'MAI', 'JUN', 'JUL', 'AGO', 'SET', 'OUT', 'NOV', 'DEZ'];
                 for (let i = 5; i >= 0; i--) {
-                    const d = new Date(today.getFullYear(), today.getMonth() - i, 1);
-                    const monthPrefix = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
-                    const monthPurchases = confirmedReplenishments.filter(r => r.date.startsWith(monthPrefix));
+                    const d = new Date(); d.setMonth(d.getMonth() - i);
+                    const monthPrefix = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2, '0')}`;
+                    const monthPurchases = validPurchases.filter(r => r.date.startsWith(monthPrefix));
                     const mTotal = chartMode === 'qty' ? monthPurchases.length : monthPurchases.reduce((acc, curr) => acc + (Number(curr.valor) || 0), 0);
                     data.push({ name: monthNames[d.getMonth()], Total: mTotal });
                 }
                 return data;
-            }, [confirmedReplenishments, chartMode]);
+            }, [replenishments, chartMode]);
 
             // --- LÓGICA DE CADASTROS (ENTIDADES) ---
             const handleOpenNewEntity = (tabName) => {
                 let defaultData = { id: null, name: '', observacoes: '', status: 'Ativo' };
                 if(tabName === 'patients') defaultData = { ...defaultData, birthDate:'', cpf:'', rg:'', cep:'', rua:'', numero:'', complemento:'', bairro:'', cidade:'', estado:'', phone:'', email:'', clinic: '', documentImage: null };
-                if(tabName === 'pharmacies') defaultData = { ...defaultData, endereco:'', telefone:'' };
-                if(tabName === 'clinics') defaultData = { ...defaultData, especialidade:'', medicoResponsavel:'', endereco:'', telefone:'' };
-                if(tabName === 'doctors') defaultData = { ...defaultData, especialidade:'', crm:'', uf:'', rqe:'' };
+                if(tabName === 'pharmacies') defaultData = { ...defaultData, cep:'', rua:'', numero:'', complemento:'', bairro:'', cidade:'', estado:'', telefone:'' };
+                if(tabName === 'clinics') defaultData = { ...defaultData, especialidade:'', medicoResponsavel:'', cep:'', rua:'', numero:'', complemento:'', bairro:'', cidade:'', estado:'', telefone:'' };
+                if(tabName === 'doctors') defaultData = { ...defaultData, especialidade:'', crm:'', uf:'', rqe:'', cep:'', rua:'', numero:'', complemento:'', bairro:'', cidade:'', estado:'' };
                 if(tabName === 'medicaments') defaultData = { ...defaultData, dosagens:'', tipo:'' };
                 
                 setEntityData(defaultData);
                 setShowEntityModal(true);
+            };
+
+            const getTargetList = () => {
+                if (activeTab === 'pharmacies' || manageListType === 'pharmacies') return pharmacies;
+                if (activeTab === 'clinics' || manageListType === 'clinics') return clinics;
+                if (activeTab === 'medicaments' || manageListType === 'medicaments') return medicaments;
+                if (activeTab === 'patients' || manageListType === 'patients') return patients;
+                return doctors;
             };
 
             const translateType = (type) => {
@@ -485,11 +502,8 @@
                 let targetList = tabContext === 'patients' ? patients : tabContext === 'pharmacies' ? pharmacies : tabContext === 'clinics' ? clinics : tabContext === 'medicaments' ? medicaments : doctors;
                 let updatedList;
                 
-                if (entityData.id) {
-                    updatedList = targetList.map(item => item.id === entityData.id ? { ...item, ...entityData } : item);
-                } else {
-                    updatedList = [...targetList, { ...entityData, id: Date.now() }];
-                }
+                if (entityData.id) { updatedList = targetList.map(item => item.id === entityData.id ? { ...item, ...entityData } : item); } 
+                else { updatedList = [...targetList, { ...entityData, id: Date.now() }]; }
                 
                 let updates = {};
                 if (tabContext === 'patients') { updates.patients = updatedList; setPatients(updatedList); }
@@ -500,12 +514,8 @@
                 
                 updateCloud(updates);
                 
-                if (isManageList) {
-                    setManageListType(null);
-                } else {
-                    setShowEntityModal(false);
-                    if (selectedEntity) setSelectedEntity({ ...selectedEntity, ...entityData });
-                }
+                if (isManageList) { setManageListType(null); } 
+                else { setShowEntityModal(false); if (selectedEntity) setSelectedEntity({ ...selectedEntity, ...entityData }); }
                 setEntityData({});
                 showToast("Registro salvo com sucesso!");
             };
@@ -541,6 +551,45 @@
                 }
             };
 
+            const renderAddressFields = () => (
+                <div className="pt-4 border-t border-slate-100">
+                    <div className="flex gap-3 mb-4">
+                        <div className="flex-1">
+                            <label className="text-[10px] font-black text-teal-600 uppercase tracking-widest ml-2 block mb-1">Pesquisar CEP</label>
+                            <input type="text" placeholder="00000-000" className="w-full font-black text-teal-700 bg-teal-50 border border-teal-100 rounded-2xl p-4 outline-none focus:ring-2 focus:ring-teal-300 placeholder:text-teal-200" value={entityData.cep || ''} onFocus={onInputFocus} onBlur={onInputBlur} onChange={handleCEPChange} />
+                        </div>
+                        <div className="flex-1">
+                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-2 block mb-1">Estado</label>
+                            <input type="text" placeholder="SP" maxLength="2" className="w-full font-bold bg-slate-50 border border-slate-100 rounded-2xl p-4 text-slate-700 outline-none focus:ring-2 focus:ring-slate-300 uppercase text-center" value={entityData.estado || ''} onFocus={onInputFocus} onBlur={onInputBlur} onChange={e=>setEntityData({...entityData, estado: e.target.value})} />
+                        </div>
+                    </div>
+                    <div className="mb-4">
+                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-2 block mb-1">Rua / Logradouro</label>
+                        <input type="text" placeholder="Ex: Rua das Flores" className="w-full font-bold bg-slate-50 border border-slate-100 rounded-2xl p-4 text-slate-700 outline-none focus:ring-2 focus:ring-slate-300" value={entityData.rua || ''} onFocus={onInputFocus} onBlur={onInputBlur} onChange={e=>setEntityData({...entityData, rua: e.target.value})} />
+                    </div>
+                    <div className="flex gap-3 mb-4">
+                        <div className="flex-1">
+                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-2 block mb-1">Número</label>
+                            <input type="text" placeholder="123" className="w-full font-bold bg-slate-50 border border-slate-100 rounded-2xl p-4 text-slate-700 outline-none focus:ring-2 focus:ring-slate-300" value={entityData.numero || ''} onFocus={onInputFocus} onBlur={onInputBlur} onChange={e=>setEntityData({...entityData, numero: e.target.value})} />
+                        </div>
+                        <div className="flex-[2]">
+                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-2 block mb-1">Complemento</label>
+                            <input type="text" placeholder="Apt 42, Bloco B" className="w-full font-bold bg-slate-50 border border-slate-100 rounded-2xl p-4 text-slate-700 outline-none focus:ring-2 focus:ring-slate-300" value={entityData.complemento || ''} onFocus={onInputFocus} onBlur={onInputBlur} onChange={e=>setEntityData({...entityData, complemento: e.target.value})} />
+                        </div>
+                    </div>
+                    <div className="flex gap-3 mb-4">
+                        <div className="flex-1">
+                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-2 block mb-1">Bairro</label>
+                            <input type="text" placeholder="Centro" className="w-full font-bold bg-slate-50 border border-slate-100 rounded-2xl p-4 text-slate-700 outline-none focus:ring-2 focus:ring-slate-300" value={entityData.bairro || ''} onFocus={onInputFocus} onBlur={onInputBlur} onChange={e=>setEntityData({...entityData, bairro: e.target.value})} />
+                        </div>
+                        <div className="flex-1">
+                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-2 block mb-1">Cidade</label>
+                            <input type="text" placeholder="São Paulo" className="w-full font-bold bg-slate-50 border border-slate-100 rounded-2xl p-4 text-slate-700 outline-none focus:ring-2 focus:ring-slate-300" value={entityData.cidade || ''} onFocus={onInputFocus} onBlur={onInputBlur} onChange={e=>setEntityData({...entityData, cidade: e.target.value})} />
+                        </div>
+                    </div>
+                </div>
+            );
+
             const handleDocumentUpload = (e, entityId) => {
                 const file = e.target.files[0];
                 if (!file) return;
@@ -549,10 +598,10 @@
                     const img = new Image();
                     img.onload = () => {
                         const canvas = document.createElement('canvas');
-                        const MAX = 1200; let w = img.width; let h = img.height;
+                        const MAX = 800; let w = img.width; let h = img.height;
                         if (w > h) { if (w > MAX) { h *= MAX / w; w = MAX; } } else { if (h > MAX) { w *= MAX / h; h = MAX; } }
                         canvas.width = w; canvas.height = h; const ctx = canvas.getContext('2d'); ctx.drawImage(img, 0, 0, w, h);
-                        const dataUrl = canvas.toDataURL('image/jpeg', 0.8);
+                        const dataUrl = canvas.toDataURL('image/jpeg', 0.7);
 
                         const updated = patients.map(p => p.id === entityId ? { ...p, documentImage: dataUrl } : p);
                         setPatients(updated); updateCloud({ patients: updated });
@@ -598,46 +647,45 @@
                 let updatedReplenishments;
                 if (supplyData.id) {
                     updatedReplenishments = replenishments.map(r => r.id === supplyData.id ? { 
-                        ...r, amount: Number(supplyData.amount)||0, date: supplyData.date, medicamento: supplyData.medicamento, patient: supplyData.patient, pharmacy: supplyData.pharmacy, clinic: supplyData.clinic, doctor: supplyData.doctor, pagamento: supplyData.pagamento, valor: numericValor, isScheduled: supplyData.isScheduled
+                        ...r, amount: Number(supplyData.amount)||0, date: supplyData.date, medicamento: supplyData.medicamento, patient: supplyData.patient, pharmacy: supplyData.pharmacy, clinic: supplyData.clinic, doctor: supplyData.doctor, pagamento: supplyData.pagamento, valor: numericValor, observacoes: supplyData.observacoes, statusCompra: supplyData.statusCompra
                     } : r);
                 } else {
                     const newReplenishment = { 
-                        amount: Number(supplyData.amount)||0, date: supplyData.date || getTodayDateStr(), medicamento: supplyData.medicamento, patient: supplyData.patient, pharmacy: supplyData.pharmacy, clinic: supplyData.clinic, doctor: supplyData.doctor, pagamento: supplyData.pagamento, valor: numericValor, id: Date.now(), isScheduled: supplyData.isScheduled 
+                        amount: Number(supplyData.amount)||0, date: supplyData.date || getTodayDateStr(), medicamento: supplyData.medicamento, patient: supplyData.patient, pharmacy: supplyData.pharmacy, clinic: supplyData.clinic, doctor: supplyData.doctor, pagamento: supplyData.pagamento, valor: numericValor, observacoes: supplyData.observacoes, statusCompra: supplyData.statusCompra, id: Date.now() 
                     };
                     updatedReplenishments = [...replenishments, newReplenishment];
                 }
                 setReplenishments(updatedReplenishments); updateCloud({ replenishments: updatedReplenishments });
                 setShowSupplyModal(false);
-                setSupplyData({ id: null, date: getTodayDateStr(), medicamento: '', amount: '', patient: '', pharmacy: '', clinic: '', doctor: '', pagamento: '', valorString: '', isScheduled: false });
-                showToast(supplyData.isScheduled ? "Agendamento salvo!" : "Compra salva com sucesso!");
-            };
-
-            const confirmScheduledPurchase = (id) => {
-                const updated = replenishments.map(r => r.id === id ? { ...r, isScheduled: false } : r);
-                setReplenishments(updated); updateCloud({ replenishments: updated });
-                showToast("Compra confirmada!");
+                setSupplyData({ id: null, date: getTodayDateStr(), medicamento: '', amount: '', patient: '', pharmacy: '', clinic: '', doctor: '', pagamento: '', valorString: '', observacoes: '', statusCompra: 'Confirmado' });
+                showToast("Compra salva com sucesso!");
             };
 
             const deletePurchase = (id) => {
                 const updated = replenishments.filter(r => r.id !== id);
                 setReplenishments(updated); updateCloud({ replenishments: updated }); setSelectedPurchase(null);
-                showToast("Registro excluído.", "error");
+                showToast("Compra excluída.", "error");
             };
 
             const handleEditPurchase = (compra) => { 
                 setSupplyData({ 
-                    id: compra.id, amount: compra.amount, date: compra.date, medicamento: compra.medicamento || '', patient: compra.patient || '', pharmacy: compra.pharmacy || '', clinic: compra.clinic || '', doctor: compra.doctor || '', pagamento: compra.pagamento || '', valorString: compra.valor ? maskCurrency(compra.valor.toFixed(2)) : '', isScheduled: compra.isScheduled || false
+                    id: compra.id, amount: compra.amount, date: compra.date, medicamento: compra.medicamento || '', patient: compra.patient || '', pharmacy: compra.pharmacy || '', clinic: compra.clinic || '', doctor: compra.doctor || '', pagamento: compra.pagamento || '', valorString: compra.valor ? maskCurrency(compra.valor.toFixed(2)) : '', observacoes: compra.observacoes || '', statusCompra: compra.statusCompra || 'Confirmado'
                 }); 
-                setSelectedPurchase(null); 
-                setShowSupplyModal(true); 
+                setSelectedPurchase(null); setShowSupplyModal(true); 
             };
 
-            // --- LÓGICA DE AUTENTICAÇÃO ---
+            const confirmarCompra = (id) => {
+                const updated = replenishments.map(r => r.id === id ? { ...r, statusCompra: 'Confirmado' } : r);
+                setReplenishments(updated); updateCloud({ replenishments: updated });
+                showToast("Compra confirmada!");
+            };
+
+            // --- LÓGICA DE AUTENTICAÇÃO E PDFs ---
             const handleAuth = async (e) => {
                 e.preventDefault(); setAuthError('');
                 try {
                     if (isRegisterMode) { await auth.createUserWithEmailAndPassword(emailInput, passwordInput); showToast("Conta criada com sucesso!"); } 
-                    else { await auth.signInWithEmailAndPassword(emailInput, passwordInput); showToast("Login realizado!"); }
+                    else { await auth.signInWithEmailAndPassword(emailInput, passwordInput); showToast("Login realizado com sucesso!"); }
                 } catch (err) {
                     if(err.code === 'auth/invalid-credential' || err.code === 'auth/user-not-found' || err.code === 'auth/wrong-password') { setAuthError('E-mail ou senha incorretos.'); } 
                     else if(err.code === 'auth/email-already-in-use') { setAuthError('Este e-mail já está cadastrado.'); } 
@@ -685,15 +733,68 @@
                 reader.readAsText(file); e.target.value = ''; 
             };
 
-            const handleInstallApp = async () => { if (deferredPrompt) { deferredPrompt.prompt(); const { outcome } = await deferredPrompt.userChoice; if (outcome === 'accepted') { setDeferredPrompt(null); } } };
+            const handleGeneratePDF = () => {
+                let iframe = document.getElementById('print-iframe');
+                if (!iframe) {
+                    iframe = document.createElement('iframe');
+                    iframe.id = 'print-iframe';
+                    iframe.style.display = 'none';
+                    document.body.appendChild(iframe);
+                }
+                
+                const makeTable = (title, headers, rows) => {
+                    if(rows.length === 0) return `<p>Nenhum registro em ${title}.</p>`;
+                    let t = `<h2 style="color: #0f172a; border-bottom: 2px solid #0f172a; padding-bottom: 5px;">${title}</h2>
+                             <table style="width: 100%; border-collapse: collapse; margin-bottom: 30px; font-size: 12px; font-family: sans-serif;">
+                             <thead><tr>`;
+                    headers.forEach(h => t += `<th style="border: 1px solid #cbd5e1; padding: 8px; background-color: #f1f5f9; text-align: left;">${h}</th>`);
+                    t += `</tr></thead><tbody>`;
+                    rows.forEach(r => {
+                        t += `<tr>`;
+                        r.forEach(cell => t += `<td style="border: 1px solid #cbd5e1; padding: 8px;">${cell || '-'}</td>`);
+                        t += `</tr>`;
+                    });
+                    t += `</tbody></table>`;
+                    return t;
+                };
+
+                let html = `<html><head><title>Relatório Farmácia</title></head><body style="font-family: Arial, sans-serif; padding: 20px; color: #334155;">
+                <h1 style="text-align: center; color: #0f172a;">RELATÓRIO COMPLETO - CONTROLE DE RECEITAS</h1>
+                <p style="text-align: center; margin-bottom: 40px;">Gerado em: ${new Date().toLocaleString('pt-BR')}</p>
+                `;
+
+                html += makeTable("Compras Realizadas", ["Data", "Status", "Medicamento", "Qtd", "Valor", "Paciente", "Farmácia", "Clínica", "Médico", "Pagamento"],
+                    replenishments.map(r => [new Date(r.date + 'T12:00:00').toLocaleDateString('pt-BR'), r.statusCompra || 'Confirmado', r.medicamento, r.amount, formatCurrency(r.valor), r.patient, r.pharmacy, r.clinic, r.doctor, r.pagamento])
+                );
+                html += makeTable("Pacientes", ["Nome", "Status", "CPF", "RG", "Telefone", "E-mail", "CEP", "Cidade/UF"],
+                    patients.map(p => [p.name, p.status || 'Ativo', p.cpf, p.rg, p.phone, p.email, p.cep, p.cidade ? `${p.cidade}/${p.estado}` : ''])
+                );
+                html += makeTable("Farmácias", ["Nome", "Status", "Telefone", "CEP", "Cidade/UF"],
+                    pharmacies.map(p => [p.name, p.status || 'Ativo', p.telefone, p.cep, p.cidade ? `${p.cidade}/${p.estado}` : ''])
+                );
+                html += makeTable("Clínicas", ["Nome", "Status", "Especialidade", "Responsável", "Telefone", "CEP"],
+                    clinics.map(c => [c.name, c.status || 'Ativo', c.especialidade, c.medicoResponsavel, c.telefone, c.cep])
+                );
+                html += makeTable("Médicos", ["Nome", "Status Reg.", "Status CRM", "Especialidade", "CRM/UF", "RQE"],
+                    doctors.map(d => [d.name, d.status || 'Ativo', d.status || 'Ativo', d.especialidade, d.crm ? `${d.crm}/${d.uf}` : '', d.rqe])
+                );
+                html += makeTable("Medicamentos", ["Nome", "Status", "Dosagens", "Tipo", "Observações"],
+                    medicaments.map(m => [m.name, m.status || 'Ativo', m.dosagens, m.tipo, m.observacoes])
+                );
+
+                html += `</body></html>`;
+                
+                const doc = iframe.contentWindow.document;
+                doc.open(); doc.write(html); doc.close();
+                setTimeout(() => { iframe.contentWindow.focus(); iframe.contentWindow.print(); }, 500);
+            };
 
             const getTitleForTab = (tab) => {
-                if (tab === 'patients') return 'Cadastro de Pacientes';
-                if (tab === 'pharmacies') return 'Cadastro de Farmácias';
-                if (tab === 'clinics') return 'Cadastro de Clínicas';
-                if (tab === 'doctors') return 'Cadastro de Médicos';
-                if (tab === 'medicaments') return 'Cadastro de Remédios';
-                if (tab === 'purchases') return 'Cadastro de Compras';
+                if (tab === 'patients') return 'Registro de Pacientes';
+                if (tab === 'pharmacies') return 'Registro de Farmácias';
+                if (tab === 'clinics') return 'Registro de Clínicas';
+                if (tab === 'doctors') return 'Registro de Médicos';
+                if (tab === 'medicaments') return 'Registro de Medicamentos';
                 return '';
             };
 
@@ -706,17 +807,23 @@
                 return '';
             };
 
+            // --- RENDERIZAR LISTAS (ABAS) ---
             const renderEntityList = (tabName, list) => {
                 const entityKey = getEntityKeyForPurchase(tabName);
-                const sortedList = sortEntitiesByPurchase(list, entityKey);
+                const filteredList = list.filter(item => item.name.toLowerCase().includes(searchTerm.toLowerCase()));
+                const sortedList = sortEntitiesByPurchase(filteredList, entityKey);
                 
                 return (
                     <div className="space-y-4 pt-4 animate-fade">
                         <div className="text-center mb-6">
                             <h2 className="text-sm font-black text-slate-400 uppercase tracking-widest mb-2">{getTitleForTab(tabName)}</h2>
-                            <button onClick={() => handleOpenNewEntity(tabName)} className="w-full bg-gradient-to-r from-slate-800 to-slate-900 text-white py-4 rounded-3xl text-sm font-black uppercase tracking-widest flex items-center justify-center shadow-lg active:scale-95 transition-all">
-                                <span className="mr-2"><IconPlus /></span> CADASTRAR NOVO
+                            <button onClick={() => handleOpenNewEntity(tabName)} className="w-full bg-emerald-100 text-emerald-800 border border-emerald-200 hover:bg-emerald-200 py-4 rounded-3xl text-sm font-black uppercase tracking-widest flex items-center justify-center shadow-sm active:scale-95 transition-all mb-4">
+                                <span className="mr-2"><IconPlus /></span> REGISTRAR NOVO
                             </button>
+                            <div className="relative">
+                                <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none text-slate-400"><IconSearch /></div>
+                                <input type="text" placeholder={`Pesquisar ${getTitleForTab(tabName).replace('Registro de ', '').toLowerCase()}...`} className="w-full bg-white border border-slate-200 rounded-2xl py-3 pl-12 pr-4 text-sm font-bold text-slate-700 outline-none focus:border-teal-400 shadow-sm" value={searchTerm} onChange={e => setSearchTerm(e.target.value)} onFocus={onInputFocus} onBlur={onInputBlur} />
+                            </div>
                         </div>
 
                         <div className="space-y-3 pb-10">
@@ -727,19 +834,20 @@
                                 const cardClass = isInactive ? 'bg-rose-50 border-rose-200' : 'bg-white border-slate-100';
                                 
                                 return (
-                                <div key={item.id} className={`p-4 rounded-3xl shadow-sm border flex justify-between items-center relative overflow-hidden ${cardClass}`}>
+                                <div key={item.id} className={`p-4 rounded-3xl shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] border flex justify-between items-center relative overflow-hidden ${cardClass}`}>
                                     <div className="flex items-center flex-1 min-w-0">
                                         <div className="flex-1 min-w-0">
-                                            <p className={`font-black text-[15px] truncate ${isInactive ? 'text-rose-900' : 'text-slate-800'}`}>
+                                            <p className={`font-black text-[15px] truncate ${isInactive ? 'text-rose-900' : 'text-slate-700'}`}>
                                                 {tabName === 'clinics' ? formatClinicName(item.name) : tabName === 'doctors' ? formatDoctorName(item.name) : item.name}
                                             </p>
-                                            <p className={`text-[9px] font-black mt-0.5 uppercase tracking-widest ${isInactive ? 'text-rose-500' : 'text-emerald-500'}`}>({daysText})</p>
+                                            <p className={`text-[9px] font-black mt-0.5 uppercase tracking-widest ${isInactive ? 'text-rose-500' : 'text-teal-500'}`}>({daysText})</p>
                                             
-                                            {tabName === 'patients' && <p className="text-[10px] text-slate-400 font-bold mt-1 truncate">CPF: {item.cpf || '-'}</p>}
-                                            {tabName === 'pharmacies' && <p className="text-[10px] text-slate-400 font-bold mt-1 truncate">{item.endereco || 'S/ Endereço'}</p>}
-                                            {tabName === 'clinics' && <p className="text-[10px] text-slate-400 font-bold mt-1 truncate">{item.especialidade || 'S/ Especialidade'}</p>}
-                                            {tabName === 'doctors' && <p className="text-[10px] text-slate-400 font-bold mt-1 truncate">{item.especialidade || 'S/ Especialidade'} | CRM: {item.crm || '-'}</p>}
-                                            {tabName === 'medicaments' && <p className="text-[10px] text-slate-400 font-bold mt-1 truncate">{item.tipo || 'S/ Tipo'} | {item.dosagens || '-'}</p>}
+                                            {/* Informações Específicas por Aba */}
+                                            {tabName === 'patients' && <p className="text-[10px] text-slate-500 font-bold mt-1 truncate">CPF: {item.cpf || '-'}</p>}
+                                            {tabName === 'pharmacies' && <p className="text-[10px] text-slate-500 font-bold mt-1 truncate">{item.rua ? `${item.rua}, ${item.numero}` : 'S/ Endereço'}</p>}
+                                            {tabName === 'clinics' && <p className="text-[10px] text-slate-500 font-bold mt-1 truncate">{item.especialidade || 'S/ Especialidade'}</p>}
+                                            {tabName === 'doctors' && <p className="text-[10px] text-slate-500 font-bold mt-1 truncate">{item.especialidade || 'S/ Especialidade'} | CRM: {item.crm || '-'}</p>}
+                                            {tabName === 'medicaments' && <p className="text-[10px] text-slate-500 font-bold mt-1 truncate">{item.tipo || 'S/ Tipo'} | {item.dosagens || '-'}</p>}
                                             
                                             <div className="mt-2 flex gap-1">
                                                 {missing && <span className="bg-orange-100 text-orange-600 px-2 py-0.5 rounded-md text-[8px] font-black uppercase">Falta preencher</span>}
@@ -747,7 +855,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <button onClick={() => setSelectedEntity(item)} className={`px-3 py-2 shrink-0 rounded-xl text-[10px] font-black uppercase active:scale-95 transition-all ml-2 ${isInactive ? 'bg-rose-100 text-rose-700 hover:bg-rose-200' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}>
+                                    <button onClick={() => setSelectedEntity(item)} className={`px-3 py-2 shrink-0 rounded-xl text-[10px] font-black uppercase active:scale-95 transition-all ml-2 ${isInactive ? 'bg-rose-100 text-rose-700 hover:bg-rose-200' : 'bg-teal-50 text-teal-700 hover:bg-teal-100'}`}>
                                         Ver Mais
                                     </button>
                                 </div>
@@ -758,48 +866,35 @@
                 );
             };
 
-            const ToastComponent = () => {
-                if (!toast) return null;
-                const isError = toast.type === 'error';
-                return (
-                    <div className="fixed top-6 left-1/2 -translate-x-1/2 z-[200] animate-slide-up w-full max-w-xs px-4">
-                        <div className={`flex items-center p-4 rounded-2xl shadow-xl border ${isError ? 'bg-rose-50 border-rose-200 text-rose-600' : 'bg-emerald-50 border-emerald-200 text-emerald-600'}`}>
-                            {isError ? <IconAlertCircle /> : <IconCheck />}
-                            <span className="ml-3 font-bold text-sm leading-tight">{toast.message}</span>
-                        </div>
-                    </div>
-                );
-            };
-
-            // --- RENDERIZAÇÃO ---
-            if (authLoading) return <div className="min-h-screen bg-slate-900 flex items-center justify-center"><div className="w-10 h-10 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin"></div></div>;
+            // --- RENDERIZAÇÃO DA APLICAÇÃO (TELAS PRINCIPAIS) ---
+            if (authLoading) return <div className="min-h-screen bg-slate-50 flex items-center justify-center"><div className="w-10 h-10 border-4 border-teal-500 border-t-transparent rounded-full animate-spin"></div></div>;
 
             if (!user) {
                 return (
-                    <div className="min-h-screen bg-slate-900 flex flex-col items-center justify-center p-6 animate-fade relative">
+                    <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center p-6 animate-fade relative">
                         <ToastComponent />
-                        <div className="w-full max-w-xs space-y-8">
+                        <div className="w-full max-w-xs space-y-8 bg-white p-8 rounded-3xl shadow-xl border border-slate-100">
                             <div className="text-center">
-                                <AppIcon className="w-24 h-24 mx-auto mb-6 shadow-[0_0_30px_rgba(16,185,129,0.2)]" />
-                                <h1 className="text-3xl font-black italic tracking-tighter text-white mb-1">FARMÁCIA</h1>
-                                <p className="text-[10px] font-black text-emerald-500 uppercase tracking-[0.3em]">{isRegisterMode ? 'Criar Nova Conta' : 'Acesso Restrito'}</p>
+                                <div className="w-16 h-16 bg-teal-50 text-teal-600 rounded-full flex items-center justify-center mx-auto mb-6 shadow-sm border border-teal-100"><IconLockStatic /></div>
+                                <h1 className="text-3xl font-black italic tracking-tighter text-slate-800 mb-1">FARMÁCIA</h1>
+                                <p className="text-[10px] font-black text-teal-500 uppercase tracking-[0.3em]">{isRegisterMode ? 'Criar Nova Conta' : 'Acesso Restrito'}</p>
                             </div>
                             <form onSubmit={handleAuth} className="space-y-4">
                                 <div>
-                                    <input type="email" required className={`w-full bg-slate-800 border-2 ${authError ? 'border-rose-500' : 'border-slate-700'} rounded-2xl p-4 text-center text-sm font-bold text-white outline-none focus:border-emerald-500 placeholder:text-slate-500 mb-3`} value={emailInput} onChange={(e) => { setEmailInput(e.target.value); setAuthError(''); }} placeholder="Seu e-mail" />
-                                    <input type="password" required className={`w-full bg-slate-800 border-2 ${authError ? 'border-rose-500' : 'border-slate-700'} rounded-2xl p-4 text-center text-lg font-black text-white tracking-[0.2em] outline-none focus:border-emerald-500 placeholder:text-slate-500 placeholder:tracking-normal`} value={passwordInput} onChange={(e) => { setPasswordInput(e.target.value); setAuthError(''); }} placeholder="Sua senha" />
+                                    <input type="email" required className={`w-full bg-slate-50 border-2 ${authError ? 'border-rose-300' : 'border-slate-100'} rounded-2xl p-4 text-center text-sm font-bold text-slate-700 outline-none focus:border-teal-400 placeholder:text-slate-400 mb-3`} value={emailInput} onChange={(e) => { setEmailInput(e.target.value); setAuthError(''); }} placeholder="Seu e-mail" />
+                                    <input type="password" required className={`w-full bg-slate-50 border-2 ${authError ? 'border-rose-300' : 'border-slate-100'} rounded-2xl p-4 text-center text-lg font-black text-slate-700 tracking-[0.2em] outline-none focus:border-teal-400 placeholder:text-slate-400 placeholder:tracking-normal`} value={passwordInput} onChange={(e) => { setPasswordInput(e.target.value); setAuthError(''); }} placeholder="Sua senha" />
                                     {authError && <p className="text-rose-500 text-[10px] font-bold text-center mt-3 uppercase tracking-widest">{authError}</p>}
                                 </div>
-                                <button type="submit" className="w-full py-5 bg-emerald-600 text-white text-xs font-black rounded-2xl uppercase tracking-widest shadow-lg shadow-emerald-500/20 active:scale-95 transition-all mt-4">{isRegisterMode ? 'Cadastrar' : 'Entrar'}</button>
+                                <button type="submit" className="w-full py-5 bg-teal-600 text-white text-xs font-black rounded-2xl uppercase tracking-widest shadow-lg shadow-teal-500/20 active:scale-95 transition-all mt-4">{isRegisterMode ? 'Cadastrar' : 'Entrar'}</button>
                             </form>
                             <div className="relative flex items-center py-2">
-                                <div className="flex-grow border-t border-slate-800"></div><span className="flex-shrink-0 mx-4 text-slate-500 text-[9px] font-bold uppercase tracking-widest">ou</span><div className="flex-grow border-t border-slate-800"></div>
+                                <div className="flex-grow border-t border-slate-100"></div><span className="flex-shrink-0 mx-4 text-slate-400 text-[9px] font-bold uppercase tracking-widest">ou</span><div className="flex-grow border-t border-slate-100"></div>
                             </div>
-                            <button type="button" onClick={handleGoogleLogin} className="w-full py-4 bg-white text-slate-800 text-xs font-black rounded-2xl uppercase tracking-widest shadow-lg active:scale-95 transition-all flex items-center justify-center">
-                                <span className="mr-3"><IconGoogle /></span> Iniciar sessão com Google
+                            <button type="button" onClick={handleGoogleLogin} className="w-full py-4 bg-slate-50 border border-slate-200 text-slate-700 text-xs font-black rounded-2xl uppercase tracking-widest shadow-sm active:scale-95 transition-all flex items-center justify-center hover:bg-slate-100">
+                                <span className="mr-3"><IconGoogle /></span> Google
                             </button>
                             <div className="text-center mt-6">
-                                <button type="button" onClick={() => {setIsRegisterMode(!isRegisterMode); setAuthError('');}} className="text-[10px] font-bold text-slate-400 hover:text-white transition-colors uppercase tracking-widest">
+                                <button type="button" onClick={() => {setIsRegisterMode(!isRegisterMode); setAuthError('');}} className="text-[10px] font-bold text-slate-500 hover:text-teal-600 transition-colors uppercase tracking-widest">
                                     {isRegisterMode ? 'Já tenho uma conta' : 'Criar uma conta por e-mail'}
                                 </button>
                             </div>
@@ -809,28 +904,54 @@
             }
 
             return (
-                <div className="min-h-screen flex flex-col">
+                <div className="min-h-screen flex flex-col bg-slate-50">
                     <ToastComponent />
                     
+                    {/* OVERLAY DO MENU LATERAL */}
+                    {isMenuOpen && (
+                        <div className="fixed inset-0 z-[140] bg-slate-900/20 backdrop-blur-sm transition-opacity" onClick={() => setIsMenuOpen(false)}></div>
+                    )}
+
+                    {/* MENU LATERAL (GAVETA) */}
+                    <div className={`fixed top-0 right-0 bottom-0 w-72 bg-white z-[150] shadow-2xl transform transition-transform duration-300 ease-in-out flex flex-col ${isMenuOpen ? 'translate-x-0' : 'translate-x-full'}`}>
+                        <div className="p-6 flex justify-between items-center border-b border-slate-100 bg-slate-50">
+                            <h2 className="text-lg font-black text-slate-700 uppercase tracking-widest">Menu</h2>
+                            <button onClick={() => setIsMenuOpen(false)} className="p-2 text-slate-400 hover:text-rose-500 transition-colors"><IconX /></button>
+                        </div>
+                        <div className="p-4 flex-1 overflow-y-auto space-y-2 scrollbar-hide">
+                            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 px-2 mt-2">Cadastros ERP</p>
+                            <button onClick={() => { setActiveTab('pharmacies'); setIsMenuOpen(false); }} className={`w-full flex items-center p-4 rounded-2xl transition-all ${activeTab === 'pharmacies' ? 'bg-teal-50 text-teal-700' : 'hover:bg-slate-50 text-slate-600'}`}><IconBuilding /><span className="ml-3 font-bold text-sm">Farmácias</span></button>
+                            <button onClick={() => { setActiveTab('clinics'); setIsMenuOpen(false); }} className={`w-full flex items-center p-4 rounded-2xl transition-all ${activeTab === 'clinics' ? 'bg-teal-50 text-teal-700' : 'hover:bg-slate-50 text-slate-600'}`}><IconHospital /><span className="ml-3 font-bold text-sm">Clínicas</span></button>
+                            <button onClick={() => { setActiveTab('doctors'); setIsMenuOpen(false); }} className={`w-full flex items-center p-4 rounded-2xl transition-all ${activeTab === 'doctors' ? 'bg-teal-50 text-teal-700' : 'hover:bg-slate-50 text-slate-600'}`}><IconHeartBeat /><span className="ml-3 font-bold text-sm">Médicos</span></button>
+                            <button onClick={() => { setActiveTab('medicaments'); setIsMenuOpen(false); }} className={`w-full flex items-center p-4 rounded-2xl transition-all ${activeTab === 'medicaments' ? 'bg-teal-50 text-teal-700' : 'hover:bg-slate-50 text-slate-600'}`}><IconPill /><span className="ml-3 font-bold text-sm">Remédios</span></button>
+
+                            <div className="my-6 border-t border-slate-100"></div>
+                            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 px-2">Sistema</p>
+                            <button onClick={() => { handleGeneratePDF(); setIsMenuOpen(false); }} className="w-full flex items-center p-4 rounded-2xl hover:bg-slate-50 text-slate-600 transition-all"><IconFileText /><span className="ml-3 font-bold text-sm">Gerar PDF</span></button>
+                            <button onClick={() => { handleBackup(); setIsMenuOpen(false); }} className="w-full flex items-center p-4 rounded-2xl hover:bg-slate-50 text-slate-600 transition-all"><IconDownload /><span className="ml-3 font-bold text-sm">Fazer Backup</span></button>
+                            <button onClick={() => { fileInputRef.current.click(); setIsMenuOpen(false); }} className="w-full flex items-center p-4 rounded-2xl hover:bg-slate-50 text-slate-600 transition-all"><IconUpload /><span className="ml-3 font-bold text-sm">Restaurar Dados</span></button>
+                        </div>
+                    </div>
+
+                    {/* IMAGEM EM TELA CHEIA */}
                     {viewingImage && (
-                        <div className="fixed inset-0 z-[200] bg-black flex items-center justify-center animate-fade">
-                            <div className="absolute top-6 right-6 z-[210]">
-                                <button onClick={() => setViewingImage(null)} className="text-white bg-black/50 p-3 rounded-full hover:bg-white/20 transition-colors"><IconX /></button>
+                        <div className="fixed inset-0 z-[200] bg-black/90 flex flex-col items-center justify-center animate-fade">
+                            <div className="absolute top-6 right-6">
+                                <button onClick={() => setViewingImage(null)} className="text-white p-2 hover:bg-white/20 rounded-full transition-colors"><IconX /></button>
                             </div>
-                            <img src={viewingImage} alt="Documento" className="w-full h-full object-contain" />
+                            <img src={viewingImage} alt="Documento" className="max-w-[95%] max-h-[85vh] rounded-lg shadow-2xl" />
                         </div>
                     )}
 
-                    <header className="bg-slate-900 text-white pt-8 pb-10 px-6 rounded-b-[3.5rem] shadow-2xl sticky top-0 z-40 border-b-4 border-emerald-500">
+                    <header className="bg-white text-slate-800 pt-8 pb-6 px-6 rounded-b-[2.5rem] shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] sticky top-0 z-40 border-b border-slate-100">
                         <div className="max-w-md mx-auto relative flex flex-col items-center justify-center">
-                            <AppIcon className="w-14 h-14 mb-2" />
-                            <h1 className="text-4xl font-black italic tracking-tighter leading-none mb-1 text-center">FARMÁCIA</h1>
+                            <h1 className="text-3xl font-black italic tracking-tighter leading-none mb-1 text-center text-teal-600">FARMÁCIA</h1>
                             <div className="flex items-center space-x-1 justify-center">
-                                <span className={`transition-colors ${status === 'Erro Cloud' ? 'text-rose-500 animate-pulse' : 'text-emerald-500 ' + (status === 'Nuvem Ativa' ? 'animate-pulse' : '')}`}><IconCloud /></span>
-                                <p className={`text-[9px] font-black uppercase tracking-[0.2em] transition-colors ${status === 'Erro Cloud' ? 'text-rose-500' : 'text-emerald-500'}`}>Controle de Receitas</p>
+                                <span className={`transition-colors ${status === 'Erro Cloud' ? 'text-rose-400 animate-pulse' : 'text-teal-400 ' + (status === 'Nuvem Ativa' ? 'animate-pulse' : '')}`}><IconCloud /></span>
+                                <p className={`text-[9px] font-black uppercase tracking-[0.2em] transition-colors ${status === 'Erro Cloud' ? 'text-rose-400' : 'text-slate-400'}`}>Controle de Receitas</p>
                             </div>
                             <div className="absolute right-0 top-1/2 -translate-y-1/2 flex space-x-1">
-                                <button onClick={handleLogout} className="p-2 text-rose-500 hover:text-rose-400 transition-colors bg-rose-500/10 rounded-full" title="Sair"><IconLogout /></button>
+                                <button onClick={handleLogout} className="p-2 text-rose-400 hover:text-rose-500 transition-colors bg-rose-50 rounded-full" title="Sair"><IconLogout /></button>
                             </div>
                         </div>
                     </header>
@@ -842,58 +963,56 @@
                                     <p className="text-xs font-black text-slate-500 uppercase tracking-widest">{getGreeting()}</p>
                                 </div>
 
-                                <div className="flex gap-3 mb-6">
-                                    <button onClick={() => { setSupplyData({ id: null, date: getTodayDateStr(), medicamento: '', amount: '', patient: '', pharmacy: '', clinic: '', doctor: '', pagamento: '', valorString: '', isScheduled: false }); setShowSupplyModal(true); }} className="flex-1 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white py-5 rounded-3xl text-[10px] font-black uppercase tracking-widest flex items-center justify-center shadow-xl shadow-emerald-500/30 active:scale-95 transition-all">
-                                        <span className="mr-2"><IconPlus /></span> REGISTRAR COMPRA
-                                    </button>
-                                    <button onClick={() => { setSupplyData({ id: null, date: getTodayDateStr(), medicamento: '', amount: '', patient: '', pharmacy: '', clinic: '', doctor: '', pagamento: '', valorString: '', isScheduled: true }); setShowSupplyModal(true); }} className="flex-1 bg-gradient-to-r from-indigo-500 to-indigo-600 text-white py-5 rounded-3xl text-[10px] font-black uppercase tracking-widest flex items-center justify-center shadow-xl shadow-indigo-500/30 active:scale-95 transition-all">
-                                        <span className="mr-2"><IconCalendar /></span> AGENDAR COMPRA
-                                    </button>
-                                </div>
+                                <button onClick={() => { setSupplyData({ id: null, date: getTodayDateStr(), medicamento: '', amount: '', patient: '', pharmacy: '', clinic: '', doctor: '', pagamento: '', valorString: '', observacoes: '', statusCompra: 'Confirmado' }); setShowSupplyModal(true); }} className="w-full bg-teal-500 text-white py-5 rounded-3xl text-sm font-black uppercase tracking-widest flex items-center justify-center shadow-[0_8px_25px_-8px_rgba(20,184,166,0.5)] active:scale-95 transition-all mb-6">
+                                    <span className="mr-2"><IconPlus /></span> REGISTRAR COMPRA
+                                </button>
                                 
-                                <div className="bg-gradient-to-br from-slate-900 to-slate-800 p-6 rounded-[2.5rem] shadow-lg text-white mb-4 relative overflow-hidden">
+                                {/* DASHBOARD DE INSIGHTS */}
+                                <div className="bg-slate-50 border border-slate-200 p-6 rounded-[2.5rem] shadow-sm text-slate-800 mb-4 relative overflow-hidden">
                                     <div className="flex justify-between items-center mb-5 relative z-10">
-                                        <h3 className="text-[10px] font-black text-emerald-400 uppercase tracking-widest flex items-center">
-                                            <IconTrophy /><span className="ml-2">{insightMode === 'recent' ? 'Mais Recentes' : 'Top 5 (12 Meses)'}</span>
+                                        <h3 className="text-[10px] font-black text-teal-600 uppercase tracking-widest flex items-center">
+                                            <IconTrophy /><span className="ml-2">{insightMode === 'top' ? 'Top 5 (12 Meses)' : 'Mais Recentes'}</span>
                                         </h3>
-                                        <div className="flex bg-slate-800 rounded-lg p-0.5 border border-slate-700">
-                                            <button onClick={() => setInsightMode('recent')} className={`px-2 py-1 text-[8px] font-black uppercase rounded-md transition-all ${insightMode === 'recent' ? 'bg-emerald-500 text-white' : 'text-slate-400'}`}>Recentes</button>
-                                            <button onClick={() => setInsightMode('top')} className={`px-2 py-1 text-[8px] font-black uppercase rounded-md transition-all ${insightMode === 'top' ? 'bg-emerald-500 text-white' : 'text-slate-400'}`}>Top</button>
+                                        <div className="flex bg-white rounded-lg p-0.5 border border-slate-200 shadow-sm">
+                                            <button onClick={() => setInsightMode('top')} className={`px-2 py-1 text-[8px] font-black uppercase rounded-md transition-all ${insightMode === 'top' ? 'bg-slate-100 text-slate-800' : 'text-slate-400'}`}>Top</button>
+                                            <button onClick={() => setInsightMode('recent')} className={`px-2 py-1 text-[8px] font-black uppercase rounded-md transition-all ${insightMode === 'recent' ? 'bg-slate-100 text-slate-800' : 'text-slate-400'}`}>Recentes</button>
                                         </div>
                                     </div>
                                     
-                                    <div className="flex justify-between gap-0.5 bg-white/10 p-1 rounded-xl mb-4 relative z-10 w-full overflow-x-auto scrollbar-hide">
-                                        <button onClick={() => setInsightTab('patient')} className={`flex-1 px-0.5 py-2 text-[7px] sm:text-[8px] font-black uppercase rounded-lg transition-all whitespace-nowrap ${insightTab === 'patient' ? 'bg-indigo-500 text-white shadow-md' : 'text-slate-400 hover:text-white'}`}>PACIENTE</button>
-                                        <button onClick={() => setInsightTab('pharmacy')} className={`flex-1 px-0.5 py-2 text-[7px] sm:text-[8px] font-black uppercase rounded-lg transition-all whitespace-nowrap ${insightTab === 'pharmacy' ? 'bg-emerald-500 text-white shadow-md' : 'text-slate-400 hover:text-white'}`}>FARMÁCIA</button>
-                                        <button onClick={() => setInsightTab('clinic')} className={`flex-1 px-0.5 py-2 text-[7px] sm:text-[8px] font-black uppercase rounded-lg transition-all whitespace-nowrap ${insightTab === 'clinic' ? 'bg-blue-500 text-white shadow-md' : 'text-slate-400 hover:text-white'}`}>CLÍNICA</button>
-                                        <button onClick={() => setInsightTab('doctor')} className={`flex-1 px-0.5 py-2 text-[7px] sm:text-[8px] font-black uppercase rounded-lg transition-all whitespace-nowrap ${insightTab === 'doctor' ? 'bg-rose-500 text-white shadow-md' : 'text-slate-400 hover:text-white'}`}>MÉDICO</button>
-                                        <button onClick={() => setInsightTab('medicamento')} className={`flex-1 px-0.5 py-2 text-[7px] sm:text-[8px] font-black uppercase rounded-lg transition-all whitespace-nowrap ${insightTab === 'medicamento' ? 'bg-purple-500 text-white shadow-md' : 'text-slate-400 hover:text-white'}`}>REMÉDIO</button>
+                                    <div className="flex justify-between gap-1 bg-white p-1 rounded-xl mb-4 relative z-10 w-full overflow-x-auto scrollbar-hide shadow-sm border border-slate-100">
+                                        <button onClick={() => setInsightTab('patient')} className={`flex-1 px-1 py-2 text-[7px] sm:text-[8px] font-black uppercase rounded-lg transition-all whitespace-nowrap ${insightTab === 'patient' ? 'bg-indigo-100 text-indigo-700' : 'text-slate-400 hover:text-slate-600'}`}>PAC</button>
+                                        <button onClick={() => setInsightTab('pharmacy')} className={`flex-1 px-1 py-2 text-[7px] sm:text-[8px] font-black uppercase rounded-lg transition-all whitespace-nowrap ${insightTab === 'pharmacy' ? 'bg-emerald-100 text-emerald-700' : 'text-slate-400 hover:text-slate-600'}`}>FAR</button>
+                                        <button onClick={() => setInsightTab('clinic')} className={`flex-1 px-1 py-2 text-[7px] sm:text-[8px] font-black uppercase rounded-lg transition-all whitespace-nowrap ${insightTab === 'clinic' ? 'bg-blue-100 text-blue-700' : 'text-slate-400 hover:text-slate-600'}`}>CLI</button>
+                                        <button onClick={() => setInsightTab('doctor')} className={`flex-1 px-1 py-2 text-[7px] sm:text-[8px] font-black uppercase rounded-lg transition-all whitespace-nowrap ${insightTab === 'doctor' ? 'bg-rose-100 text-rose-700' : 'text-slate-400 hover:text-slate-600'}`}>MED</button>
+                                        <button onClick={() => setInsightTab('medicamento')} className={`flex-1 px-1 py-2 text-[7px] sm:text-[8px] font-black uppercase rounded-lg transition-all whitespace-nowrap ${insightTab === 'medicamento' ? 'bg-purple-100 text-purple-700' : 'text-slate-400 hover:text-slate-600'}`}>REM</button>
                                     </div>
 
                                     <div className="space-y-2 relative z-10">
                                         {insightData.length > 0 ? insightData.map((item, idx) => {
-                                            let rankClass = insightMode === 'recent' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-slate-700/50 text-slate-400';
+                                            let rankClass = 'bg-slate-100 text-slate-500 border border-slate-200';
                                             if (insightMode === 'top') {
-                                                if (idx === 0) rankClass = 'bg-yellow-400/20 text-yellow-400';
-                                                else if (idx === 1) rankClass = 'bg-slate-300/20 text-slate-300';
-                                                else if (idx === 2) rankClass = 'bg-amber-600/20 text-amber-500';
+                                                if (idx === 0) rankClass = 'bg-yellow-50 text-yellow-600 border border-yellow-200';
+                                                else if (idx === 1) rankClass = 'bg-slate-100 text-slate-500 border border-slate-200';
+                                                else if (idx === 2) rankClass = 'bg-amber-50 text-amber-600 border border-amber-200';
+                                            } else {
+                                                rankClass = 'bg-teal-50 text-teal-600 border border-teal-200';
                                             }
 
                                             return (
-                                                <div key={idx} className="flex items-center justify-between bg-white/5 p-3 rounded-2xl border border-white/10 backdrop-blur-md">
+                                                <div key={idx} className="flex items-center justify-between bg-white p-3 rounded-2xl border border-slate-100 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)]">
                                                     <div className="flex items-center min-w-0 flex-1 pr-2">
                                                         <div className={`w-6 h-6 rounded-full flex items-center justify-center mr-3 font-black text-xs shrink-0 ${rankClass}`}>
                                                             {idx + 1}
                                                         </div>
                                                         <div className="min-w-0">
-                                                            <p className="font-black text-sm truncate text-white leading-tight">{item.name}</p>
+                                                            <p className="font-black text-sm truncate text-slate-700 leading-tight">{item.name}</p>
                                                             <p className="text-[8px] text-slate-400 uppercase font-bold tracking-widest mt-0.5">
                                                                 {insightMode === 'top' ? (item.daysAgo === 0 ? 'Última: Hoje' : `Última: Há ${item.daysAgo} dias`) : `Registro(s): ${item.count}`}
                                                             </p>
                                                         </div>
                                                     </div>
                                                     <div className="text-right shrink-0 flex flex-col items-end justify-center">
-                                                        <span className="text-lg font-black text-white leading-none">
+                                                        <span className="text-lg font-black text-slate-700 leading-none">
                                                             {insightMode === 'top' ? item.count : (item.daysAgo === 0 ? 'HOJE' : item.daysAgo)}
                                                         </span>
                                                         {!(insightMode === 'recent' && item.daysAgo === 0) && (
@@ -912,12 +1031,12 @@
 
                                 <div className="grid grid-cols-2 gap-3 mb-4">
                                     <div className="bg-white p-5 rounded-[2.5rem] shadow-sm border border-slate-100 flex flex-col justify-between aspect-square text-center">
-                                        <p className="text-slate-400 text-[10px] font-black uppercase leading-tight">Gastos<br/>(Últ. 6 Meses)</p>
-                                        <p className="text-2xl font-black text-indigo-600 leading-none break-all my-auto">{formatCurrency(dashStats.gastoPeriodo)}</p>
+                                        <p className="text-slate-400 text-[10px] font-black uppercase leading-tight">Gastos<br/>(Últ. 6 meses)</p>
+                                        <p className="text-2xl font-black text-indigo-600 leading-none break-all my-auto">{formatCurrency(dashStats.gasto6Meses)}</p>
                                     </div>
                                     <div className="bg-white p-5 rounded-[2.5rem] shadow-sm border border-slate-100 flex flex-col justify-between aspect-square text-center">
-                                        <p className="text-slate-400 text-[10px] font-black uppercase leading-tight">Total Compras<br/>(Últ. 6 Meses)</p>
-                                        <p className="text-5xl font-black leading-none text-emerald-600 my-auto">{dashStats.totalComprasPeriodo}</p>
+                                        <p className="text-slate-400 text-[10px] font-black uppercase leading-tight">Total Compras<br/>(Últ. 6 meses)</p>
+                                        <p className="text-5xl font-black leading-none text-emerald-600 my-auto">{dashStats.totalCompras6Meses}</p>
                                     </div>
                                 </div>
                                 <div className="bg-white p-6 rounded-[2.5rem] shadow-sm border border-slate-100">
@@ -930,69 +1049,61 @@
                                     </div>
                                     <div className="h-48 w-full"><QuantityBarChart data={dashChartData} mode={chartMode} /></div>
                                 </div>
-
-                                <div className="flex space-x-3 pb-2 mt-2">
-                                    <button onClick={handleBackup} className="flex-1 py-4 bg-white border border-slate-200 text-slate-600 rounded-[2rem] text-[10px] font-black uppercase tracking-widest flex items-center justify-center shadow-sm active:scale-95 transition-all">
-                                        <span className="mr-2 text-indigo-500"><IconDownload /></span> Cópia de Segurança
-                                    </button>
-                                    <button onClick={() => fileInputRef.current.click()} className="flex-1 py-4 bg-white border border-slate-200 text-slate-600 rounded-[2rem] text-[10px] font-black uppercase tracking-widest flex items-center justify-center shadow-sm active:scale-95 transition-all">
-                                        <span className="mr-2 text-emerald-500"><IconUpload /></span> Restaurar
-                                    </button>
-                                </div>
-                                <input type="file" ref={fileInputRef} className="hidden" accept=".json" onChange={handleRestore} />
                             </div>
                         )}
 
                         {activeTab === 'purchases' && (
                             <div className="space-y-4 pt-4 animate-fade">
                                 <div className="text-center mb-6">
-                                    <h2 className="text-sm font-black text-slate-400 uppercase tracking-widest mb-2">Controle de Compras</h2>
-                                    <div className="flex gap-3">
-                                        <button onClick={() => { setSupplyData({ id: null, date: getTodayDateStr(), medicamento: '', amount: '', patient: '', pharmacy: '', clinic: '', doctor: '', pagamento: '', valorString: '', isScheduled: false }); setShowSupplyModal(true); }} className="flex-1 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white py-4 rounded-3xl text-[10px] font-black uppercase tracking-widest flex items-center justify-center shadow-lg active:scale-95 transition-all">
-                                            <span className="mr-2"><IconPlus /></span> REGISTRAR COMPRA
+                                    <h2 className="text-sm font-black text-slate-400 uppercase tracking-widest mb-2">Registro de Compras</h2>
+                                    <div className="flex gap-2">
+                                        <button onClick={() => { setSupplyData({ id: null, date: getTodayDateStr(), medicamento: '', amount: '', patient: '', pharmacy: '', clinic: '', doctor: '', pagamento: '', valorString: '', observacoes: '', statusCompra: 'Confirmado' }); setShowSupplyModal(true); }} className="flex-1 bg-teal-500 text-white py-4 rounded-3xl text-xs font-black uppercase tracking-widest flex items-center justify-center shadow-[0_8px_25px_-8px_rgba(20,184,166,0.5)] active:scale-95 transition-all">
+                                            <span className="mr-1"><IconPlus /></span> COMPRA
                                         </button>
-                                        <button onClick={() => { setSupplyData({ id: null, date: getTodayDateStr(), medicamento: '', amount: '', patient: '', pharmacy: '', clinic: '', doctor: '', pagamento: '', valorString: '', isScheduled: true }); setShowSupplyModal(true); }} className="flex-1 bg-gradient-to-r from-indigo-500 to-indigo-600 text-white py-4 rounded-3xl text-[10px] font-black uppercase tracking-widest flex items-center justify-center shadow-lg active:scale-95 transition-all">
-                                            <span className="mr-2"><IconCalendar /></span> AGENDAR COMPRA
+                                        <button onClick={() => { setSupplyData({ id: null, date: getTodayDateStr(), medicamento: '', amount: '', patient: '', pharmacy: '', clinic: '', doctor: '', pagamento: '', valorString: '', observacoes: '', statusCompra: 'Pendente' }); setShowSupplyModal(true); }} className="flex-1 bg-orange-400 text-white py-4 rounded-3xl text-xs font-black uppercase tracking-widest flex items-center justify-center shadow-[0_8px_25px_-8px_rgba(251,146,60,0.5)] active:scale-95 transition-all">
+                                            <span className="mr-1"><IconPlus /></span> AGENDAR
                                         </button>
                                     </div>
+                                    <div className="relative mt-4">
+                                        <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none text-slate-400"><IconSearch /></div>
+                                        <input type="text" placeholder="Pesquisar compra..." className="w-full bg-white border border-slate-200 rounded-2xl py-3 pl-12 pr-4 text-sm font-bold text-slate-700 outline-none focus:border-teal-400 shadow-sm" value={searchTerm} onChange={e => setSearchTerm(e.target.value)} onFocus={onInputFocus} onBlur={onInputBlur} />
+                                    </div>
                                 </div>
-                                <div className="space-y-4 pb-10">
-                                    {[...replenishments].sort((a,b) => new Date(b.date) - new Date(a.date)).map(compra => {
+                                <div className="space-y-3 pb-10">
+                                    {[...replenishments]
+                                        .filter(r => (r.medicamento?.toLowerCase() || '').includes(searchTerm.toLowerCase()) || (r.pharmacy?.toLowerCase() || '').includes(searchTerm.toLowerCase()) || (r.patient?.toLowerCase() || '').includes(searchTerm.toLowerCase()))
+                                        .sort((a,b) => new Date(b.date) - new Date(a.date)).map(compra => {
                                         const daysAgo = calculateDaysAgo(compra.date);
                                         const firstName = compra.patient ? compra.patient.split(' ')[0] : 'S/ Paciente';
+                                        const isPendente = compra.statusCompra === 'Pendente';
                                         
                                         return (
-                                        <div key={compra.id} className={`p-5 rounded-[2.5rem] shadow-sm border flex items-center justify-between relative overflow-hidden transition-all ${compra.isScheduled ? 'bg-indigo-50/50 border-indigo-100' : 'bg-white border-slate-100'}`}>
-                                            {compra.isScheduled && <div className="absolute top-0 right-10 bg-indigo-500 text-white px-4 py-1.5 rounded-b-2xl text-[8px] font-black uppercase tracking-widest shadow-sm">AGENDADO</div>}
+                                        <div key={compra.id} className={`p-4 rounded-[2rem] shadow-sm border flex items-center justify-between relative overflow-hidden ${isPendente ? 'bg-orange-50 border-orange-200' : 'bg-white border-slate-100'}`}>
                                             <div className="flex items-center flex-1 min-w-0">
                                                 <div className="flex-1 min-w-0 pr-2">
-                                                    <p className="text-base font-black text-slate-800 leading-tight mb-1 truncate">{compra.pharmacy || 'S/ Farmácia'}</p>
-                                                    <p className="text-[11px] font-bold text-slate-500 truncate mb-3">👤 {firstName} | 🏥 {formatClinicName(compra.clinic) || 'S/ Clínica'}</p>
-                                                    
-                                                    {compra.isScheduled ? (
-                                                        <div className="mb-2 py-1.5 px-4 bg-indigo-100 text-indigo-700 rounded-full inline-flex items-center text-[10px] font-black uppercase tracking-wide">
-                                                            <span className="mr-2"><IconCalendar /></span> AGENDADO P/ {new Date(compra.date + 'T12:00:00').toLocaleDateString('pt-BR')}
-                                                        </div>
-                                                    ) : (
-                                                        <p className="text-[9px] font-black text-emerald-600 uppercase tracking-widest">
-                                                            {daysAgo === 0 ? 'Comprado Hoje' : daysAgo === 1 ? 'Comprado Ontem' : `Há ${daysAgo} dias`}
-                                                        </p>
-                                                    )}
+                                                    <p className={`text-base font-black leading-tight mb-0.5 truncate ${isPendente ? 'text-orange-900' : 'text-slate-700'}`}>
+                                                        {compra.pharmacy || 'S/ Farmácia'}
+                                                        {isPendente && <span className="ml-2 bg-orange-500 text-white px-2 py-0.5 rounded-md text-[8px] font-black uppercase">Agendada</span>}
+                                                    </p>
+                                                    <p className="text-[11px] font-bold text-slate-500 truncate mb-1">👤 {firstName} | 🏥 {formatClinicName(compra.clinic) || 'S/ Clínica'} | 💊 {compra.medicamento || 'S/ Medic.'}</p>
+                                                    <p className={`text-[9px] font-black uppercase tracking-widest ${isPendente ? 'text-orange-600' : 'text-teal-600'}`}>
+                                                        {daysAgo === 0 ? 'Hoje' : daysAgo === 1 ? 'Ontem' : `Há ${daysAgo} dias`}
+                                                    </p>
                                                 </div>
                                             </div>
-                                            <div className="flex flex-col gap-2 ml-2">
-                                                {compra.isScheduled && (
-                                                    <button onClick={() => confirmScheduledPurchase(compra.id)} className="px-4 py-3 bg-emerald-500 text-white rounded-2xl text-[9px] font-black uppercase active:scale-95 transition-all shadow-md shadow-emerald-500/20">
-                                                        CONFIRMAR
+                                            <div className="flex flex-col gap-2 shrink-0 ml-2">
+                                                {isPendente && (
+                                                    <button onClick={() => confirmarCompra(compra.id)} className="px-3 py-1.5 bg-teal-500 text-white hover:bg-teal-600 rounded-xl text-[9px] font-black uppercase active:scale-95 transition-all shadow-md flex items-center justify-center">
+                                                        <IconCheck /> Confirmar
                                                     </button>
                                                 )}
-                                                <button onClick={() => setSelectedPurchase(compra)} className={`px-4 py-3 bg-slate-100 text-slate-600 hover:bg-slate-200 rounded-2xl text-[9px] font-black uppercase active:scale-95 transition-all`}>
-                                                    VER MAIS
+                                                <button onClick={() => setSelectedPurchase(compra)} className={`px-3 py-2 ${isPendente ? 'bg-orange-100 text-orange-700 hover:bg-orange-200' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'} rounded-xl text-[10px] font-black uppercase active:scale-95 transition-all text-center`}>
+                                                    Ver Mais
                                                 </button>
                                             </div>
                                         </div>
                                     )})}
-                                    {replenishments.length === 0 && <div className="text-center py-10 text-slate-400 text-xs font-bold">Nenhuma compra ou agendamento registrado.</div>}
+                                    {replenishments.length === 0 && <div className="text-center py-10 text-slate-400 text-xs font-bold">Nenhuma compra registrada.</div>}
                                 </div>
                             </div>
                         )}
@@ -1005,6 +1116,165 @@
 
                     </main>
 
+                    {/* MODAIS DA APLICAÇÃO */}
+                    
+                    {/* Modal Nova/Editar Compra */}
+                    {showSupplyModal && (
+                        <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-0 sm:p-6 bg-slate-900/90 backdrop-blur-md">
+                            <div className="bg-white w-full max-w-sm rounded-t-[3rem] sm:rounded-[3rem] p-8 shadow-2xl border-t-8 border-teal-500 max-h-[90vh] overflow-y-auto animate-fade">
+                                <h2 className="text-xl font-black text-center italic mb-6 uppercase text-slate-800">{supplyData.id ? 'Editar Compra' : (supplyData.statusCompra === 'Pendente' ? 'Agendar Compra' : 'Nova Compra')}</h2>
+                                <div className="space-y-4 mb-8">
+                                    <div className="flex gap-3">
+                                        <div className="flex-[2]">
+                                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-2 block mb-1">Data</label>
+                                            <input type="date" className="w-full font-bold bg-slate-50 border border-slate-100 rounded-2xl p-4 text-slate-700 outline-none focus:ring-2 focus:ring-teal-400" value={supplyData.date} onFocus={onInputFocus} onBlur={onInputBlur} onChange={e=>setSupplyData({...supplyData, date: e.target.value})} />
+                                        </div>
+                                        <div className="flex-1">
+                                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-2 block mb-1">Qtd</label>
+                                            <input type="number" placeholder="0" className="w-full font-bold bg-slate-50 border border-slate-100 rounded-2xl p-4 text-slate-700 outline-none focus:ring-2 focus:ring-teal-400 text-center" value={supplyData.amount} onFocus={onInputFocus} onBlur={onInputBlur} onChange={e=>setSupplyData({...supplyData, amount: e.target.value})} />
+                                        </div>
+                                    </div>
+                                    
+                                    <div>
+                                        <div className="flex justify-between items-end mb-1">
+                                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-2 block">Medicamento</label>
+                                            <button onClick={() => setQuickAdd({ label: 'Medicamento', listName: 'medicaments' })} className="text-emerald-500 font-black flex items-center hover:text-emerald-700 transition-colors text-[10px]"><IconPlus /><span className="ml-1">Novo</span></button>
+                                        </div>
+                                        <select className="w-full font-bold bg-slate-50 border border-slate-100 rounded-2xl p-4 text-slate-700 outline-none focus:ring-2 focus:ring-teal-400" value={supplyData.medicamento} onChange={e=>setSupplyData({...supplyData, medicamento: e.target.value})}>
+                                            <option value="">Selecione ou adicione novo...</option>
+                                            {medicaments.map(p => <option key={p.id} value={p.name}>{p.name}</option>)}
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <div className="flex justify-between items-end mb-1">
+                                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-2 block">Paciente</label>
+                                            <button onClick={() => setQuickAdd({ label: 'Paciente', listName: 'patients' })} className="text-emerald-500 font-black flex items-center hover:text-emerald-700 transition-colors text-[10px]"><IconPlus /><span className="ml-1">Novo</span></button>
+                                        </div>
+                                        <select className="w-full font-bold bg-slate-50 border border-slate-100 rounded-2xl p-4 text-slate-700 outline-none focus:ring-2 focus:ring-teal-400" value={supplyData.patient} onChange={e=>setSupplyData({...supplyData, patient: e.target.value})}>
+                                            <option value="">Selecione ou adicione novo...</option>
+                                            {patients.map(p => <option key={p.id} value={p.name}>{p.name}</option>)}
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <div className="flex justify-between items-end mb-1">
+                                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-2 block">Farmácia</label>
+                                            <button onClick={() => setQuickAdd({ label: 'Farmácia', listName: 'pharmacies' })} className="text-emerald-500 font-black flex items-center hover:text-emerald-700 transition-colors text-[10px]"><IconPlus /><span className="ml-1">Nova</span></button>
+                                        </div>
+                                        <select className="w-full font-bold bg-slate-50 border border-slate-100 rounded-2xl p-4 text-slate-700 outline-none focus:ring-2 focus:ring-teal-400" value={supplyData.pharmacy} onChange={e=>setSupplyData({...supplyData, pharmacy: e.target.value})}>
+                                            <option value="">Selecione ou adicione nova...</option>
+                                            {pharmacies.map(p => <option key={p.id} value={p.name}>{p.name}</option>)}
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <div className="flex justify-between items-end mb-1">
+                                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-2 block">Clínica</label>
+                                            <button onClick={() => setQuickAdd({ label: 'Clínica', listName: 'clinics' })} className="text-emerald-500 font-black flex items-center hover:text-emerald-700 transition-colors text-[10px]"><IconPlus /><span className="ml-1">Nova</span></button>
+                                        </div>
+                                        <select className="w-full font-bold bg-slate-50 border border-slate-100 rounded-2xl p-4 text-slate-700 outline-none focus:ring-2 focus:ring-teal-400" value={supplyData.clinic} onChange={e=>setSupplyData({...supplyData, clinic: e.target.value})}>
+                                            <option value="">Selecione ou adicione nova...</option>
+                                            {clinics.map(c => <option key={c.id} value={c.name}>{c.name}</option>)}
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <div className="flex justify-between items-end mb-1">
+                                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-2 block">Médico</label>
+                                            <button onClick={() => setQuickAdd({ label: 'Médico', listName: 'doctors' })} className="text-emerald-500 font-black flex items-center hover:text-emerald-700 transition-colors text-[10px]"><IconPlus /><span className="ml-1">Novo</span></button>
+                                        </div>
+                                        <select className="w-full font-bold bg-slate-50 border border-slate-100 rounded-2xl p-4 text-slate-700 outline-none focus:ring-2 focus:ring-teal-400" value={supplyData.doctor} onChange={e=>setSupplyData({...supplyData, doctor: e.target.value})}>
+                                            <option value="">Selecione ou adicione novo...</option>
+                                            {doctors.map(d => <option key={d.id} value={d.name}>{d.name}</option>)}
+                                        </select>
+                                    </div>
+
+                                    <div className="pt-4 border-t border-slate-100">
+                                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-2 block mb-1">Valor da Compra (R$)</label>
+                                        <input type="text" inputMode="numeric" placeholder="0,00" className="w-full font-bold bg-slate-50 border border-slate-100 rounded-2xl p-4 text-slate-700 outline-none focus:ring-2 focus:ring-teal-400" value={supplyData.valorString} onFocus={onInputFocus} onBlur={onInputBlur} onChange={e=>setSupplyData({...supplyData, valorString: maskCurrency(e.target.value)})} />
+                                    </div>
+
+                                    <div>
+                                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-2 block mb-1">Forma de Pagamento</label>
+                                        <input type="text" placeholder="Ex: Cartão Crédito, Pix..." className="w-full font-bold bg-slate-50 border border-slate-100 rounded-2xl p-4 text-slate-700 outline-none focus:ring-2 focus:ring-teal-400" value={supplyData.pagamento} onFocus={onInputFocus} onBlur={onInputBlur} onChange={e=>setSupplyData({...supplyData, pagamento: e.target.value})} />
+                                    </div>
+                                    
+                                    <div className="pt-4 border-t border-slate-100">
+                                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-2 block mb-1">Observações</label>
+                                        <textarea placeholder="Detalhes da compra..." rows="2" className="w-full font-bold bg-slate-50 border border-slate-100 rounded-2xl p-4 text-slate-700 outline-none focus:ring-2 focus:ring-teal-400 resize-none" value={supplyData.observacoes} onFocus={onInputFocus} onBlur={onInputBlur} onChange={e=>setSupplyData({...supplyData, observacoes: e.target.value})}></textarea>
+                                    </div>
+                                </div>
+                                <div className="flex space-x-3">
+                                    <button onClick={()=>setShowSupplyModal(false)} className="flex-1 py-4 text-xs font-black text-slate-400 uppercase bg-slate-100 rounded-2xl active:scale-95 transition-all">Cancelar</button>
+                                    <button onClick={handleSupply} className={`flex-[2] py-4 text-white text-xs font-black rounded-2xl uppercase shadow-lg active:scale-95 transition-all ${supplyData.statusCompra === 'Pendente' ? 'bg-orange-500 shadow-orange-500/30' : 'bg-teal-500 shadow-teal-500/30'}`}>Salvar</button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Modal Detalhes Compra (Ver Mais) */}
+                    {selectedPurchase && (
+                        <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-slate-900/90 backdrop-blur-md">
+                            <div className="bg-white w-full max-w-sm rounded-[3rem] p-8 shadow-2xl border-t-8 border-teal-500 animate-fade">
+                                <div className="flex justify-between items-start mb-6">
+                                    <h2 className="text-xl font-black italic uppercase text-slate-800 break-words pr-4 leading-tight">{selectedPurchase.pharmacy || 'S/ Farmácia'}</h2>
+                                    <button onClick={() => setSelectedPurchase(null)} className="text-slate-400 hover:text-slate-600 p-2 shrink-0 transition-colors"><IconX /></button>
+                                </div>
+                                
+                                <div className="space-y-4 mb-8 bg-slate-50 p-6 rounded-3xl border border-slate-100 text-center">
+                                    {selectedPurchase.statusCompra === 'Pendente' && (
+                                        <div className="mb-4 bg-orange-100 text-orange-700 py-2 rounded-xl text-xs font-black uppercase tracking-widest">
+                                            Compra Agendada (Pendente)
+                                        </div>
+                                    )}
+                                    <div className="grid grid-cols-2 gap-4 text-left">
+                                        <div>
+                                            <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Data da Compra</p>
+                                            <p className="text-sm font-bold text-slate-800">{new Date(selectedPurchase.date + 'T12:00:00').toLocaleDateString('pt-BR')}</p>
+                                        </div>
+                                        <div>
+                                            <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Quantidade</p>
+                                            <p className="text-sm font-bold text-teal-600">{selectedPurchase.amount} unidades</p>
+                                        </div>
+                                        <div className="col-span-2">
+                                            <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Medicamento</p>
+                                            <p className="text-sm font-bold text-slate-800">{selectedPurchase.medicamento || 'Não informado'}</p>
+                                        </div>
+                                        <div className="col-span-2">
+                                            <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Paciente Associado</p>
+                                            <p className="text-sm font-bold text-slate-800">{selectedPurchase.patient || 'Não informado'}</p>
+                                        </div>
+                                        <div className="col-span-2">
+                                            <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Clínica</p>
+                                            <p className="text-sm font-bold text-slate-800">{selectedPurchase.clinic || 'Não informada'}</p>
+                                        </div>
+                                        <div className="col-span-2">
+                                            <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Médico Recitante</p>
+                                            <p className="text-sm font-bold text-slate-800">{selectedPurchase.doctor || 'Não informado'}</p>
+                                        </div>
+
+                                        <div className="col-span-2 border-t border-slate-200 border-dashed pt-4 mt-2">
+                                            <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Valor Pago</p>
+                                            <p className="text-xl font-black text-teal-600">{formatCurrency(selectedPurchase.valor)}</p>
+                                        </div>
+                                        <div className="col-span-2">
+                                            <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Forma de Pagamento</p>
+                                            <p className="text-sm font-bold text-slate-800">{selectedPurchase.pagamento || 'Não informada'}</p>
+                                        </div>
+                                        {selectedPurchase.observacoes && (
+                                            <div className="col-span-2 border-t border-slate-200 pt-4 mt-2">
+                                                <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Observações</p>
+                                                <p className="text-sm font-bold text-slate-800 whitespace-pre-wrap">{selectedPurchase.observacoes}</p>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+
+                                <div className="flex space-x-3">
+                                    <button onClick={() => deletePurchase(selectedPurchase.id)} className="flex-1 py-4 bg-rose-50 text-rose-600 text-xs font-black rounded-2xl uppercase flex items-center justify-center active:scale-95 transition-all"><span className="mr-2"><IconTrash /></span> Excluir</button>
+                                    <button onClick={() => handleEditPurchase(selectedPurchase)} className="flex-1 py-4 bg-slate-800 text-white text-xs font-black rounded-2xl uppercase flex items-center justify-center active:scale-95 transition-all"><span className="mr-2"><IconPencil /></span> Editar</button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
                     {/* Modal Unificado Criar/Editar Entidades */}
                     {showEntityModal && (
                         <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-0 sm:p-6 bg-slate-900/90 backdrop-blur-md">
@@ -1013,7 +1283,7 @@
                                 <div className="space-y-4 mb-8">
                                     <div>
                                         <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-2 block mb-1">Nome*</label>
-                                        <input type="text" placeholder="Nome principal" className="w-full font-bold bg-slate-50 border border-slate-100 rounded-2xl p-4 text-slate-700 outline-none focus:ring-2 focus:ring-slate-400" value={entityData.name} onFocus={onInputFocus} onBlur={onInputBlur} onChange={e=>setEntityData({...entityData, name: e.target.value})} />
+                                        <input type="text" placeholder="Nome principal" className="w-full font-bold bg-slate-50 border border-slate-100 rounded-2xl p-4 text-slate-700 outline-none focus:ring-2 focus:ring-teal-400" value={entityData.name} onFocus={onInputFocus} onBlur={onInputBlur} onChange={e=>setEntityData({...entityData, name: e.target.value})} />
                                     </div>
 
                                     {activeTab === 'patients' && (
@@ -1021,34 +1291,71 @@
                                             <div className="flex gap-3">
                                                 <div className="flex-1">
                                                     <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-2 block mb-1">Nascimento</label>
-                                                    <input type="date" className="w-full font-bold bg-slate-50 border border-slate-100 rounded-2xl p-4 text-slate-700 outline-none focus:ring-2 focus:ring-slate-400" value={entityData.birthDate} onFocus={onInputFocus} onBlur={onInputBlur} onChange={e=>setEntityData({...entityData, birthDate: e.target.value})} />
+                                                    <input type="date" className="w-full font-bold bg-slate-50 border border-slate-100 rounded-2xl p-4 text-slate-700 outline-none focus:ring-2 focus:ring-teal-400" value={entityData.birthDate} onFocus={onInputFocus} onBlur={onInputBlur} onChange={e=>setEntityData({...entityData, birthDate: e.target.value})} />
                                                 </div>
                                             </div>
                                             <div className="flex gap-3">
                                                 <div className="flex-1">
                                                     <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-2 block mb-1">CPF</label>
-                                                    <input type="text" placeholder="000.000.000-00" className="w-full font-bold bg-slate-50 border border-slate-100 rounded-2xl p-4 text-slate-700 outline-none focus:ring-2 focus:ring-slate-400" value={entityData.cpf} onFocus={onInputFocus} onBlur={onInputBlur} onChange={e=>setEntityData({...entityData, cpf: maskCPF(e.target.value)})} />
+                                                    <input type="text" placeholder="000.000.000-00" className="w-full font-bold bg-slate-50 border border-slate-100 rounded-2xl p-4 text-slate-700 outline-none focus:ring-2 focus:ring-teal-400" value={entityData.cpf} onFocus={onInputFocus} onBlur={onInputBlur} onChange={e=>setEntityData({...entityData, cpf: maskCPF(e.target.value)})} />
                                                 </div>
                                                 <div className="flex-1">
                                                     <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-2 block mb-1">RG</label>
-                                                    <input type="text" placeholder="00.000.000-X" className="w-full font-bold bg-slate-50 border border-slate-100 rounded-2xl p-4 text-slate-700 outline-none focus:ring-2 focus:ring-slate-400" value={entityData.rg} onFocus={onInputFocus} onBlur={onInputBlur} onChange={e=>setEntityData({...entityData, rg: maskRG(e.target.value)})} />
+                                                    <input type="text" placeholder="00.000.000-X" className="w-full font-bold bg-slate-50 border border-slate-100 rounded-2xl p-4 text-slate-700 outline-none focus:ring-2 focus:ring-teal-400" value={entityData.rg} onFocus={onInputFocus} onBlur={onInputBlur} onChange={e=>setEntityData({...entityData, rg: maskRG(e.target.value)})} />
                                                 </div>
                                             </div>
-                                            <div className="pt-4 border-t border-slate-100">
-                                                <div className="flex gap-3 mb-4">
-                                                    <div className="flex-1">
-                                                        <label className="text-[10px] font-black text-indigo-500 uppercase tracking-widest ml-2 block mb-1">Pesquisar CEP</label>
-                                                        <input type="text" placeholder="00000-000" className="w-full font-black text-indigo-600 bg-indigo-50 border border-indigo-100 rounded-2xl p-4 outline-none focus:ring-2 focus:ring-indigo-400 placeholder:text-indigo-200" value={entityData.cep} onFocus={onInputFocus} onBlur={onInputBlur} onChange={handleCEPChange} />
-                                                    </div>
-                                                </div>
-                                                <div className="mb-4">
-                                                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-2 block mb-1">Endereço</label>
-                                                    <input type="text" placeholder="Rua, Número, Bairro..." className="w-full font-bold bg-slate-50 border border-slate-100 rounded-2xl p-4 text-slate-700 outline-none focus:ring-2 focus:ring-slate-400" value={entityData.rua} onFocus={onInputFocus} onBlur={onInputBlur} onChange={e=>setEntityData({...entityData, rua: e.target.value})} />
-                                                </div>
-                                            </div>
+                                            {renderAddressFields()}
                                             <div>
                                                 <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-2 block mb-1">Telefone</label>
-                                                <input type="tel" placeholder="(00) 00000.0000" className="w-full font-bold bg-slate-50 border border-slate-100 rounded-2xl p-4 text-slate-700 outline-none focus:ring-2 focus:ring-slate-400" value={entityData.phone} onFocus={onInputFocus} onBlur={onInputBlur} onChange={e=>setEntityData({...entityData, phone: maskPhone(e.target.value)})} />
+                                                <input type="tel" placeholder="(00) 00000.0000" className="w-full font-bold bg-slate-50 border border-slate-100 rounded-2xl p-4 text-slate-700 outline-none focus:ring-2 focus:ring-teal-400" value={entityData.phone} onFocus={onInputFocus} onBlur={onInputBlur} onChange={e=>setEntityData({...entityData, phone: maskPhone(e.target.value)})} />
+                                            </div>
+                                            <div>
+                                                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-2 block mb-1">E-mail</label>
+                                                <input type="email" placeholder="paciente@email.com" className="w-full font-bold bg-slate-50 border border-slate-100 rounded-2xl p-4 text-slate-700 outline-none focus:ring-2 focus:ring-teal-400" value={entityData.email} onFocus={onInputFocus} onBlur={onInputBlur} onChange={e=>setEntityData({...entityData, email: e.target.value})} />
+                                            </div>
+                                            <div>
+                                                <div className="flex justify-between items-end mb-1">
+                                                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-2 block">Clínica</label>
+                                                    <button onClick={() => setQuickAdd({ label: 'Clínica', listName: 'clinics' })} className="text-emerald-500 font-black flex items-center hover:text-emerald-700 transition-colors text-[10px]"><IconPlus /><span className="ml-1">Nova</span></button>
+                                                </div>
+                                                <select className="w-full font-bold bg-slate-50 border border-slate-100 rounded-2xl p-4 text-slate-700 outline-none focus:ring-2 focus:ring-teal-400" value={entityData.clinic} onChange={e=>setEntityData({...entityData, clinic: e.target.value})}>
+                                                    <option value="">Selecione...</option>
+                                                    {clinics.map(c => <option key={c.id} value={c.name}>{c.name}</option>)}
+                                                </select>
+                                            </div>
+                                        </>
+                                    )}
+
+                                    {activeTab === 'pharmacies' && (
+                                        <>
+                                            {renderAddressFields()}
+                                            <div>
+                                                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-2 block mb-1">Telefone</label>
+                                                <input type="tel" placeholder="(00) 00000.0000" className="w-full font-bold bg-slate-50 border border-slate-100 rounded-2xl p-4 text-slate-700 outline-none focus:ring-2 focus:ring-teal-400" value={entityData.telefone} onFocus={onInputFocus} onBlur={onInputBlur} onChange={e=>setEntityData({...entityData, telefone: maskPhone(e.target.value)})} />
+                                            </div>
+                                        </>
+                                    )}
+                                    
+                                    {activeTab === 'clinics' && (
+                                        <>
+                                            <div>
+                                                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-2 block mb-1">Especialidade</label>
+                                                <input type="text" placeholder="Ex: Cardiologia" className="w-full font-bold bg-slate-50 border border-slate-100 rounded-2xl p-4 text-slate-700 outline-none focus:ring-2 focus:ring-teal-400" value={entityData.especialidade} onFocus={onInputFocus} onBlur={onInputBlur} onChange={e=>setEntityData({...entityData, especialidade: e.target.value})} />
+                                            </div>
+                                            <div>
+                                                <div className="flex justify-between items-end mb-1">
+                                                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-2 block">Médico Responsável</label>
+                                                    <button onClick={() => setQuickAdd({ label: 'Médico', listName: 'doctors' })} className="text-emerald-500 font-black flex items-center hover:text-emerald-700 transition-colors text-[10px]"><IconPlus /><span className="ml-1">Novo</span></button>
+                                                </div>
+                                                <select className="w-full font-bold bg-slate-50 border border-slate-100 rounded-2xl p-4 text-slate-700 outline-none focus:ring-2 focus:ring-teal-400" value={entityData.medicoResponsavel} onChange={e=>setEntityData({...entityData, medicoResponsavel: e.target.value})}>
+                                                    <option value="">Selecione...</option>
+                                                    {doctors.map(d => <option key={d.id} value={d.name}>{d.name}</option>)}
+                                                </select>
+                                            </div>
+                                            {renderAddressFields()}
+                                            <div>
+                                                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-2 block mb-1">Telefone</label>
+                                                <input type="tel" placeholder="(00) 00000.0000" className="w-full font-bold bg-slate-50 border border-slate-100 rounded-2xl p-4 text-slate-700 outline-none focus:ring-2 focus:ring-teal-400" value={entityData.telefone} onFocus={onInputFocus} onBlur={onInputBlur} onChange={e=>setEntityData({...entityData, telefone: maskPhone(e.target.value)})} />
                                             </div>
                                         </>
                                     )}
@@ -1057,38 +1364,54 @@
                                         <>
                                             <div>
                                                 <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-2 block mb-1">Especialidade</label>
-                                                <input type="text" placeholder="Ex: Cardiologia" className="w-full font-bold bg-slate-50 border border-slate-100 rounded-2xl p-4 text-slate-700 outline-none focus:ring-2 focus:ring-slate-400" value={entityData.especialidade} onFocus={onInputFocus} onBlur={onInputBlur} onChange={e=>setEntityData({...entityData, especialidade: e.target.value})} />
+                                                <input type="text" placeholder="Ex: Cardiologia" className="w-full font-bold bg-slate-50 border border-slate-100 rounded-2xl p-4 text-slate-700 outline-none focus:ring-2 focus:ring-teal-400" value={entityData.especialidade} onFocus={onInputFocus} onBlur={onInputBlur} onChange={e=>setEntityData({...entityData, especialidade: e.target.value})} />
                                             </div>
                                             <div className="flex gap-3">
                                                 <div className="flex-[2]">
                                                     <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-2 block mb-1">CRM</label>
-                                                    <input type="text" placeholder="00000" className="w-full font-bold bg-slate-50 border border-slate-100 rounded-2xl p-4 text-slate-700 outline-none focus:ring-2 focus:ring-slate-400" value={entityData.crm} onFocus={onInputFocus} onBlur={onInputBlur} onChange={e=>setEntityData({...entityData, crm: e.target.value})} />
+                                                    <input type="text" placeholder="00000" className="w-full font-bold bg-slate-50 border border-slate-100 rounded-2xl p-4 text-slate-700 outline-none focus:ring-2 focus:ring-teal-400" value={entityData.crm} onFocus={onInputFocus} onBlur={onInputBlur} onChange={e=>setEntityData({...entityData, crm: e.target.value})} />
                                                 </div>
                                                 <div className="flex-1">
                                                     <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-2 block mb-1">UF</label>
-                                                    <input type="text" placeholder="SP" maxLength="2" className="w-full font-bold bg-slate-50 border border-slate-100 rounded-2xl p-4 text-slate-700 outline-none focus:ring-2 focus:ring-slate-400 uppercase text-center" value={entityData.uf} onFocus={onInputFocus} onBlur={onInputBlur} onChange={e=>setEntityData({...entityData, uf: e.target.value})} />
+                                                    <input type="text" placeholder="SP" maxLength="2" className="w-full font-bold bg-slate-50 border border-slate-100 rounded-2xl p-4 text-slate-700 outline-none focus:ring-2 focus:ring-teal-400 uppercase text-center" value={entityData.uf} onFocus={onInputFocus} onBlur={onInputBlur} onChange={e=>setEntityData({...entityData, uf: e.target.value})} />
                                                 </div>
                                             </div>
+                                            <div className="flex gap-3">
+                                                <div className="flex-1">
+                                                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-2 block mb-1">RQE</label>
+                                                    <input type="text" placeholder="00000" className="w-full font-bold bg-slate-50 border border-slate-100 rounded-2xl p-4 text-slate-700 outline-none focus:ring-2 focus:ring-teal-400" value={entityData.rqe} onFocus={onInputFocus} onBlur={onInputBlur} onChange={e=>setEntityData({...entityData, rqe: e.target.value})} />
+                                                </div>
+                                            </div>
+                                            {renderAddressFields()}
+                                        </>
+                                    )}
+
+                                    {activeTab === 'medicaments' && (
+                                        <>
                                             <div>
-                                                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-2 block mb-1">RQE</label>
-                                                <input type="text" placeholder="00000" className="w-full font-bold bg-slate-50 border border-slate-100 rounded-2xl p-4 text-slate-700 outline-none focus:ring-2 focus:ring-slate-400" value={entityData.rqe} onFocus={onInputFocus} onBlur={onInputBlur} onChange={e=>setEntityData({...entityData, rqe: e.target.value})} />
+                                                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-2 block mb-1">Dosagens</label>
+                                                <input type="text" placeholder="Ex: 50mg, 100mg" className="w-full font-bold bg-slate-50 border border-slate-100 rounded-2xl p-4 text-slate-700 outline-none focus:ring-2 focus:ring-teal-400" value={entityData.dosagens} onFocus={onInputFocus} onBlur={onInputBlur} onChange={e=>setEntityData({...entityData, dosagens: e.target.value})} />
+                                            </div>
+                                            <div>
+                                                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-2 block mb-1">Tipo</label>
+                                                <input type="text" placeholder="Ex: Comprimido, Xarope..." className="w-full font-bold bg-slate-50 border border-slate-100 rounded-2xl p-4 text-slate-700 outline-none focus:ring-2 focus:ring-teal-400" value={entityData.tipo} onFocus={onInputFocus} onBlur={onInputBlur} onChange={e=>setEntityData({...entityData, tipo: e.target.value})} />
                                             </div>
                                         </>
                                     )}
 
-                                    {/* STATUS E OBSERVAÇÕES */}
+                                    {/* STATUS E OBSERVAÇÕES (PARA TODAS) */}
                                     <div className="pt-4 border-t border-slate-100">
                                         <div className="flex gap-3 mb-4">
                                             <div className="flex-1">
                                                 <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-2 block mb-1">Status do Registro</label>
-                                                <select className="w-full font-bold bg-slate-50 border border-slate-100 rounded-2xl p-4 text-slate-700 outline-none focus:ring-2 focus:ring-slate-400" value={entityData.status || 'Ativo'} onChange={e=>setEntityData({...entityData, status: e.target.value})}>
+                                                <select className="w-full font-bold bg-slate-50 border border-slate-100 rounded-2xl p-4 text-slate-700 outline-none focus:ring-2 focus:ring-teal-400" value={entityData.status || 'Ativo'} onChange={e=>setEntityData({...entityData, status: e.target.value})}>
                                                     <option value="Ativo">Ativo</option>
                                                     <option value="Inativo">Inativo</option>
                                                 </select>
                                             </div>
                                         </div>
                                         <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-2 block mb-1">Observações</label>
-                                        <textarea placeholder="Detalhes adicionais..." rows="3" className="w-full font-bold bg-slate-50 border border-slate-100 rounded-2xl p-4 text-slate-700 outline-none focus:ring-2 focus:ring-slate-400 resize-none" value={entityData.observacoes} onFocus={onInputFocus} onBlur={onInputBlur} onChange={e=>setEntityData({...entityData, observacoes: e.target.value})}></textarea>
+                                        <textarea placeholder="Detalhes adicionais..." rows="3" className="w-full font-bold bg-slate-50 border border-slate-100 rounded-2xl p-4 text-slate-700 outline-none focus:ring-2 focus:ring-teal-400 resize-none" value={entityData.observacoes} onFocus={onInputFocus} onBlur={onInputBlur} onChange={e=>setEntityData({...entityData, observacoes: e.target.value})}></textarea>
                                     </div>
                                 </div>
 
@@ -1105,82 +1428,100 @@
                         <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-slate-900/90 backdrop-blur-md">
                             <div className="bg-white w-full max-w-sm rounded-[3rem] p-8 shadow-2xl border-t-8 border-slate-800 animate-fade overflow-y-auto max-h-[90vh]">
                                 <div className="flex justify-between items-start mb-4">
-                                    <h2 className="text-xl font-black italic uppercase text-slate-800">FICHA DETALHADA</h2>
-                                    <button onClick={() => setSelectedEntity(null)} className="text-slate-400 hover:text-slate-600 p-2"><IconX /></button>
+                                    <h2 className="text-xl font-black italic uppercase text-slate-800">Ficha Detalhada</h2>
+                                    <button onClick={() => setSelectedEntity(null)} className="text-slate-400 hover:text-rose-500 p-2 transition-colors"><IconX /></button>
                                 </div>
                                 
                                 <div className="mb-6 text-center">
                                     <h3 className="text-2xl font-black text-slate-800 leading-tight">
-                                        {activeTab === 'doctors' ? formatDoctorName(selectedEntity.name) : selectedEntity.name}
+                                        {activeTab === 'clinics' ? formatClinicName(selectedEntity.name) : activeTab === 'doctors' ? formatDoctorName(selectedEntity.name) : selectedEntity.name}
                                     </h3>
-                                    <p className="text-[10px] font-black text-emerald-500 mt-1 uppercase tracking-[0.2em]">
-                                        (ÚLTIMA COMPRA: {getLastPurchaseData(getEntityKeyForPurchase(activeTab), selectedEntity.name).text.toUpperCase()})
-                                    </p>
+                                    <p className="text-[10px] font-black text-teal-500 mt-1 uppercase tracking-[0.2em]">(Última compra: {getLastPurchaseData(getEntityKeyForPurchase(activeTab), selectedEntity.name).text})</p>
                                 </div>
 
                                 <div className="space-y-4 mb-6 bg-slate-50 p-6 rounded-3xl border border-slate-100">
-                                    <div className="grid grid-cols-1 gap-y-4 text-left">
+                                    <div className="grid grid-cols-2 gap-y-4 gap-x-2 text-left">
                                         
-                                        {activeTab === 'doctors' ? (
+                                        {activeTab === 'patients' && (
                                             <>
-                                                <div>
-                                                    <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">ESPECIALIDADE</p>
-                                                    <p className="text-sm font-bold text-slate-800">{selectedEntity.especialidade || '-'}</p>
+                                                <div><p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">CPF</p><p className="text-sm font-bold text-slate-800">{selectedEntity.cpf || '-'}</p></div>
+                                                <div><p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">RG</p><p className="text-sm font-bold text-slate-800">{selectedEntity.rg || '-'}</p></div>
+                                                <div className="col-span-2 flex justify-between items-center border-t border-b border-slate-200 py-3 my-1">
+                                                    <div><p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Nascimento</p><p className="text-base font-bold text-slate-800">{selectedEntity.birthDate ? new Date(selectedEntity.birthDate + 'T12:00:00').toLocaleDateString('pt-BR') : '-'}{selectedEntity.birthDate && <span className="text-indigo-500 font-black ml-2 text-xs uppercase tracking-tighter italic">({getAge(selectedEntity.birthDate)} anos)</span>}</p></div>
                                                 </div>
-                                                <div>
+                                                <div className="col-span-2"><p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">Endereço Completo</p><p className="text-sm font-bold text-slate-800 leading-snug">{selectedEntity.rua ? `${selectedEntity.rua}, ${selectedEntity.numero || 'S/N'} ${selectedEntity.complemento ? ' - ' + selectedEntity.complemento : ''}` : '-'}</p><p className="text-[11px] font-bold text-slate-500 mt-1">{selectedEntity.bairro}</p><p className="text-[11px] font-bold text-slate-500">{selectedEntity.cidade ? `${selectedEntity.cidade} - ${selectedEntity.estado}` : ''}</p><p className="text-sm font-black text-slate-700 mt-2">CEP: {selectedEntity.cep || '-'}</p></div>
+                                                <div className="col-span-2 border-t border-slate-200 pt-3 mt-1"><p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Clínica Associada</p><p className="text-sm font-bold text-slate-800">{selectedEntity.clinic || '-'}</p></div>
+                                                <div className="col-span-2"><p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Telefone</p><p className="text-sm font-bold text-slate-800">{selectedEntity.phone || '-'}</p></div>
+                                                <div className="col-span-2"><p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">E-mail</p><p className="text-sm font-bold text-slate-800 break-all">{selectedEntity.email || '-'}</p></div>
+                                            </>
+                                        )}
+
+                                        {activeTab === 'pharmacies' && (
+                                            <>
+                                                <div className="col-span-2"><p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">Endereço Completo</p><p className="text-sm font-bold text-slate-800 leading-snug">{selectedEntity.rua ? `${selectedEntity.rua}, ${selectedEntity.numero || 'S/N'} ${selectedEntity.complemento ? ' - ' + selectedEntity.complemento : ''}` : '-'}</p><p className="text-[11px] font-bold text-slate-500 mt-1">{selectedEntity.bairro}</p><p className="text-[11px] font-bold text-slate-500">{selectedEntity.cidade ? `${selectedEntity.cidade} - ${selectedEntity.estado}` : ''}</p><p className="text-sm font-black text-slate-700 mt-2">CEP: {selectedEntity.cep || '-'}</p></div>
+                                                <div className="col-span-2"><p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Telefone</p><p className="text-sm font-bold text-slate-800">{selectedEntity.telefone || '-'}</p></div>
+                                            </>
+                                        )}
+
+                                        {activeTab === 'clinics' && (
+                                            <>
+                                                <div className="col-span-2"><p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Especialidade</p><p className="text-sm font-bold text-slate-800 leading-snug">{selectedEntity.especialidade || '-'}</p></div>
+                                                <div className="col-span-2"><p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Médico Responsável</p><p className="text-sm font-bold text-slate-800 leading-snug">{selectedEntity.medicoResponsavel || '-'}</p></div>
+                                                <div className="col-span-2"><p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">Endereço Completo</p><p className="text-sm font-bold text-slate-800 leading-snug">{selectedEntity.rua ? `${selectedEntity.rua}, ${selectedEntity.numero || 'S/N'} ${selectedEntity.complemento ? ' - ' + selectedEntity.complemento : ''}` : '-'}</p><p className="text-[11px] font-bold text-slate-500 mt-1">{selectedEntity.bairro}</p><p className="text-[11px] font-bold text-slate-500">{selectedEntity.cidade ? `${selectedEntity.cidade} - ${selectedEntity.estado}` : ''}</p><p className="text-sm font-black text-slate-700 mt-2">CEP: {selectedEntity.cep || '-'}</p></div>
+                                                <div className="col-span-2"><p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Telefone</p><p className="text-sm font-bold text-slate-800">{selectedEntity.telefone || '-'}</p></div>
+                                            </>
+                                        )}
+
+                                        {activeTab === 'doctors' && (
+                                            <>
+                                                <div className="col-span-2"><p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Especialidade</p><p className="text-sm font-bold text-slate-800 leading-snug">{selectedEntity.especialidade || '-'}</p></div>
+                                                <div className="col-span-2">
                                                     <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">CRM</p>
                                                     <div className="flex items-center">
                                                         <p className="text-sm font-bold text-slate-800">{selectedEntity.crm || '-'} {selectedEntity.uf ? `/${selectedEntity.uf}` : ''}</p>
                                                         {selectedEntity.crm && (
-                                                            <button onClick={() => fallbackCopyTextToClipboard(selectedEntity.crm)} className="ml-2 p-1 text-slate-400 hover:text-indigo-600 transition-colors">
+                                                            <button onClick={() => fallbackCopyTextToClipboard(selectedEntity.crm)} className="ml-2 p-1 text-slate-400 hover:text-teal-600 transition-colors" title="Copiar CRM">
                                                                 <IconCopy />
                                                             </button>
                                                         )}
                                                     </div>
                                                 </div>
-                                                <div>
-                                                    <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">RQE</p>
-                                                    <p className="text-sm font-bold text-slate-800">{selectedEntity.rqe || '-'}</p>
-                                                </div>
-                                                <div className="border-t border-slate-200 pt-3">
-                                                    <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">STATUS</p>
-                                                    <p className={`text-sm font-black ${selectedEntity.status === 'Inativo' ? 'text-rose-500' : 'text-emerald-500'}`}>{selectedEntity.status || 'Ativo'}</p>
-                                                </div>
-                                                <div className="border-t border-slate-200 pt-3">
-                                                    <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">OBSERVAÇÕES</p>
-                                                    <p className="text-sm font-bold text-slate-800 break-words">{selectedEntity.observacoes || '-'}</p>
-                                                </div>
-                                                <div className="mt-2">
-                                                    <button onClick={() => copyAndOpenCrm(selectedEntity.crm)} className="w-full py-4 bg-indigo-50 border border-indigo-200 text-indigo-600 text-[10px] font-black rounded-2xl uppercase flex items-center justify-center active:scale-95 transition-all shadow-sm">
-                                                        <span className="mr-2"><IconExternalLink /></span> CONSULTAR STATUS NO CREMESP
-                                                    </button>
-                                                </div>
+                                                <div><p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">RQE</p><p className="text-sm font-bold text-slate-800">{selectedEntity.rqe || '-'}</p></div>
+                                                <div className="col-span-2"><p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">Endereço Completo</p><p className="text-sm font-bold text-slate-800 leading-snug">{selectedEntity.rua ? `${selectedEntity.rua}, ${selectedEntity.numero || 'S/N'} ${selectedEntity.complemento ? ' - ' + selectedEntity.complemento : ''}` : '-'}</p><p className="text-[11px] font-bold text-slate-500 mt-1">{selectedEntity.bairro}</p><p className="text-[11px] font-bold text-slate-500">{selectedEntity.cidade ? `${selectedEntity.cidade} - ${selectedEntity.estado}` : ''}</p><p className="text-sm font-black text-slate-700 mt-2">CEP: {selectedEntity.cep || '-'}</p></div>
                                             </>
-                                        ) : activeTab === 'patients' ? (
+                                        )}
+
+                                        {activeTab === 'medicaments' && (
                                             <>
-                                                <div className="grid grid-cols-2 gap-2">
-                                                    <div><p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">CPF</p><p className="text-sm font-bold text-slate-800">{selectedEntity.cpf || '-'}</p></div>
-                                                    <div><p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">NASCIMENTO</p><p className="text-sm font-bold text-slate-800">{selectedEntity.birthDate ? new Date(selectedEntity.birthDate + 'T12:00:00').toLocaleDateString('pt-BR') : '-'}</p></div>
-                                                </div>
-                                                <div><p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">TELEFONE</p><p className="text-sm font-bold text-slate-800">{selectedEntity.phone || '-'}</p></div>
-                                                <div><p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">ENDEREÇO</p><p className="text-sm font-bold text-slate-800">{selectedEntity.rua || '-'}</p></div>
-                                                <div className="border-t border-slate-200 pt-3">
-                                                    <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">STATUS</p>
-                                                    <p className={`text-sm font-black ${selectedEntity.status === 'Inativo' ? 'text-rose-500' : 'text-emerald-500'}`}>{selectedEntity.status || 'Ativo'}</p>
-                                                </div>
+                                                <div className="col-span-2"><p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Dosagens</p><p className="text-sm font-bold text-slate-800 leading-snug">{selectedEntity.dosagens || '-'}</p></div>
+                                                <div className="col-span-2"><p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Tipo</p><p className="text-sm font-bold text-slate-800">{selectedEntity.tipo || '-'}</p></div>
                                             </>
-                                        ) : (
-                                            <>
-                                                <div><p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">STATUS</p><p className={`text-sm font-black ${selectedEntity.status === 'Inativo' ? 'text-rose-500' : 'text-emerald-500'}`}>{selectedEntity.status || 'Ativo'}</p></div>
-                                                <div><p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">DETALHES</p><p className="text-sm font-bold text-slate-800">{selectedEntity.observacoes || 'Nenhuma observação.'}</p></div>
-                                            </>
+                                        )}
+
+                                        <div className="col-span-2 border-t border-slate-200 pt-3 mt-1">
+                                            <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">Status</p>
+                                            <p className={`text-sm font-black ${selectedEntity.status === 'Inativo' ? 'text-rose-500' : 'text-teal-500'}`}>{selectedEntity.status || 'Ativo'}</p>
+                                        </div>
+
+                                        <div className="col-span-2 border-t border-slate-200 pt-3 mt-1">
+                                            <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Observações</p>
+                                            <p className="text-sm font-bold text-slate-800 break-words whitespace-pre-wrap">{selectedEntity.observacoes || '-'}</p>
+                                        </div>
+
+                                        {activeTab === 'doctors' && (
+                                            <div className="col-span-2 mt-2 flex justify-center">
+                                                <button onClick={() => copyAndOpenCrm(selectedEntity.crm)} className="w-full py-4 bg-teal-50 border border-teal-200 text-teal-700 text-xs font-black rounded-2xl uppercase flex items-center justify-center active:scale-95 transition-all shadow-sm hover:bg-teal-100">
+                                                    <span className="mr-2"><IconExternalLink /></span> Consultar Status no CREMESP
+                                                </button>
+                                            </div>
                                         )}
                                     </div>
                                 </div>
 
+                                {/* UPLOAD DE IMAGEM APENAS PARA PACIENTES */}
                                 {activeTab === 'patients' && (
                                     <div className="mb-8">
-                                        <input type="file" ref={uploadInputRef} className="hidden" accept="image/*" onChange={(e) => handleDocumentUpload(e, selectedEntity.id)} />
+                                        <input type="file" ref={uploadInputRef} className="hidden" accept="image/*,.pdf" onChange={(e) => handleDocumentUpload(e, selectedEntity.id)} />
                                         {selectedEntity.documentImage ? (
                                             <div className="flex gap-2">
                                                 <button onClick={() => setViewingImage(selectedEntity.documentImage)} className="flex-1 py-4 bg-indigo-50 border border-indigo-200 text-indigo-600 text-xs font-black rounded-2xl uppercase flex items-center justify-center active:scale-95 transition-all shadow-sm">
@@ -1198,95 +1539,9 @@
                                     </div>
                                 )}
 
-                                <div className="flex space-x-3 mt-4">
-                                    <button onClick={() => handleDeleteEntity(selectedEntity.id, activeTab)} className="flex-1 py-4 bg-rose-50 text-rose-600 text-xs font-black rounded-2xl uppercase flex items-center justify-center active:scale-95 transition-all"><span className="mr-2"><IconTrash /></span> EXCLUIR</button>
-                                    <button onClick={() => { setEntityData(selectedEntity); setSelectedEntity(null); setShowEntityModal(true); }} className="flex-1 py-4 bg-slate-900 text-white text-xs font-black rounded-2xl uppercase flex items-center justify-center active:scale-95 transition-all"><span className="mr-2"><IconPencil /></span> EDITAR</button>
-                                </div>
-                            </div>
-                        </div>
-                    )}
-
-                    {/* Modal Nova/Editar Compra */}
-                    {showSupplyModal && (
-                        <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-0 sm:p-6 bg-slate-900/90 backdrop-blur-md">
-                            <div className={`bg-white w-full max-w-sm rounded-t-[3rem] sm:rounded-[3rem] p-8 shadow-2xl border-t-8 ${supplyData.isScheduled ? 'border-indigo-500' : 'border-emerald-500'} max-h-[90vh] overflow-y-auto animate-fade`}>
-                                <h2 className="text-xl font-black text-center italic mb-6 uppercase text-slate-800">{supplyData.id ? 'Editar' : 'Novo'} {supplyData.isScheduled ? 'Agendamento' : 'Registro de Compra'}</h2>
-                                <div className="space-y-4 mb-8">
-                                    <div className="flex gap-3">
-                                        <div className="flex-[2]">
-                                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-2 block mb-1">Data</label>
-                                            <input type="date" className="w-full font-bold bg-slate-50 border border-slate-100 rounded-2xl p-4 text-slate-700 outline-none focus:ring-2 focus:ring-slate-400" value={supplyData.date} onFocus={onInputFocus} onBlur={onInputBlur} onChange={e=>setSupplyData({...supplyData, date: e.target.value})} />
-                                        </div>
-                                        <div className="flex-1">
-                                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-2 block mb-1">Qtd</label>
-                                            <input type="number" placeholder="0" className="w-full font-bold bg-slate-50 border border-slate-100 rounded-2xl p-4 text-slate-700 outline-none focus:ring-2 focus:ring-slate-400 text-center" value={supplyData.amount} onFocus={onInputFocus} onBlur={onInputBlur} onChange={e=>setSupplyData({...supplyData, amount: e.target.value})} />
-                                        </div>
-                                    </div>
-                                    
-                                    <div>
-                                        <div className="flex justify-between items-end mb-1">
-                                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-2 block">Medicamento</label>
-                                            <button onClick={() => setQuickAdd({ label: 'Medicamento', listName: 'medicaments' })} className="text-slate-600 bg-slate-100 p-1 rounded-md text-[10px] font-black flex items-center hover:bg-slate-200 transition-colors"><IconPlus /><span className="ml-1">Novo</span></button>
-                                        </div>
-                                        <select className="w-full font-bold bg-slate-50 border border-slate-100 rounded-2xl p-4 text-slate-700 outline-none focus:ring-2 focus:ring-slate-400" value={supplyData.medicamento} onChange={e=>setSupplyData({...supplyData, medicamento: e.target.value})}>
-                                            <option value="">Selecione ou adicione novo...</option>
-                                            {medicaments.map(p => <option key={p.id} value={p.name}>{p.name}</option>)}
-                                        </select>
-                                    </div>
-                                    <div>
-                                        <div className="flex justify-between items-end mb-1">
-                                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-2 block">Paciente</label>
-                                            <button onClick={() => setQuickAdd({ label: 'Paciente', listName: 'patients' })} className="text-slate-600 bg-slate-100 p-1 rounded-md text-[10px] font-black flex items-center hover:bg-slate-200 transition-colors"><IconPlus /><span className="ml-1">Novo</span></button>
-                                        </div>
-                                        <select className="w-full font-bold bg-slate-50 border border-slate-100 rounded-2xl p-4 text-slate-700 outline-none focus:ring-2 focus:ring-slate-400" value={supplyData.patient} onChange={e=>setSupplyData({...supplyData, patient: e.target.value})}>
-                                            <option value="">Selecione ou adicione novo...</option>
-                                            {patients.map(p => <option key={p.id} value={p.name}>{p.name}</option>)}
-                                        </select>
-                                    </div>
-                                    <div>
-                                        <div className="flex justify-between items-end mb-1">
-                                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-2 block">Farmácia</label>
-                                            <button onClick={() => setQuickAdd({ label: 'Farmácia', listName: 'pharmacies' })} className="text-slate-600 bg-slate-100 p-1 rounded-md text-[10px] font-black flex items-center hover:bg-slate-200 transition-colors"><IconPlus /><span className="ml-1">Nova</span></button>
-                                        </div>
-                                        <select className="w-full font-bold bg-slate-50 border border-slate-100 rounded-2xl p-4 text-slate-700 outline-none focus:ring-2 focus:ring-slate-400" value={supplyData.pharmacy} onChange={e=>setSupplyData({...supplyData, pharmacy: e.target.value})}>
-                                            <option value="">Selecione ou adicione nova...</option>
-                                            {pharmacies.map(p => <option key={p.id} value={p.name}>{p.name}</option>)}
-                                        </select>
-                                    </div>
-                                    <div>
-                                        <div className="flex justify-between items-end mb-1">
-                                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-2 block">Clínica</label>
-                                            <button onClick={() => setQuickAdd({ label: 'Clínica', listName: 'clinics' })} className="text-slate-600 bg-slate-100 p-1 rounded-md text-[10px] font-black flex items-center hover:bg-slate-200 transition-colors"><IconPlus /><span className="ml-1">Nova</span></button>
-                                        </div>
-                                        <select className="w-full font-bold bg-slate-50 border border-slate-100 rounded-2xl p-4 text-slate-700 outline-none focus:ring-2 focus:ring-slate-400" value={supplyData.clinic} onChange={e=>setSupplyData({...supplyData, clinic: e.target.value})}>
-                                            <option value="">Selecione ou adicione nova...</option>
-                                            {clinics.map(c => <option key={c.id} value={c.name}>{c.name}</option>)}
-                                        </select>
-                                    </div>
-                                    <div>
-                                        <div className="flex justify-between items-end mb-1">
-                                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-2 block">Médico</label>
-                                            <button onClick={() => setQuickAdd({ label: 'Médico', listName: 'doctors' })} className="text-slate-600 bg-slate-100 p-1 rounded-md text-[10px] font-black flex items-center hover:bg-slate-200 transition-colors"><IconPlus /><span className="ml-1">Novo</span></button>
-                                        </div>
-                                        <select className="w-full font-bold bg-slate-50 border border-slate-100 rounded-2xl p-4 text-slate-700 outline-none focus:ring-2 focus:ring-slate-400" value={supplyData.doctor} onChange={e=>setSupplyData({...supplyData, doctor: e.target.value})}>
-                                            <option value="">Selecione ou adicione novo...</option>
-                                            {doctors.map(d => <option key={d.id} value={d.name}>{d.name}</option>)}
-                                        </select>
-                                    </div>
-
-                                    <div className="pt-4 border-t border-slate-100">
-                                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-2 block mb-1">Valor {supplyData.isScheduled ? 'Estimado' : 'da Compra'} (R$)</label>
-                                        <input type="text" inputMode="numeric" placeholder="0,00" className="w-full font-bold bg-slate-50 border border-slate-100 rounded-2xl p-4 text-slate-700 outline-none focus:ring-2 focus:ring-emerald-400" value={supplyData.valorString} onFocus={onInputFocus} onBlur={onInputBlur} onChange={e=>setSupplyData({...supplyData, valorString: maskCurrency(e.target.value)})} />
-                                    </div>
-
-                                    <div>
-                                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-2 block mb-1">Forma de Pagamento</label>
-                                        <input type="text" placeholder="Ex: Cartão Crédito, Pix..." className="w-full font-bold bg-slate-50 border border-slate-100 rounded-2xl p-4 text-slate-700 outline-none focus:ring-2 focus:ring-slate-400" value={supplyData.pagamento} onFocus={onInputFocus} onBlur={onInputBlur} onChange={e=>setSupplyData({...supplyData, pagamento: e.target.value})} />
-                                    </div>
-                                </div>
                                 <div className="flex space-x-3">
-                                    <button onClick={()=>setShowSupplyModal(false)} className="flex-1 py-4 text-xs font-black text-slate-400 uppercase bg-slate-100 rounded-2xl active:scale-95 transition-all">Cancelar</button>
-                                    <button onClick={handleSupply} className={`flex-[2] py-4 text-white text-xs font-black rounded-2xl uppercase shadow-lg active:scale-95 transition-all ${supplyData.isScheduled ? 'bg-indigo-600 shadow-indigo-500/30' : 'bg-emerald-600 shadow-emerald-500/30'}`}>Salvar</button>
+                                    <button onClick={() => handleDeleteEntity(selectedEntity.id, activeTab)} className="flex-1 py-4 bg-rose-50 text-rose-600 text-xs font-black rounded-2xl uppercase flex items-center justify-center active:scale-95 transition-all"><span className="mr-2"><IconTrash /></span> Excluir</button>
+                                    <button onClick={() => { setEntityData(selectedEntity); setSelectedEntity(null); setShowEntityModal(true); }} className="flex-1 py-4 bg-slate-800 text-white text-xs font-black rounded-2xl uppercase flex items-center justify-center active:scale-95 transition-all"><span className="mr-2"><IconPencil /></span> Editar</button>
                                 </div>
                             </div>
                         </div>
@@ -1312,15 +1567,38 @@
                         <div className="fixed bottom-0 left-0 right-0 h-16 z-[45]" onClick={() => setForceShowNav(true)}></div>
                     )}
 
-                    {/* RODAPÉ ORDENADO */}
-                    <nav className={`fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-2xl border-t border-slate-100 flex justify-between items-center py-2 px-2 sm:px-6 pb-10 shadow-2xl z-40 transition-transform duration-500 overflow-x-auto scrollbar-hide ${(isKeyboardVisible && !forceShowNav) ? 'translate-y-full opacity-0 pointer-events-none' : 'translate-y-0 opacity-100'}`}>
-                        <button onClick={()=>setActiveTab('dashboard')} className={`flex flex-col items-center p-2 min-w-[50px] transition-all ${activeTab === 'dashboard' ? 'tab-active text-slate-800' : 'text-slate-400'}`}><IconHome /><span className="text-[7px] sm:text-[8px] mt-1 uppercase font-black">Início</span></button>
-                        <button onClick={()=>setActiveTab('purchases')} className={`flex flex-col items-center p-2 min-w-[50px] transition-all ${activeTab === 'purchases' ? 'tab-active text-slate-800' : 'text-slate-400'}`}><IconBag /><span className="text-[7px] sm:text-[8px] mt-1 uppercase font-black">Compras</span></button>
-                        <button onClick={()=>setActiveTab('patients')} className={`flex flex-col items-center p-2 min-w-[50px] transition-all ${activeTab === 'patients' ? 'tab-active text-slate-800' : 'text-slate-400'}`}><IconUserSmall /><span className="text-[7px] sm:text-[8px] mt-1 uppercase font-black">Pacientes</span></button>
-                        <button onClick={()=>setActiveTab('pharmacies')} className={`flex flex-col items-center p-2 min-w-[50px] transition-all ${activeTab === 'pharmacies' ? 'tab-active text-slate-800' : 'text-slate-400'}`}><IconBuilding /><span className="text-[7px] sm:text-[8px] mt-1 uppercase font-black">Farmácias</span></button>
-                        <button onClick={()=>setActiveTab('clinics')} className={`flex flex-col items-center p-2 min-w-[50px] transition-all ${activeTab === 'clinics' ? 'tab-active text-slate-800' : 'text-slate-400'}`}><IconHospital /><span className="text-[7px] sm:text-[8px] mt-1 uppercase font-black">Clínicas</span></button>
-                        <button onClick={()=>setActiveTab('doctors')} className={`flex flex-col items-center p-2 min-w-[50px] transition-all ${activeTab === 'doctors' ? 'tab-active text-slate-800' : 'text-slate-400'}`}><IconHeartBeat /><span className="text-[7px] sm:text-[8px] mt-1 uppercase font-black">Médicos</span></button>
-                        <button onClick={()=>setActiveTab('medicaments')} className={`flex flex-col items-center p-2 min-w-[50px] transition-all ${activeTab === 'medicaments' ? 'tab-active text-slate-800' : 'text-slate-400'}`}><IconPill /><span className="text-[7px] sm:text-[8px] mt-1 uppercase font-black">Remédios</span></button>
+                    {/* RODAPÉ DO MENU LATERAL (GAVETA DE MENU) */}
+                    {isMenuOpen && (
+                        <div className="fixed inset-0 z-[140] bg-slate-900/20 backdrop-blur-sm transition-opacity" onClick={() => setIsMenuOpen(false)}></div>
+                    )}
+
+                    {/* MENU LATERAL (GAVETA) */}
+                    <div className={`fixed top-0 right-0 bottom-0 w-72 bg-white z-[150] shadow-2xl transform transition-transform duration-300 ease-in-out flex flex-col ${isMenuOpen ? 'translate-x-0' : 'translate-x-full'}`}>
+                        <div className="p-6 flex justify-between items-center border-b border-slate-100 bg-slate-50">
+                            <h2 className="text-lg font-black text-slate-700 uppercase tracking-widest">Menu</h2>
+                            <button onClick={() => setIsMenuOpen(false)} className="p-2 text-slate-400 hover:text-rose-500 transition-colors"><IconX /></button>
+                        </div>
+                        <div className="p-4 flex-1 overflow-y-auto space-y-2 scrollbar-hide">
+                            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 px-2 mt-2">Cadastros ERP</p>
+                            <button onClick={() => { setActiveTab('pharmacies'); setIsMenuOpen(false); }} className={`w-full flex items-center p-4 rounded-2xl transition-all ${activeTab === 'pharmacies' ? 'bg-teal-50 text-teal-700' : 'hover:bg-slate-50 text-slate-600'}`}><IconBuilding /><span className="ml-3 font-bold text-sm">Farmácias</span></button>
+                            <button onClick={() => { setActiveTab('clinics'); setIsMenuOpen(false); }} className={`w-full flex items-center p-4 rounded-2xl transition-all ${activeTab === 'clinics' ? 'bg-teal-50 text-teal-700' : 'hover:bg-slate-50 text-slate-600'}`}><IconHospital /><span className="ml-3 font-bold text-sm">Clínicas</span></button>
+                            <button onClick={() => { setActiveTab('doctors'); setIsMenuOpen(false); }} className={`w-full flex items-center p-4 rounded-2xl transition-all ${activeTab === 'doctors' ? 'bg-teal-50 text-teal-700' : 'hover:bg-slate-50 text-slate-600'}`}><IconHeartBeat /><span className="ml-3 font-bold text-sm">Médicos</span></button>
+                            <button onClick={() => { setActiveTab('medicaments'); setIsMenuOpen(false); }} className={`w-full flex items-center p-4 rounded-2xl transition-all ${activeTab === 'medicaments' ? 'bg-teal-50 text-teal-700' : 'hover:bg-slate-50 text-slate-600'}`}><IconPill /><span className="ml-3 font-bold text-sm">Remédios</span></button>
+
+                            <div className="my-6 border-t border-slate-100"></div>
+                            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 px-2">Sistema</p>
+                            <button onClick={() => { handleGeneratePDF(); setIsMenuOpen(false); }} className="w-full flex items-center p-4 rounded-2xl hover:bg-slate-50 text-slate-600 transition-all"><IconFileText /><span className="ml-3 font-bold text-sm">Gerar PDF</span></button>
+                            <button onClick={() => { handleBackup(); setIsMenuOpen(false); }} className="w-full flex items-center p-4 rounded-2xl hover:bg-slate-50 text-slate-600 transition-all"><IconDownload /><span className="ml-3 font-bold text-sm">Fazer Backup</span></button>
+                            <button onClick={() => { fileInputRef.current.click(); setIsMenuOpen(false); }} className="w-full flex items-center p-4 rounded-2xl hover:bg-slate-50 text-slate-600 transition-all"><IconUpload /><span className="ml-3 font-bold text-sm">Restaurar Dados</span></button>
+                        </div>
+                    </div>
+
+                    {/* RODAPÉ ELEGANTE (4 ÍCONES) */}
+                    <nav className={`fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-xl border-t border-slate-100 flex justify-around items-center py-2 px-4 sm:px-6 pb-8 shadow-[0_-4px_20px_-4px_rgba(0,0,0,0.05)] z-40 transition-transform duration-500 ${(isKeyboardVisible && !forceShowNav) ? 'translate-y-full opacity-0 pointer-events-none' : 'translate-y-0 opacity-100'}`}>
+                        <button onClick={()=>setActiveTab('dashboard')} className={`flex flex-col items-center p-2 min-w-[60px] transition-all ${activeTab === 'dashboard' ? 'text-teal-600 scale-110' : 'text-slate-400 hover:text-slate-600'}`}><IconHome /><span className="text-[8px] sm:text-[9px] mt-1 uppercase font-black">Início</span></button>
+                        <button onClick={()=>setActiveTab('purchases')} className={`flex flex-col items-center p-2 min-w-[60px] transition-all ${activeTab === 'purchases' ? 'text-teal-600 scale-110' : 'text-slate-400 hover:text-slate-600'}`}><IconBag /><span className="text-[8px] sm:text-[9px] mt-1 uppercase font-black">Compras</span></button>
+                        <button onClick={()=>setActiveTab('patients')} className={`flex flex-col items-center p-2 min-w-[60px] transition-all ${activeTab === 'patients' ? 'text-indigo-500 scale-110' : 'text-slate-400 hover:text-slate-600'}`}><IconUserSmall /><span className="text-[8px] sm:text-[9px] mt-1 uppercase font-black">Pacientes</span></button>
+                        <button onClick={() => setIsMenuOpen(true)} className={`flex flex-col items-center p-2 min-w-[60px] transition-all text-slate-400 hover:text-slate-600`}><IconMenu /><span className="text-[8px] sm:text-[9px] mt-1 uppercase font-black">Menu</span></button>
                     </nav>
                 </div>
             );
