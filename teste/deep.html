@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -17,321 +18,146 @@
     .hide-scroll::-webkit-scrollbar { display: none; }
     .hide-scroll { -ms-overflow-style: none; scrollbar-width: none; }
     .auth-bg { background: linear-gradient(135deg, #eff6ff 0%, #bfdbfe 100%); }
-
-    .wrap-two-lines {
-      display: -webkit-box;
-      -webkit-line-clamp: 2;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
-      white-space: normal !important;
-      word-break: break-word;
-      overflow-wrap: anywhere;
-      line-height: 1.2;
-    }
-    .wrap-soft {
-      white-space: normal !important;
-      word-break: break-word;
-      overflow-wrap: anywhere;
-      line-height: 1.25;
-    }
+    .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
   </style>
 </head>
-
 <body class="bg-slate-50 text-slate-800 font-sans antialiased pb-20 md:pb-0 md:pt-16 hidden" id="app-body">
 
-  <!-- AUTHENTICATION SCREEN -->
+  <!-- AUTH SCREEN -->
   <div id="auth-screen" class="fixed inset-0 z-[100] auth-bg flex items-center justify-center p-4">
     <div class="bg-white p-8 rounded-3xl shadow-2xl w-full max-w-md flex flex-col items-center">
       <div class="w-24 h-24 mb-4 rounded-3xl overflow-hidden flex items-center justify-center bg-white shadow-sm p-1 border-2 border-slate-100">
-        <img src="https://farmacia.kaioadriel.com.br/icone/images.png" alt="Logo Controle de Farmácias" class="w-full h-full object-contain">
+        <img src="https://farmacia.kaioadriel.com.br/icone/images.png" alt="Logo" class="w-full h-full object-contain">
       </div>
       <h1 class="text-2xl font-black text-slate-800 mb-2 text-center">Controle de Farmácias</h1>
       <p class="text-sm text-slate-500 mb-8 text-center font-medium">Faça login para acessar e sincronizar seus dados.</p>
-
       <div class="w-full space-y-4">
-        <div>
-          <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5 ml-1">E-mail</label>
-          <input type="email" id="auth-email" placeholder="seu@email.com" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3.5 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
-        </div>
-        <div>
-          <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5 ml-1">Senha</label>
-          <input type="password" id="auth-pass" placeholder="••••••••" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3.5 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
-        </div>
-
+        <div><label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5 ml-1">E-mail</label><input type="email" id="auth-email" placeholder="seu@email.com" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3.5 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 transition"></div>
+        <div><label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5 ml-1">Senha</label><input type="password" id="auth-pass" placeholder="••••••••" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3.5 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 transition"></div>
         <div class="flex gap-3 pt-2">
           <button onclick="handleLoginEmail()" class="flex-1 bg-blue-600 text-white font-bold py-3.5 rounded-xl shadow-md hover:bg-blue-700 transition active:scale-95">Entrar</button>
           <button onclick="handleRegisterEmail()" class="flex-1 bg-slate-100 text-slate-600 font-bold py-3.5 rounded-xl shadow-sm hover:bg-slate-200 transition active:scale-95">Criar Conta</button>
         </div>
-
-        <div class="relative flex py-4 items-center">
-          <div class="flex-grow border-t border-slate-200"></div>
-          <span class="flex-shrink-0 mx-4 text-slate-400 text-xs font-bold uppercase">Ou</span>
-          <div class="flex-grow border-t border-slate-200"></div>
-        </div>
-
-        <button onclick="handleLoginGoogle()" class="w-full bg-white border-2 border-slate-100 text-slate-700 font-bold py-3.5 rounded-xl shadow-sm hover:bg-slate-50 transition active:scale-95 flex items-center justify-center gap-3">
-          <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" class="w-5 h-5"> Entrar com Google
-        </button>
+        <div class="relative flex py-4 items-center"><div class="flex-grow border-t border-slate-200"></div><span class="flex-shrink-0 mx-4 text-slate-400 text-xs font-bold uppercase">Ou</span><div class="flex-grow border-t border-slate-200"></div></div>
+        <button onclick="handleLoginGoogle()" class="w-full bg-white border-2 border-slate-100 text-slate-700 font-bold py-3.5 rounded-xl shadow-sm hover:bg-slate-50 transition active:scale-95 flex items-center justify-center gap-3"><img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" class="w-5 h-5"> Entrar com Google</button>
       </div>
     </div>
   </div>
 
-  <!-- Header -->
+  <!-- HEADER -->
   <header id="main-header" class="bg-white text-blue-700 p-4 shadow-sm md:fixed md:top-0 md:w-full md:z-40 flex justify-between items-center border-b border-slate-200 hidden">
-    <div class="flex items-center gap-3">
-      <img src="https://farmacia.kaioadriel.com.br/icone/images.png" alt="Logo" class="h-8 w-8 object-contain rounded-md">
-      <h1 class="text-base sm:text-lg font-bold text-slate-800 leading-tight break-words max-w-[200px] sm:max-w-xs">Controle de Farmácias</h1>
+    <div class="flex items-center gap-3 min-w-0">
+      <img src="https://farmacia.kaioadriel.com.br/icone/images.png" alt="Logo" class="h-8 w-8 object-contain rounded-md shrink-0">
+      <h1 class="text-lg sm:text-xl font-bold leading-tight text-slate-800">Controle de Farmácias</h1>
     </div>
-    <div class="flex items-center gap-2">
-      <button id="btn-install-app" onclick="installApp()" class="hidden bg-yellow-400 text-yellow-900 text-[10px] sm:text-xs font-bold px-3 py-1.5 rounded-full shadow-sm hover:bg-yellow-500 transition flex items-center gap-1 active:scale-95">
-        <i class="fa-solid fa-download"></i> <span class="hidden sm:inline">Instalar App</span>
-      </button>
-      <button onclick="logoutApp()" class="bg-slate-100 text-slate-600 text-[10px] sm:text-xs font-bold px-3 py-1.5 rounded-full hover:bg-slate-200 transition flex items-center gap-1 active:scale-95" title="Sair da Conta">
-        <i class="fa-solid fa-right-from-bracket"></i> Sair
-      </button>
+    <div class="flex items-center gap-2 shrink-0">
+      <button id="btn-install-app" onclick="installApp()" class="hidden bg-yellow-400 text-yellow-900 text-[10px] sm:text-xs font-bold px-3 py-1.5 rounded-full shadow-sm hover:bg-yellow-500 transition flex items-center gap-1 active:scale-95"><i class="fa-solid fa-download"></i> <span class="hidden sm:inline">Instalar App</span></button>
+      <button onclick="logoutApp()" class="bg-slate-100 text-slate-600 text-[10px] sm:text-xs font-bold px-3 py-1.5 rounded-full hover:bg-slate-200 transition flex items-center gap-1 active:scale-95" title="Sair"><i class="fa-solid fa-right-from-bracket"></i> Sair</button>
     </div>
   </header>
 
-  <!-- Main Content Area -->
+  <!-- MAIN -->
   <main id="main-content" class="w-full max-w-6xl mx-auto md:p-4 md:flex md:gap-6 mt-4 md:mt-0 hidden">
-
-    <!-- Desktop Sidebar -->
     <aside class="hidden md:block w-64 shrink-0">
       <div class="bg-white rounded-xl shadow-sm p-4 sticky top-24 border border-slate-100">
         <div class="flex items-center gap-3 mb-6 p-2 bg-slate-50 rounded-lg border border-slate-100">
           <div class="w-10 h-10 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center font-bold" id="sidebar-avatar">KA</div>
-          <div class="min-w-0">
-            <p class="text-xs text-slate-500 font-bold uppercase tracking-wider">Logado como</p>
-            <p class="text-sm font-bold text-slate-800 truncate" id="sidebar-username">...</p>
-          </div>
+          <div class="min-w-0"><p class="text-xs text-slate-500 font-bold uppercase tracking-wider">Logado como</p><p class="text-sm font-bold text-slate-800 truncate" id="sidebar-username">...</p></div>
         </div>
         <nav class="flex flex-col gap-2">
-          <button onclick="switchView('dashboard')" class="nav-btn-desktop text-left p-3 rounded-lg hover:bg-slate-100 flex items-center gap-3 active-nav-desktop" data-target="dashboard">
-            <i class="fa-solid fa-chart-column w-5 text-blue-500"></i> Dash
-          </button>
-          <button onclick="switchView('compras')" class="nav-btn-desktop text-left p-3 rounded-lg hover:bg-slate-100 flex items-center gap-3" data-target="compras">
-            <i class="fa-solid fa-cart-shopping w-5 text-orange-500"></i> Compras
-          </button>
-          <button onclick="switchView('erp-categories')" class="nav-btn-desktop text-left p-3 rounded-lg hover:bg-slate-100 flex items-center gap-3" data-target="erp">
-            <i class="fa-regular fa-folder-open w-5 text-yellow-500"></i> Cadastros
-          </button>
+          <button onclick="switchView('dashboard')" class="nav-btn-desktop text-left p-3 rounded-lg hover:bg-slate-100 flex items-center gap-3 active-nav-desktop" data-target="dashboard"><i class="fa-solid fa-chart-column w-5 text-blue-500"></i> Dash</button>
+          <button onclick="switchView('compras')" class="nav-btn-desktop text-left p-3 rounded-lg hover:bg-slate-100 flex items-center gap-3" data-target="compras"><i class="fa-solid fa-cart-shopping w-5 text-orange-500"></i> Compras</button>
+          <button onclick="switchView('erp-categories')" class="nav-btn-desktop text-left p-3 rounded-lg hover:bg-slate-100 flex items-center gap-3" data-target="erp"><i class="fa-regular fa-folder-open w-5 text-yellow-500"></i> Cadastros</button>
         </nav>
       </div>
     </aside>
 
     <div class="flex-1 px-4 md:px-0 w-full" id="main-view-container">
 
-      <!-- Dashboard View -->
+      <!-- DASHBOARD -->
       <section id="view-dashboard" class="view-section active">
-        <div class="flex justify-between items-center mb-4 md:mb-6">
-          <h2 class="text-2xl font-bold text-slate-800">Visão Geral</h2>
-          <button onclick="openCompraForm()" class="bg-blue-600 text-white px-4 py-2.5 text-sm md:text-base rounded-xl font-bold shadow-md hover:bg-blue-700 transition active:scale-95 flex items-center gap-2">
-            <i class="fa-solid fa-cart-plus"></i> <span class="hidden sm:inline">Nova Compra</span><span class="sm:hidden">Comprar</span>
-          </button>
-        </div>
-
+        <div class="flex justify-between items-center mb-4 md:mb-6"><h2 class="text-2xl font-bold text-slate-800">Visão Geral</h2><button onclick="openCompraForm()" class="bg-blue-600 text-white px-4 py-2.5 text-sm md:text-base rounded-xl font-bold shadow-md hover:bg-blue-700 transition active:scale-95 flex items-center gap-2"><i class="fa-solid fa-cart-plus"></i> <span class="hidden sm:inline">Nova Compra</span><span class="sm:hidden">Comprar</span></button></div>
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6">
           <div class="bg-white p-4 md:p-5 rounded-2xl shadow-sm border border-slate-100 flex flex-col h-full order-1 lg:order-none">
-            <div class="flex justify-between items-center mb-4">
-              <h3 class="font-bold text-slate-700"><i class="fa-solid fa-clock-rotate-left text-orange-500 mr-2"></i>Últimas Compras</h3>
-              <button onclick="switchView('compras')" class="text-xs font-bold text-blue-600 hover:underline">Ver Todas</button>
-            </div>
+            <div class="flex justify-between items-center mb-4"><h3 class="font-bold text-slate-700"><i class="fa-solid fa-clock-rotate-left text-orange-500 mr-2"></i>Últimas Compras</h3><button onclick="switchView('compras')" class="text-xs font-bold text-blue-600 hover:underline">Ver Todas</button></div>
             <div id="dashboard-recent-compras" class="space-y-3 flex-1 overflow-y-auto"></div>
           </div>
-
           <div class="bg-white p-4 md:p-5 rounded-2xl shadow-sm border border-slate-100 flex flex-col order-2 lg:order-none">
-            <div class="flex justify-between items-center mb-2">
-              <h3 class="font-bold text-slate-700">Histórico (6 Meses)</h3>
-              <button id="btn-toggle-chart" onclick="toggleChartType()" class="text-xs bg-slate-100 px-3 py-1.5 rounded-lg text-slate-600 hover:bg-slate-200 font-bold transition">Ver Gastos (R$)</button>
-            </div>
+            <div class="flex justify-between items-center mb-2"><h3 class="font-bold text-slate-700">Histórico (6 Meses)</h3><button id="btn-toggle-chart" onclick="toggleChartType()" class="text-xs bg-slate-100 px-3 py-1.5 rounded-lg text-slate-600 hover:bg-slate-200 font-bold transition">Ver Gastos (R$)</button></div>
             <div class="text-3xl font-black text-blue-600 mb-4" id="chart-total-label">0</div>
             <div class="h-56 w-full relative mt-auto"><canvas id="mainChart"></canvas></div>
           </div>
         </div>
       </section>
 
-      <!-- Compras View -->
+      <!-- COMPRAS -->
       <section id="view-compras" class="view-section hidden">
-        <div class="flex justify-between items-center mb-6">
-          <h2 class="text-2xl font-bold text-slate-800">Compras</h2>
-          <button onclick="openCompraForm()" class="bg-blue-600 text-white w-12 h-12 rounded-full shadow-lg flex items-center justify-center hover:bg-blue-700 transition active:scale-95 text-xl">
-            <i class="fa-solid fa-plus"></i>
-          </button>
-        </div>
-
-        <!-- FILTROS INTEGRADOS AO ERP - COMPACTO -->
+        <div class="flex justify-between items-center mb-6"><h2 class="text-2xl font-bold text-slate-800">Compras</h2><button onclick="openCompraForm()" class="bg-blue-600 text-white w-12 h-12 rounded-full shadow-lg flex items-center justify-center hover:bg-blue-700 transition active:scale-95 text-xl"><i class="fa-solid fa-plus"></i></button></div>
         <div class="mb-4">
           <div class="flex items-center gap-2">
-            <button onclick="toggleCompraFilters()" class="flex-1 bg-white border border-slate-200 rounded-2xl px-4 py-3 shadow-sm flex items-center justify-between active:scale-[0.98] transition">
-              <span class="flex items-center gap-2 font-black text-slate-700 text-sm">
-                <i class="fa-solid fa-filter text-blue-600"></i>
-                Filtros
-                <span id="filter-count-badge" class="hidden bg-blue-600 text-white text-[10px] px-2 py-0.5 rounded-full font-black">0</span>
-              </span>
-              <i id="filter-chevron" class="fa-solid fa-chevron-down text-slate-400 text-xs transition-transform"></i>
-            </button>
-
-            <button onclick="clearCompraFilters()" class="bg-slate-100 text-slate-600 border border-slate-200 rounded-2xl px-3 py-3 shadow-sm active:scale-95 transition" title="Limpar filtros">
-              <i class="fa-solid fa-eraser"></i>
-            </button>
+            <button onclick="toggleCompraFilters()" class="flex-1 bg-white border border-slate-200 rounded-2xl px-4 py-3 shadow-sm flex items-center justify-between active:scale-[0.98] transition"><span class="flex items-center gap-2 font-black text-slate-700 text-sm"><i class="fa-solid fa-filter text-blue-600"></i> Filtros <span id="filter-count-badge" class="hidden bg-blue-600 text-white text-[10px] px-2 py-0.5 rounded-full font-black">0</span></span><i id="filter-chevron" class="fa-solid fa-chevron-down text-slate-400 text-xs transition-transform"></i></button>
+            <button onclick="clearCompraFilters()" class="bg-slate-100 text-slate-600 border border-slate-200 rounded-2xl px-3 py-3 shadow-sm active:scale-95 transition" title="Limpar filtros"><i class="fa-solid fa-eraser"></i></button>
           </div>
-
           <div id="compra-filters-panel" class="hidden bg-white p-4 rounded-2xl shadow-sm border border-slate-100 mt-3">
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
-              <div class="space-y-1">
-                <label class="text-[9px] font-black text-slate-400 uppercase tracking-wider ml-1">Farmácia</label>
-                <select id="filter-farmacia" onchange="handleCompraFilterChange()" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs font-bold outline-none focus:ring-2 focus:ring-blue-500"></select>
-              </div>
-              <div class="space-y-1">
-                <label class="text-[9px] font-black text-slate-400 uppercase tracking-wider ml-1">Paciente</label>
-                <select id="filter-paciente" onchange="handleCompraFilterChange()" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs font-bold outline-none focus:ring-2 focus:ring-blue-500"></select>
-              </div>
-              <div class="space-y-1">
-                <label class="text-[9px] font-black text-slate-400 uppercase tracking-wider ml-1">Clínica</label>
-                <select id="filter-clinica" onchange="handleCompraFilterChange()" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs font-bold outline-none focus:ring-2 focus:ring-blue-500"></select>
-              </div>
-              <div class="space-y-1">
-                <label class="text-[9px] font-black text-slate-400 uppercase tracking-wider ml-1">Médico</label>
-                <select id="filter-medico" onchange="handleCompraFilterChange()" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs font-bold outline-none focus:ring-2 focus:ring-blue-500"></select>
-              </div>
-              <div class="space-y-1">
-                <label class="text-[9px] font-black text-slate-400 uppercase tracking-wider ml-1">Remédio</label>
-                <select id="filter-remedio" onchange="handleCompraFilterChange()" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs font-bold outline-none focus:ring-2 focus:ring-blue-500"></select>
-              </div>
+              <div class="space-y-1"><label class="text-[9px] font-black text-slate-400 uppercase tracking-wider ml-1">Farmácia</label><select id="filter-farmacia" onchange="handleCompraFilterChange()" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs font-bold outline-none focus:ring-2 focus:ring-blue-500"></select></div>
+              <div class="space-y-1"><label class="text-[9px] font-black text-slate-400 uppercase tracking-wider ml-1">Paciente</label><select id="filter-paciente" onchange="handleCompraFilterChange()" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs font-bold outline-none focus:ring-2 focus:ring-blue-500"></select></div>
+              <div class="space-y-1"><label class="text-[9px] font-black text-slate-400 uppercase tracking-wider ml-1">Clínica</label><select id="filter-clinica" onchange="handleCompraFilterChange()" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs font-bold outline-none focus:ring-2 focus:ring-blue-500"></select></div>
+              <div class="space-y-1"><label class="text-[9px] font-black text-slate-400 uppercase tracking-wider ml-1">Médico</label><select id="filter-medico" onchange="handleCompraFilterChange()" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs font-bold outline-none focus:ring-2 focus:ring-blue-500"></select></div>
+              <div class="space-y-1"><label class="text-[9px] font-black text-slate-400 uppercase tracking-wider ml-1">Remédio</label><select id="filter-remedio" onchange="handleCompraFilterChange()" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs font-bold outline-none focus:ring-2 focus:ring-blue-500"></select></div>
             </div>
-            <div class="flex justify-end mt-3">
-              <button onclick="clearCompraFilters()" class="text-xs font-bold text-slate-500 bg-slate-100 hover:bg-slate-200 px-3 py-2 rounded-xl transition">
-                <i class="fa-solid fa-eraser mr-1"></i> Limpar filtros
-              </button>
-            </div>
+            <div class="flex justify-end mt-3"><button onclick="clearCompraFilters()" class="text-xs font-bold text-slate-500 bg-slate-100 hover:bg-slate-200 px-3 py-2 rounded-xl transition"><i class="fa-solid fa-eraser mr-1"></i> Limpar filtros</button></div>
           </div>
         </div>
-
         <div id="list-compras" class="space-y-3 pb-6"></div>
       </section>
 
-      <!-- ERP Categories View -->
+      <!-- ERP CATEGORIES -->
       <section id="view-erp-categories" class="view-section hidden">
         <h2 class="text-2xl font-bold text-slate-800 mb-6">Módulo ERP</h2>
         <div class="grid grid-cols-2 gap-4">
-          <button onclick="openErpList('pacientes')" class="bg-white p-6 rounded-2xl shadow-[0_2px_10px_-3px_rgba(0,0,0,0.1)] border border-slate-50 flex flex-col items-center justify-center gap-3 hover:bg-slate-50 transition active:scale-95">
-            <span class="text-5xl">👤</span><span class="font-bold text-slate-700 text-sm md:text-base">Pacientes</span>
-          </button>
-          <button onclick="openErpList('medicos')" class="bg-white p-6 rounded-2xl shadow-[0_2px_10px_-3px_rgba(0,0,0,0.1)] border border-slate-50 flex flex-col items-center justify-center gap-3 hover:bg-slate-50 transition active:scale-95">
-            <span class="text-5xl">👨‍⚕️</span><span class="font-bold text-slate-700 text-sm md:text-base">Médicos</span>
-          </button>
-          <button onclick="openErpList('clinicas')" class="bg-white p-6 rounded-2xl shadow-[0_2px_10px_-3px_rgba(0,0,0,0.1)] border border-slate-50 flex flex-col items-center justify-center gap-3 hover:bg-slate-50 transition active:scale-95">
-            <span class="text-5xl">🏥</span><span class="font-bold text-slate-700 text-sm md:text-base">Clínicas</span>
-          </button>
-          <button onclick="openErpList('farmacias')" class="bg-white p-6 rounded-2xl shadow-[0_2px_10px_-3px_rgba(0,0,0,0.1)] border border-slate-50 flex flex-col items-center justify-center gap-3 hover:bg-slate-50 transition active:scale-95">
-            <span class="text-5xl">🏪</span><span class="font-bold text-slate-700 text-sm md:text-base">Farmácias</span>
-          </button>
-          <button onclick="openErpList('remedios')" class="bg-white p-6 rounded-2xl shadow-[0_2px_10px_-3px_rgba(0,0,0,0.1)] border border-slate-50 flex flex-col items-center justify-center gap-3 hover:bg-slate-50 transition active:scale-95">
-            <span class="text-5xl">💊</span><span class="font-bold text-slate-700 text-sm md:text-base">Remédios</span>
-          </button>
+          <button onclick="openErpList('pacientes')" class="bg-white p-6 rounded-2xl shadow-[0_2px_10px_-3px_rgba(0,0,0,0.1)] border border-slate-50 flex flex-col items-center justify-center gap-3 hover:bg-slate-50 transition active:scale-95"><span class="text-5xl">👤</span><span class="font-bold text-slate-700 text-sm md:text-base">Pacientes</span></button>
+          <button onclick="openErpList('medicos')" class="bg-white p-6 rounded-2xl shadow-[0_2px_10px_-3px_rgba(0,0,0,0.1)] border border-slate-50 flex flex-col items-center justify-center gap-3 hover:bg-slate-50 transition active:scale-95"><span class="text-5xl">👨‍⚕️</span><span class="font-bold text-slate-700 text-sm md:text-base">Médicos</span></button>
+          <button onclick="openErpList('clinicas')" class="bg-white p-6 rounded-2xl shadow-[0_2px_10px_-3px_rgba(0,0,0,0.1)] border border-slate-50 flex flex-col items-center justify-center gap-3 hover:bg-slate-50 transition active:scale-95"><span class="text-5xl">🏥</span><span class="font-bold text-slate-700 text-sm md:text-base">Clínicas</span></button>
+          <button onclick="openErpList('farmacias')" class="bg-white p-6 rounded-2xl shadow-[0_2px_10px_-3px_rgba(0,0,0,0.1)] border border-slate-50 flex flex-col items-center justify-center gap-3 hover:bg-slate-50 transition active:scale-95"><span class="text-5xl">🏪</span><span class="font-bold text-slate-700 text-sm md:text-base">Farmácias</span></button>
+          <button onclick="openErpList('remedios')" class="bg-white p-6 rounded-2xl shadow-[0_2px_10px_-3px_rgba(0,0,0,0.1)] border border-slate-50 flex flex-col items-center justify-center gap-3 hover:bg-slate-50 transition active:scale-95"><span class="text-5xl">💊</span><span class="font-bold text-slate-700 text-sm md:text-base">Remédios</span></button>
         </div>
       </section>
 
-      <!-- ERP List View -->
+      <!-- ERP LIST -->
       <section id="view-erp-list" class="view-section hidden">
         <div class="flex justify-between items-center mb-4">
-          <div class="flex items-center gap-3">
-            <button onclick="switchView('erp-categories')" class="w-10 h-10 rounded-full bg-slate-200 text-slate-600 flex items-center justify-center hover:bg-slate-300 transition">
-              <i class="fa-solid fa-arrow-left"></i>
-            </button>
-            <h2 class="text-2xl font-bold text-slate-800 flex items-center gap-2" id="erp-list-title">Lista</h2>
-          </div>
-          <button onclick="openErpForm()" class="bg-blue-600 text-white w-12 h-12 rounded-full shadow-lg flex items-center justify-center hover:bg-blue-700 transition active:scale-95 text-xl">
-            <i class="fa-solid fa-plus"></i>
-          </button>
+          <div class="flex items-center gap-3"><button onclick="switchView('erp-categories')" class="w-10 h-10 rounded-full bg-slate-200 text-slate-600 flex items-center justify-center hover:bg-slate-300 transition"><i class="fa-solid fa-arrow-left"></i></button><h2 class="text-2xl font-bold text-slate-800 flex items-center gap-2" id="erp-list-title">Lista</h2></div>
+          <button onclick="openErpForm()" class="bg-blue-600 text-white w-12 h-12 rounded-full shadow-lg flex items-center justify-center hover:bg-blue-700 transition active:scale-95 text-xl"><i class="fa-solid fa-plus"></i></button>
         </div>
         <div class="relative mb-3">
           <i class="fa-solid fa-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
           <input type="text" id="erp-search" onkeyup="filterErpList()" placeholder="Buscar..." class="w-full bg-white border border-slate-200 rounded-xl py-3 pl-12 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm">
         </div>
-
-        <!-- Ordenação da lista ERP -->
-        <div class="mb-4 flex items-center gap-3 overflow-x-auto hide-scroll">
-          <span class="text-[11px] font-black text-slate-500 uppercase tracking-wider shrink-0">Ordenar:</span>
-          <button id="erp-sort-alpha" onclick="setErpSortMode('alpha')" class="erp-sort-btn shrink-0 bg-blue-600 text-white px-4 py-3 rounded-xl text-sm font-black shadow-md active:scale-95 transition">
-            A-Z
-          </button>
-          <button id="erp-sort-lastPurchase" onclick="setErpSortMode('lastPurchase')" class="erp-sort-btn shrink-0 bg-slate-100 text-slate-600 px-4 py-3 rounded-xl text-sm font-black active:scale-95 transition">
-            Última Compra
-          </button>
+        <div class="flex items-center gap-2 mb-4">
+          <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Ordenar:</span>
+          <button onclick="setErpSort('alfabetica')" id="btn-sort-alfa" class="text-xs font-bold px-3 py-2 rounded-lg bg-blue-600 text-white shadow-sm transition active:scale-95">A-Z</button>
+          <button onclick="setErpSort('recente')" id="btn-sort-recente" class="text-xs font-bold px-3 py-2 rounded-lg bg-slate-100 text-slate-600 hover:bg-slate-200 transition active:scale-95">Última Compra</button>
         </div>
-
         <div id="list-erp" class="space-y-3 pb-6"></div>
       </section>
-
     </div>
   </main>
 
-  <!-- Mobile Bottom Navigation -->
+  <!-- MOBILE NAV -->
   <nav id="mobile-nav" class="md:hidden fixed bottom-0 w-full bg-white border-t border-slate-200 z-40 pb-safe hidden">
     <div class="flex justify-around items-center h-[68px]">
-      <button onclick="switchView('dashboard')" class="nav-btn relative flex flex-col items-center justify-center w-full h-full text-slate-400 hover:text-blue-600 transition" data-target="dashboard">
-        <div class="nav-indicator hidden absolute top-0 w-1/2 h-1 bg-blue-600 rounded-b-md"></div>
-        <i class="fa-solid fa-chart-column text-xl mb-1 mt-1"></i>
-        <span class="text-[11px] font-bold">Dash</span>
-      </button>
-      <button onclick="switchView('compras')" class="nav-btn relative flex flex-col items-center justify-center w-full h-full text-slate-400 hover:text-blue-600 transition" data-target="compras">
-        <div class="nav-indicator hidden absolute top-0 w-1/2 h-1 bg-blue-600 rounded-b-md"></div>
-        <i class="fa-solid fa-cart-shopping text-xl mb-1 mt-1"></i>
-        <span class="text-[11px] font-bold">Compras</span>
-      </button>
-      <button onclick="switchView('erp-categories')" class="nav-btn relative flex flex-col items-center justify-center w-full h-full text-slate-400 hover:text-blue-600 transition" data-target="erp">
-        <div class="nav-indicator hidden absolute top-0 w-1/2 h-1 bg-blue-600 rounded-b-md"></div>
-        <i class="fa-regular fa-folder-open text-xl mb-1 mt-1"></i>
-        <span class="text-[11px] font-bold">Cadastros</span>
-      </button>
+      <button onclick="switchView('dashboard')" class="nav-btn relative flex flex-col items-center justify-center w-full h-full text-slate-400 hover:text-blue-600 transition" data-target="dashboard"><div class="nav-indicator hidden absolute top-0 w-1/2 h-1 bg-blue-600 rounded-b-md"></div><i class="fa-solid fa-chart-column text-xl mb-1 mt-1"></i><span class="text-[11px] font-bold">Dash</span></button>
+      <button onclick="switchView('compras')" class="nav-btn relative flex flex-col items-center justify-center w-full h-full text-slate-400 hover:text-blue-600 transition" data-target="compras"><div class="nav-indicator hidden absolute top-0 w-1/2 h-1 bg-blue-600 rounded-b-md"></div><i class="fa-solid fa-cart-shopping text-xl mb-1 mt-1"></i><span class="text-[11px] font-bold">Compras</span></button>
+      <button onclick="switchView('erp-categories')" class="nav-btn relative flex flex-col items-center justify-center w-full h-full text-slate-400 hover:text-blue-600 transition" data-target="erp"><div class="nav-indicator hidden absolute top-0 w-1/2 h-1 bg-blue-600 rounded-b-md"></div><i class="fa-regular fa-folder-open text-xl mb-1 mt-1"></i><span class="text-[11px] font-bold">Cadastros</span></button>
     </div>
   </nav>
 
-  <!-- Global Modal Overlay -->
-  <div id="modal-overlay" class="fixed inset-0 bg-slate-900/40 z-50 hidden flex items-end md:items-center justify-center transition-opacity opacity-0 backdrop-blur-sm">
-    <div id="modal-content" class="bg-white w-full max-w-2xl md:rounded-2xl rounded-t-3xl h-[90vh] md:h-auto md:max-h-[90vh] flex flex-col shadow-2xl transform translate-y-full md:translate-y-0 transition-transform duration-300">
-      <div class="flex justify-between items-center p-5 border-b border-slate-100">
-        <h3 id="modal-title" class="text-xl font-bold text-slate-800">Título</h3>
-        <button onclick="closeModal()" class="w-8 h-8 flex items-center justify-center rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200 transition"><i class="fa-solid fa-times"></i></button>
-      </div>
-      <div id="modal-body" class="p-5 overflow-y-auto flex-1 hide-scroll"></div>
-      <div id="modal-footer" class="p-5 border-t border-slate-100 bg-slate-50 flex gap-3 justify-end md:rounded-b-2xl pb-safe"></div>
-    </div>
-  </div>
-
-  <!-- Quick Add Modal -->
-  <div id="quick-add-overlay" class="fixed inset-0 bg-slate-900/60 z-[80] hidden flex items-center justify-center p-4 transition-opacity opacity-0 backdrop-blur-sm">
-    <div id="quick-add-content" class="bg-white rounded-2xl p-6 w-full max-w-sm shadow-2xl transform scale-95 transition-transform duration-300">
-      <div class="flex items-center justify-between mb-2">
-        <h3 class="font-bold text-lg text-slate-800">Cadastro Rápido ⚡</h3>
-        <button onclick="closeQuickAdd()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-times"></i></button>
-      </div>
-      <p class="text-sm text-slate-500 mb-5">Insira apenas o nome. Este cadastro ficará marcado como Incompleto no ERP.</p>
-      <input type="hidden" id="quick-add-collection">
-      <input type="hidden" id="quick-add-select-id">
-      <input type="text" id="quick-add-input" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 mb-5 focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-800 font-medium" placeholder="Digite o nome aqui...">
-      <div class="flex gap-3 justify-end">
-        <button onclick="closeQuickAdd()" class="px-5 py-2.5 bg-slate-100 rounded-xl text-slate-600 font-medium hover:bg-slate-200 transition">Cancelar</button>
-        <button onclick="confirmQuickAdd()" class="px-5 py-2.5 bg-blue-600 rounded-xl text-white font-bold shadow-md hover:bg-blue-700 transition">Salvar & Usar</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Fullscreen Image Viewer -->
-  <div id="image-viewer" class="fixed inset-0 bg-black z-[90] hidden flex-col items-center justify-center">
-    <div class="absolute top-6 right-6 flex gap-4">
-      <button onclick="deleteCurrentDocument()" class="w-12 h-12 flex items-center justify-center rounded-full bg-red-600/90 text-white text-xl backdrop-blur-md shadow-lg"><i class="fa-solid fa-trash"></i></button>
-      <button onclick="closeImageViewer()" class="w-12 h-12 flex items-center justify-center rounded-full bg-white/20 text-white text-xl backdrop-blur-md hover:bg-white/30 transition"><i class="fa-solid fa-times"></i></button>
-    </div>
-    <img id="image-viewer-img" src="" class="max-w-full max-h-full object-contain p-2">
-  </div>
-
-  <!-- Toast Notification -->
-  <div id="toast" class="fixed top-20 left-1/2 transform -translate-x-1/2 text-white px-5 py-3 rounded-xl shadow-xl z-[110] transition-opacity duration-300 opacity-0 pointer-events-none flex items-center gap-3 font-medium">
-    <i id="toast-icon" class="fa-solid fa-info-circle text-lg"></i>
-    <span id="toast-msg" class="text-sm"></span>
-  </div>
+  <!-- MODALS ETC -->
+  <div id="modal-overlay" class="fixed inset-0 bg-slate-900/40 z-50 hidden flex items-end md:items-center justify-center transition-opacity opacity-0 backdrop-blur-sm"><div id="modal-content" class="bg-white w-full max-w-2xl md:rounded-2xl rounded-t-3xl h-[90vh] md:h-auto md:max-h-[90vh] flex flex-col shadow-2xl transform translate-y-full md:translate-y-0 transition-transform duration-300"><div class="flex justify-between items-center p-5 border-b border-slate-100"><h3 id="modal-title" class="text-xl font-bold text-slate-800">Título</h3><button onclick="closeModal()" class="w-8 h-8 flex items-center justify-center rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200 transition"><i class="fa-solid fa-times"></i></button></div><div id="modal-body" class="p-5 overflow-y-auto flex-1 hide-scroll"></div><div id="modal-footer" class="p-5 border-t border-slate-100 bg-slate-50 flex gap-3 justify-end md:rounded-b-2xl pb-safe"></div></div></div>
+  <div id="quick-add-overlay" class="fixed inset-0 bg-slate-900/60 z-[80] hidden flex items-center justify-center p-4 transition-opacity opacity-0 backdrop-blur-sm"><div id="quick-add-content" class="bg-white rounded-2xl p-6 w-full max-w-sm shadow-2xl transform scale-95 transition-transform duration-300"><div class="flex items-center justify-between mb-2"><h3 class="font-bold text-lg text-slate-800">Cadastro Rápido ⚡</h3><button onclick="closeQuickAdd()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-times"></i></button></div><p class="text-sm text-slate-500 mb-5">Insira apenas o nome. Este cadastro ficará marcado como Incompleto no ERP.</p><input type="hidden" id="quick-add-collection"><input type="hidden" id="quick-add-select-id"><input type="text" id="quick-add-input" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 mb-5 focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-800 font-medium" placeholder="Digite o nome aqui..."><div class="flex gap-3 justify-end"><button onclick="closeQuickAdd()" class="px-5 py-2.5 bg-slate-100 rounded-xl text-slate-600 font-medium hover:bg-slate-200 transition">Cancelar</button><button onclick="confirmQuickAdd()" class="px-5 py-2.5 bg-blue-600 rounded-xl text-white font-bold shadow-md hover:bg-blue-700 transition">Salvar & Usar</button></div></div></div>
+  <div id="image-viewer" class="fixed inset-0 bg-black z-[90] hidden flex-col items-center justify-center"><div class="absolute top-6 right-6 flex gap-4"><button onclick="deleteCurrentDocument()" class="w-12 h-12 flex items-center justify-center rounded-full bg-red-600/90 text-white text-xl backdrop-blur-md shadow-lg"><i class="fa-solid fa-trash"></i></button><button onclick="closeImageViewer()" class="w-12 h-12 flex items-center justify-center rounded-full bg-white/20 text-white text-xl backdrop-blur-md hover:bg-white/30 transition"><i class="fa-solid fa-times"></i></button></div><img id="image-viewer-img" src="" class="max-w-full max-h-full object-contain p-2"></div>
+  <div id="toast" class="fixed top-20 left-1/2 transform -translate-x-1/2 text-white px-5 py-3 rounded-xl shadow-xl z-[110] transition-opacity duration-300 opacity-0 pointer-events-none flex items-center gap-3 font-medium"><i id="toast-icon" class="fa-solid fa-info-circle text-lg"></i><span id="toast-msg" class="text-sm"></span></div>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
@@ -339,907 +165,333 @@
     import { getFirestore, collection, onSnapshot, doc, setDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
     function injectPWA() {
-      const manifest = {
-        "name": "Controle de Farmácias - PharmaSync",
-        "short_name": "Controle de Farmácias",
-        "start_url": ".",
-        "display": "standalone",
-        "background_color": "#f8fafc",
-        "theme_color": "#2563eb",
-        "icons": [{"src": "https://farmacia.kaioadriel.com.br/icone/images.png", "sizes": "512x512", "type": "image/png", "purpose": "any"}]
-      };
-      const manifestBlob = new Blob([JSON.stringify(manifest)], {type: 'application/json'});
-      const link = document.createElement('link');
-      link.rel = 'manifest';
-      link.href = URL.createObjectURL(manifestBlob);
-      document.head.appendChild(link);
-
-      const swCode = `self.addEventListener('install', (e) => self.skipWaiting()); self.addEventListener('activate', (e) => e.waitUntil(clients.claim())); self.addEventListener('fetch', (e) => {});`;
-      const swBlob = new Blob([swCode], {type: 'text/javascript'});
-      if ('serviceWorker' in navigator) navigator.serviceWorker.register(URL.createObjectURL(swBlob)).catch(err => console.log('SW falhou', err));
-
-      let deferredPrompt;
-      window.addEventListener('beforeinstallprompt', (e) => {
-        e.preventDefault();
-        deferredPrompt = e;
-        document.getElementById('btn-install-app').classList.remove('hidden');
-      });
-      window.installApp = async () => {
-        if (deferredPrompt) {
-          deferredPrompt.prompt();
-          const { outcome } = await deferredPrompt.userChoice;
-          if (outcome === 'accepted') document.getElementById('btn-install-app').classList.add('hidden');
-          deferredPrompt = null;
-        }
-      };
+      const manifest = {"name":"Controle de Farmácias","short_name":"Farmácias","start_url":".","display":"standalone","background_color":"#f8fafc","theme_color":"#2563eb","icons":[{"src":"https://farmacia.kaioadriel.com.br/icone/images.png","sizes":"512x512","type":"image/png"}]};
+      const link = document.createElement('link'); link.rel='manifest'; link.href=URL.createObjectURL(new Blob([JSON.stringify(manifest)],{type:'application/json'})); document.head.appendChild(link);
+      if('serviceWorker' in navigator) navigator.serviceWorker.register(URL.createObjectURL(new Blob([`self.addEventListener('install',()=>self.skipWaiting());self.addEventListener('activate',e=>e.waitUntil(clients.claim()));`],{type:'text/javascript'})));
+      let deferredPrompt; window.addEventListener('beforeinstallprompt',e=>{ e.preventDefault(); deferredPrompt=e; document.getElementById('btn-install-app').classList.remove('hidden'); });
+      window.installApp = async ()=>{ if(deferredPrompt){ deferredPrompt.prompt(); const {outcome} = await deferredPrompt.userChoice; if(outcome==='accepted') document.getElementById('btn-install-app').classList.add('hidden'); deferredPrompt=null; } };
     }
     injectPWA();
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyB1HRg4rqLgyGMQ8GL6wP6zq9GSHUZlIZc",
-      authDomain: "farmacia-d7bb3.firebaseapp.com",
-      projectId: "farmacia-d7bb3",
-      storageBucket: "farmacia-d7bb3.firebasestorage.app",
-      messagingSenderId: "999252393322",
-      appId: "1:999252393322:web:2cd640bc6deac648cfb913"
-    };
-
-    window.AppState = {
-      user: null,
-      userId: null,
-      view: 'dashboard',
-      erpTab: 'pacientes',
-      data: { pacientes: [], medicos: [], clinicas: [], farmacias: [], remedios: [], compras: [] },
-      chartType: 'count',
-      erpSort: 'alpha'
-    };
-
-    let app, db, auth, provider, listeners = [];
-    let myChart = null;
+    const firebaseConfig = { apiKey:"AIzaSyB1HRg4rqLgyGMQ8GL6wP6zq9GSHUZlIZc", authDomain:"farmacia-d7bb3.firebaseapp.com", projectId:"farmacia-d7bb3", storageBucket:"farmacia-d7bb3.firebasestorage.app", messagingSenderId:"999252393322", appId:"1:999252393322:web:2cd640bc6deac648cfb913" };
+    window.AppState = { user:null, userId:null, view:'dashboard', erpTab:'pacientes', erpSort:'alfabetica', data:{ pacientes:[], medicos:[], clinicas:[], farmacias:[], remedios:[], compras:[] }, chartType:'count' };
+    let app, db, auth, provider, listeners=[], myChart=null;
 
     function initApp() {
       document.getElementById('app-body').classList.remove('hidden');
       try {
-        app = initializeApp(firebaseConfig);
-        auth = getAuth(app);
-        db = getFirestore(app);
-        provider = new GoogleAuthProvider();
-
-        onAuthStateChanged(auth, (user) => {
-          if (user) {
-            AppState.user = user;
-            AppState.userId = user.uid;
-
+        app = initializeApp(firebaseConfig); auth = getAuth(app); db = getFirestore(app); provider = new GoogleAuthProvider();
+        onAuthStateChanged(auth,(user)=>{
+          if(user){
+            AppState.user=user; AppState.userId=user.uid;
             document.getElementById('auth-screen').classList.add('hidden');
             document.getElementById('main-header').classList.remove('hidden');
             document.getElementById('main-content').classList.remove('hidden');
             document.getElementById('mobile-nav').classList.remove('hidden');
-
-            const name = user.displayName || user.email.split('@')[0];
-            document.getElementById('sidebar-username').innerText = name;
-            document.getElementById('sidebar-avatar').innerText = name.substring(0, 2).toUpperCase();
-
-            setupDatabaseListeners();
-            updateUI();
-          } else {
-            AppState.user = null;
-            AppState.userId = null;
+            const name = user.displayName||user.email.split('@')[0];
+            document.getElementById('sidebar-username').innerText=name;
+            document.getElementById('sidebar-avatar').innerText=name.substring(0,2).toUpperCase();
+            setupDatabaseListeners(); updateUI();
+          }else{
+            AppState.user=null; AppState.userId=null;
             document.getElementById('auth-screen').classList.remove('hidden');
             document.getElementById('main-header').classList.add('hidden');
             document.getElementById('main-content').classList.add('hidden');
             document.getElementById('mobile-nav').classList.add('hidden');
-            listeners.forEach(unsub => unsub());
-            listeners = [];
+            listeners.forEach(u=>u()); listeners=[];
           }
         });
-      } catch (error) {
-        showToast("Erro ao inicializar banco de dados.", "error");
-      }
+      }catch(e){ showToast("Erro ao inicializar banco.","error"); }
     }
 
-    window.handleLoginEmail = async () => {
-      const em = document.getElementById('auth-email').value;
-      const pw = document.getElementById('auth-pass').value;
-      if (!em || !pw) return showToast("Preencha e-mail e senha.", "error");
-      try { await signInWithEmailAndPassword(auth, em, pw); showToast("Bem-vindo de volta!", "success"); }
-      catch(e) { showToast("Erro no login. Verifique as credenciais.", "error"); }
-    };
+    window.handleLoginEmail = async ()=>{ const e=document.getElementById('auth-email').value, p=document.getElementById('auth-pass').value; if(!e||!p) return showToast("Preencha e-mail e senha.","error"); try{ await signInWithEmailAndPassword(auth,e,p); showToast("Bem-vindo!","success"); }catch(ex){ showToast("Erro no login.","error"); } };
+    window.handleRegisterEmail = async ()=>{ const e=document.getElementById('auth-email').value, p=document.getElementById('auth-pass').value; if(!e||!p) return showToast("Preencha e-mail e senha.","error"); try{ await createUserWithEmailAndPassword(auth,e,p); showToast("Conta criada!","success"); }catch(ex){ showToast("Erro ao criar conta.","error"); } };
+    window.handleLoginGoogle = async ()=>{ try{ await signInWithPopup(auth,provider); showToast("Login efetuado!","success"); }catch(ex){ showToast("Login cancelado.","error"); } };
+    window.logoutApp = ()=>{ signOut(auth); showToast("Você saiu.","success"); };
 
-    window.handleRegisterEmail = async () => {
-      const em = document.getElementById('auth-email').value;
-      const pw = document.getElementById('auth-pass').value;
-      if (!em || !pw) return showToast("Preencha e-mail e senha.", "error");
-      try { await createUserWithEmailAndPassword(auth, em, pw); showToast("Conta criada com sucesso!", "success"); }
-      catch(e) { showToast("Erro ao criar conta. Senha fraca ou email já em uso.", "error"); }
-    };
-
-    window.handleLoginGoogle = async () => {
-      try { await signInWithPopup(auth, provider); showToast("Login efetuado!", "success"); }
-      catch(e) { showToast("Login cancelado ou com erro.", "error"); }
-    };
-
-    window.logoutApp = () => { signOut(auth); showToast("Você saiu.", "success"); };
-
-    function setupDatabaseListeners() {
-      listeners.forEach(unsub => unsub());
-      listeners = [];
-
-      ['pacientes', 'medicos', 'clinicas', 'farmacias', 'remedios', 'compras'].forEach(colName => {
-        const colRef = collection(db, 'users', AppState.userId, colName);
-        listeners.push(onSnapshot(colRef, (snapshot) => {
-          const items = [];
-          snapshot.forEach(doc => items.push({ id: doc.id, ...doc.data() }));
-          AppState.data[colName] = items;
-          renderCompraFilterOptions();
-          updateUI();
-        }, (error) => console.error("Sync error:", error)));
+    function setupDatabaseListeners(){
+      listeners.forEach(u=>u()); listeners=[];
+      ['pacientes','medicos','clinicas','farmacias','remedios','compras'].forEach(colName=>{
+        const colRef = collection(db,'users',AppState.userId,colName);
+        listeners.push(onSnapshot(colRef,(snap)=>{ const items=[]; snap.forEach(d=>items.push({id:d.id,...d.data()})); AppState.data[colName]=items; updateUI(); }));
       });
     }
 
-    window.dbSave = async (colName, dataObj, id = null) => {
-      if (!AppState.userId) return false;
-      try {
-        const cleanData = JSON.parse(JSON.stringify(dataObj));
-        const docId = id || crypto.randomUUID();
-        await setDoc(doc(db, 'users', AppState.userId, colName, docId), cleanData);
-        showToast(id ? "Atualizado!" : "Salvo!", "success");
-        return docId;
-      } catch (error) {
-        showToast("Erro ao salvar (verifique as Regras do Firestore).", "error");
-        return false;
-      }
+    window.dbSave = async (col,dataObj,id=null)=>{
+      if(!AppState.userId) return false;
+      try{ const docId=id||crypto.randomUUID(); await setDoc(doc(db,'users',AppState.userId,col,docId),JSON.parse(JSON.stringify(dataObj))); showToast(id?"Atualizado!":"Salvo!","success"); return docId; }catch(e){ showToast("Erro ao salvar.","error"); return false; }
     };
+    window.dbDelete = async (col,id)=>{ try{ await deleteDoc(doc(db,'users',AppState.userId,col,id)); showToast("Excluído!","success"); }catch(e){ showToast("Erro ao excluir.","error"); } };
 
-    window.dbDelete = async (colName, id) => {
-      if (!AppState.userId) return;
-      try {
-        await deleteDoc(doc(db, 'users', AppState.userId, colName, id));
-        showToast("Excluído com sucesso.", "success");
-      } catch (error) {
-        showToast("Erro ao excluir.", "error");
-      }
-    };
-
-    window.switchView = (viewName) => {
-      AppState.view = viewName.startsWith('erp') ? 'erp' : viewName;
-      document.querySelectorAll('.view-section').forEach(el => el.classList.add('hidden'));
+    window.switchView = (viewName)=>{
+      AppState.view = viewName.startsWith('erp')?'erp':viewName;
+      document.querySelectorAll('.view-section').forEach(s=>s.classList.add('hidden'));
       document.getElementById(`view-${viewName}`).classList.remove('hidden');
-
-      document.querySelectorAll('.nav-btn').forEach(btn => {
-        btn.classList.remove('text-blue-600');
-        btn.classList.add('text-slate-400');
-        btn.querySelector('.nav-indicator').classList.add('hidden');
-        if (btn.dataset.target === AppState.view) {
-          btn.classList.remove('text-slate-400');
-          btn.classList.add('text-blue-600');
-          btn.querySelector('.nav-indicator').classList.remove('hidden');
-        }
-      });
-
-      document.querySelectorAll('.nav-btn-desktop').forEach(btn => {
-        btn.classList.remove('bg-blue-50', 'text-blue-700', 'font-bold');
-        if (btn.dataset.target === AppState.view) btn.classList.add('bg-blue-50', 'text-blue-700', 'font-bold');
-      });
-
-      if (viewName === 'compras') renderCompraFilterOptions();
-      if (viewName === 'erp-list') renderErpList();
+      document.querySelectorAll('.nav-btn').forEach(b=>{ b.classList.remove('text-blue-600'); b.classList.add('text-slate-400'); b.querySelector('.nav-indicator').classList.add('hidden'); if(b.dataset.target===AppState.view){ b.classList.remove('text-slate-400'); b.classList.add('text-blue-600'); b.querySelector('.nav-indicator').classList.remove('hidden'); } });
+      document.querySelectorAll('.nav-btn-desktop').forEach(b=>{ b.classList.remove('bg-blue-50','text-blue-700','font-bold'); if(b.dataset.target===AppState.view) b.classList.add('bg-blue-50','text-blue-700','font-bold'); });
+      if(viewName==='erp-list') renderErpList();
       updateUI();
     };
+    window.openErpList = (tab)=>{ AppState.erpTab=tab; document.getElementById('erp-list-title').innerHTML={pacientes:'👤 Pacientes',medicos:'👨‍⚕️ Médicos',clinicas:'🏥 Clínicas',farmacias:'🏪 Farmácias',remedios:'💊 Remédios'}[tab]; document.getElementById('erp-search').value=''; updateErpSortButtons(); switchView('erp-list'); };
 
-    window.openErpList = (tab) => {
-      AppState.erpTab = tab;
-      const titles = { pacientes: '👤 Pacientes', medicos: '👨‍⚕️ Médicos', clinicas: '🏥 Clínicas', farmacias: '🏪 Farmácias', remedios: '💊 Remédios' };
-      document.getElementById('erp-list-title').innerHTML = titles[tab];
-      document.getElementById('erp-search').value = '';
-      AppState.erpSort = 'alpha';
-      switchView('erp-list');
-    };
-
-    function updateUI() {
-      if (!AppState.user) return;
-      if (AppState.view === 'dashboard') renderDashboard();
-      else if (AppState.view === 'compras') renderCompras();
-      else if (AppState.view === 'erp' && !document.getElementById('view-erp-list').classList.contains('hidden')) renderErpList();
-    }
-
-    function calcularDiasAtras(dataStr) {
-      const diff = Math.floor((new Date().setHours(0,0,0,0) - new Date(dataStr + 'T00:00:00')) / 86400000);
-      if (diff === 0) return 'Hoje';
-      if (diff === 1) return 'Ontem';
-      if (diff === -1) return 'Amanhã';
-      if (diff > 1) return `Há ${diff} dias`;
-      return `Em ${Math.abs(diff)} dias`;
-    }
-
-    function formatCurrency(val) {
-      return (parseFloat(val) || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-    }
-
-    window.toggleChartType = () => {
-      AppState.chartType = AppState.chartType === 'count' ? 'value' : 'count';
-      document.getElementById('btn-toggle-chart').innerText = AppState.chartType === 'count' ? 'Ver Gastos (R$)' : 'Ver Quantidade';
-      renderDashboard();
-    };
-
-    const dataLabelsPlugin = {
-      id: 'dataLabelsPlugin',
-      afterDatasetsDraw(chart) {
-        const { ctx, data } = chart;
-        ctx.save();
-        ctx.font = 'bold 11px sans-serif';
-        ctx.fillStyle = '#64748b';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'bottom';
-        chart.getDatasetMeta(0).data.forEach((bar, index) => {
-          const val = data.datasets[0].data[index];
-          if (val === 0) return;
-          let text = val;
-          if (AppState.chartType !== 'count') text = val >= 1000 ? 'R$ ' + (val/1000).toFixed(1).replace('.', ',') + 'k' : 'R$ ' + val.toFixed(0);
-          ctx.fillText(text, bar.x, bar.y - 4);
-        });
-        ctx.restore();
-      }
-    };
-
-    function renderDashboard() {
-      const ctx = document.getElementById('mainChart');
-      if (!ctx) return;
-
-      const compras = AppState.data.compras.filter(c => c.status === 'confirmada');
-      const monthsMap = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"];
-      const labels = [];
-      const data = [];
-      let total = 0;
-      const currDate = new Date();
-
-      for (let i = 5; i >= 0; i--) {
-        const d = new Date(currDate.getFullYear(), currDate.getMonth() - i, 1);
-        const mk = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
-        labels.push(`${monthsMap[d.getMonth()]} ${d.getFullYear().toString().slice(2)}`);
-        const mesCompras = compras.filter(c => c.data?.startsWith(mk));
-        if (AppState.chartType === 'count') {
-          data.push(mesCompras.length);
-          total += mesCompras.length;
-        } else {
-          const sum = mesCompras.reduce((a, b) => a + (parseFloat(b.valor) || 0), 0);
-          data.push(sum);
-          total += sum;
-        }
-      }
-
-      document.getElementById('chart-total-label').innerText = AppState.chartType === 'count' ? `${total} Compras` : formatCurrency(total);
-
-      if (myChart) myChart.destroy();
-      myChart = new Chart(ctx, {
-        type: 'bar',
-        data: { labels, datasets: [{ data, backgroundColor: '#3b82f6', borderRadius: 4 }] },
-        plugins: [dataLabelsPlugin],
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          layout: { padding: { top: 20 } },
-          plugins: { legend: { display: false } },
-          scales: {
-            y: { beginAtZero: true, grace: '15%', grid: { borderDash: [4, 4] } },
-            x: { grid: { display: false } }
-          }
-        }
-      });
-
-      const recent = [...compras].sort((a,b) => new Date(b.data) - new Date(a.data)).slice(0, 5);
-      document.getElementById('dashboard-recent-compras').innerHTML = recent.length ? recent.map(c => {
-        const farm = AppState.data.farmacias.find(f => f.id === c.farmaciaId)?.nome || '-';
-        const pac = AppState.data.pacientes.find(p => p.id === c.pacienteId)?.nome || '-';
-        const med = AppState.data.medicos.find(m => m.id === c.medicoId)?.nome || '-';
-        const clin = AppState.data.clinicas.find(cl => cl.id === c.clinicaId)?.nome || '-';
-        return `<div class="p-3 bg-white hover:bg-slate-50 rounded-xl border border-slate-100 mb-2 shadow-[0_1px_3px_rgba(0,0,0,0.02)] transition flex flex-col gap-1.5">
-          <div class="flex justify-between items-center">
-            <h4 class="font-black text-slate-800 text-[13px] truncate pr-2"><i class="fa-solid fa-shop text-purple-600 mr-1.5"></i>${farm}</h4>
-            <span class="text-[10px] font-black text-blue-700 bg-blue-100 px-2 py-0.5 rounded-md shrink-0 uppercase tracking-wide">${calcularDiasAtras(c.data)}</span>
-          </div>
-          <div class="flex flex-wrap gap-x-3 gap-y-1 text-[11px] font-medium text-slate-500">
-            <span class="flex items-center gap-1 min-w-0"><i class="fa-solid fa-user text-slate-300"></i><span class="wrap-two-lines">${pac}</span></span>
-            <span class="flex items-center gap-1 min-w-0"><i class="fa-solid fa-user-doctor text-slate-300"></i><span class="wrap-two-lines">${med}</span></span>
-            <span class="flex items-center gap-1 min-w-0"><i class="fa-solid fa-house-medical text-slate-300"></i><span class="wrap-two-lines">${clin}</span></span>
-          </div>
-        </div>`;
-      }).join('') : '<div class="text-center py-6 text-slate-400"><i class="fa-solid fa-box-open text-3xl mb-2"></i><p class="text-sm">Nenhuma compra registrada.</p></div>';
-    }
-
-    function fillFilterSelect(id, label, items) {
-      const el = document.getElementById(id);
-      if (!el) return;
-
-      const current = el.value;
-      const sorted = [...items].sort((a, b) => (a.nome || '').localeCompare(b.nome || '', 'pt-BR'));
-
-      el.innerHTML = `<option value="">Todas</option>` + sorted.map(item => {
-        const status = item.status === 'inativo' ? ' (Inativo)' : '';
-        const incomplete = item.incomplete ? ' (Incompleto)' : '';
-        return `<option value="${item.id}">${item.nome || 'Sem nome'}${status}${incomplete}</option>`;
-      }).join('');
-
-      if (current && sorted.some(item => item.id === current)) el.value = current;
-    }
-
-    function renderCompraFilterOptions() {
-      fillFilterSelect('filter-farmacia', 'Farmácia', AppState.data.farmacias);
-      fillFilterSelect('filter-paciente', 'Paciente', AppState.data.pacientes);
-      fillFilterSelect('filter-clinica', 'Clínica', AppState.data.clinicas);
-      fillFilterSelect('filter-medico', 'Médico', AppState.data.medicos);
-      fillFilterSelect('filter-remedio', 'Remédio', AppState.data.remedios);
-      updateCompraFilterBadge();
-    }
-
-    window.toggleCompraFilters = () => {
-      const panel = document.getElementById('compra-filters-panel');
-      const chevron = document.getElementById('filter-chevron');
-
-      if (!panel) return;
-
-      panel.classList.toggle('hidden');
-
-      if (chevron) {
-        chevron.classList.toggle('rotate-180', !panel.classList.contains('hidden'));
-      }
-    };
-
-    window.handleCompraFilterChange = () => {
-      updateCompraFilterBadge();
-      renderCompras();
-    };
-
-    function updateCompraFilterBadge() {
-      const ids = ['filter-farmacia', 'filter-paciente', 'filter-clinica', 'filter-medico', 'filter-remedio'];
-      const activeCount = ids.filter(id => document.getElementById(id)?.value).length;
-      const badge = document.getElementById('filter-count-badge');
-
-      if (!badge) return;
-
-      if (activeCount > 0) {
-        badge.innerText = activeCount;
-        badge.classList.remove('hidden');
-      } else {
-        badge.classList.add('hidden');
-      }
-    }
-
-    window.clearCompraFilters = () => {
-      ['filter-farmacia', 'filter-paciente', 'filter-clinica', 'filter-medico', 'filter-remedio'].forEach(id => {
-        const el = document.getElementById(id);
-        if (el) el.value = '';
-      });
-
-      updateCompraFilterBadge();
-      renderCompras();
-    };
-
-    window.renderCompras = function renderCompras() {
-      let compras = [...AppState.data.compras];
-
-      const farmaciaId = document.getElementById('filter-farmacia')?.value || '';
-      const pacienteId = document.getElementById('filter-paciente')?.value || '';
-      const clinicaId = document.getElementById('filter-clinica')?.value || '';
-      const medicoId = document.getElementById('filter-medico')?.value || '';
-      const remedioId = document.getElementById('filter-remedio')?.value || '';
-
-      compras = compras.filter(c =>
-        (!farmaciaId || c.farmaciaId === farmaciaId) &&
-        (!pacienteId || c.pacienteId === pacienteId) &&
-        (!clinicaId || c.clinicaId === clinicaId) &&
-        (!medicoId || c.medicoId === medicoId) &&
-        (!remedioId || c.remedioId === remedioId)
-      );
-
-      compras.sort((a, b) => {
-        if (a.status === 'agendada' && b.status !== 'agendada') return -1;
-        if (a.status !== 'agendada' && b.status === 'agendada') return 1;
-        return new Date(b.data) - new Date(a.data);
-      });
-
-      const cont = document.getElementById('list-compras');
-      if (!cont) return;
-
-      if (!compras.length) {
-        cont.innerHTML = `<div class="text-center py-10 text-slate-400"><i class="fa-solid fa-box-open text-3xl mb-2"></i><p>Nenhuma compra encontrada.</p></div>`;
-        return;
-      }
-
-      cont.innerHTML = compras.map(c => {
-        const farmName = AppState.data.farmacias.find(f => f.id === c.farmaciaId)?.nome || 'Farmácia não informada';
-        const pacName = AppState.data.pacientes.find(p => p.id === c.pacienteId)?.nome || '-';
-        const remName = AppState.data.remedios.find(r => r.id === c.remedioId)?.nome || '-';
-        const clinName = AppState.data.clinicas.find(cl => cl.id === c.clinicaId)?.nome || '-';
-        const medName = AppState.data.medicos.find(m => m.id === c.medicoId)?.nome || '-';
-        const isAgendada = c.status === 'agendada';
-        const borderClass = isAgendada ? 'border-orange-300 border-l-4 border-l-orange-500 bg-orange-50/30' : 'border-slate-100 bg-white';
-        const timeColorClass = isAgendada ? 'text-orange-600' : 'text-blue-600';
-
-        return `<div class="p-4 rounded-xl shadow-sm border ${borderClass} mb-3 transition">
-          <div class="flex justify-between items-start mb-2">
-            <div class="min-w-0 pr-2 flex-1">
-              <h4 class="font-black text-slate-800 text-[14px] sm:text-base wrap-two-lines">${farmName}</h4>
-              <p class="text-xs text-slate-500 wrap-two-lines mt-0.5"><i class="fa-regular fa-user mr-1 text-slate-400"></i>${pacName}</p>
-            </div>
-            <div class="text-right shrink-0">
-              <span class="block font-black ${timeColorClass} text-base">${calcularDiasAtras(c.data)}</span>
-              <span class="text-[10px] text-slate-400 font-bold">${(c.data || '').split('-').reverse().join('/')}</span>
-            </div>
-          </div>
-
-          <div class="flex flex-col gap-1.5 text-[11px] text-slate-600 bg-slate-50/80 p-2.5 rounded-lg mb-3 font-medium border border-slate-100/80">
-            <div class="flex items-center gap-2 min-w-0"><i class="fa-solid fa-pills w-3.5 text-center text-slate-400"></i> <span class="font-bold text-slate-700 wrap-two-lines">${remName}</span></div>
-            <div class="flex items-center gap-2 min-w-0"><i class="fa-solid fa-house-medical w-3.5 text-center text-slate-400"></i> <span class="wrap-two-lines">${clinName}</span></div>
-            <div class="flex items-center gap-2 min-w-0"><i class="fa-solid fa-user-doctor w-3.5 text-center text-slate-400"></i> <span class="wrap-two-lines">${medName}</span></div>
-          </div>
-
-          <div class="flex justify-end gap-2">
-            <button onclick="editCompra('${c.id}')" class="px-4 py-2 text-xs font-bold text-slate-600 bg-slate-100 rounded-lg hover:bg-slate-200 transition active:scale-95">Editar</button>
-            ${isAgendada ? `<button onclick="confirmarCompra('${c.id}')" class="px-4 py-2 text-xs font-bold text-white bg-green-500 rounded-lg hover:bg-green-600 shadow-sm transition active:scale-95"><i class="fa-solid fa-check mr-1"></i> Confirmar</button>` : ''}
-          </div>
-        </div>`;
-      }).join('');
-    };
-
-    window.confirmarCompra = async (id) => {
-      const c = AppState.data.compras.find(x => x.id === id);
-      if (c) {
-        c.status = 'confirmada';
-        c.data = new Date().toISOString().split('T')[0];
-        await dbSave('compras', c, id);
-      }
-    };
-
-    window.filterErpList = () => renderErpList();
-
-    window.setErpSortMode = (mode) => {
-      AppState.erpSort = mode === 'lastPurchase' ? 'lastPurchase' : 'alpha';
+    window.setErpSort = (sort)=>{
+      AppState.erpSort = sort;
       updateErpSortButtons();
       renderErpList();
     };
 
-    function updateErpSortButtons() {
-      const active = 'bg-blue-600 text-white shadow-md';
-      const inactive = 'bg-slate-100 text-slate-600';
-      const btnAlpha = document.getElementById('erp-sort-alpha');
-      const btnLast = document.getElementById('erp-sort-lastPurchase');
-      if (!btnAlpha || !btnLast) return;
-
-      btnAlpha.className = `erp-sort-btn shrink-0 px-4 py-3 rounded-xl text-sm font-black active:scale-95 transition ${AppState.erpSort === 'alpha' ? active : inactive}`;
-      btnLast.className = `erp-sort-btn shrink-0 px-4 py-3 rounded-xl text-sm font-black active:scale-95 transition ${AppState.erpSort === 'lastPurchase' ? active : inactive}`;
+    function updateErpSortButtons(){
+      const btnA = document.getElementById('btn-sort-alfa');
+      const btnR = document.getElementById('btn-sort-recente');
+      if(btnA && btnR){
+        if(AppState.erpSort === 'alfabetica'){
+          btnA.className = 'text-xs font-bold px-3 py-2 rounded-lg bg-blue-600 text-white shadow-sm transition active:scale-95';
+          btnR.className = 'text-xs font-bold px-3 py-2 rounded-lg bg-slate-100 text-slate-600 hover:bg-slate-200 transition active:scale-95';
+        } else {
+          btnR.className = 'text-xs font-bold px-3 py-2 rounded-lg bg-blue-600 text-white shadow-sm transition active:scale-95';
+          btnA.className = 'text-xs font-bold px-3 py-2 rounded-lg bg-slate-100 text-slate-600 hover:bg-slate-200 transition active:scale-95';
+        }
+      }
     }
 
-    function renderErpList() {
-      const tab = AppState.erpTab;
-      const term = document.getElementById('erp-search').value.toLowerCase();
-      let items = AppState.data[tab].filter(i => Object.values(i).some(v => String(v).toLowerCase().includes(term)));
-      const sortMode = AppState.erpSort || 'alpha';
-      updateErpSortButtons();
-      const idFieldMap = { pacientes: 'pacienteId', medicos: 'medicoId', clinicas: 'clinicaId', farmacias: 'farmaciaId', remedios: 'remedioId' };
-      const currentIdField = idFieldMap[tab];
+    function updateUI(){ if(!AppState.user) return; if(AppState.view==='dashboard') renderDashboard(); else if(AppState.view==='compras'){ renderCompraFilterOptions(); renderCompras(); } else if(AppState.view==='erp' && !document.getElementById('view-erp-list').classList.contains('hidden')) renderErpList(); }
 
-      function getLastPurchaseTime(itemId) {
-        const timestamps = AppState.data.compras
-          .filter(c => c.status === 'confirmada' && c[currentIdField] === itemId && c.data)
-          .map(c => new Date(c.data + 'T00:00:00').getTime())
-          .filter(time => !Number.isNaN(time));
+    function calcularDiasAtras(d){ const diff=Math.floor((new Date().setHours(0,0,0,0)-new Date(d+'T00:00:00'))/86400000); if(diff===0)return'Hoje';if(diff===1)return'Ontem';if(diff===-1)return'Amanhã';return diff>1?`Há ${diff} dias`:`Em ${Math.abs(diff)} dias`; }
+    function formatCurrency(v){ return (parseFloat(v)||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'}); }
 
-        return timestamps.length ? Math.max(...timestamps) : 0;
-      }
+    window.toggleChartType = ()=>{ AppState.chartType=AppState.chartType==='count'?'value':'count'; document.getElementById('btn-toggle-chart').innerText=AppState.chartType==='count'?'Ver Gastos (R$)':'Ver Quantidade'; renderDashboard(); };
 
-      items.sort((a,b) => {
-        if (sortMode === 'lastPurchase') {
-          const lastA = getLastPurchaseTime(a.id);
-          const lastB = getLastPurchaseTime(b.id);
+    const dataLabelsPlugin = { id:'lab', afterDatasetsDraw(chart){ const {ctx,data}=chart; ctx.save(); ctx.font='bold 11px sans-serif'; ctx.fillStyle='#64748b'; ctx.textAlign='center'; ctx.textBaseline='bottom'; chart.getDatasetMeta(0).data.forEach((b,i)=>{ const v=data.datasets[0].data[i]; if(!v)return; ctx.fillText(AppState.chartType!=='count'?(v>=1000?'R$ '+(v/1000).toFixed(1).replace('.',',')+'k':'R$ '+v.toFixed(0)):v,b.x,b.y-4); }); ctx.restore(); } };
 
-          if (lastA !== lastB) return lastB - lastA;
-        }
-
-        return (a.nome || '').localeCompare(b.nome || '', 'pt-BR');
-      });
-
-      const cont = document.getElementById('list-erp');
-      if (!items.length) return cont.innerHTML = `<p class="text-center text-slate-500 py-10">Vazio.</p>`;
-
-      const cfg = { pacientes:{i:'fa-user',s:'cpf'}, medicos:{i:'fa-user-doctor',s:'especialidade'}, clinicas:{i:'fa-house-medical',s:'especialidade'}, farmacias:{i:'fa-shop',s:'rede'}, remedios:{i:'fa-pills',s:'tipo'} }[tab];
-
-      cont.innerHTML = items.map(item => {
-        const isOff = item.status === 'inativo';
-        const inc = item.incomplete;
-        let bg = isOff ? "bg-red-50 border-red-200 opacity-70" : (inc ? "bg-orange-50 border-orange-300 border-l-4 border-l-orange-500" : "bg-white border-slate-100");
-        return `<div class="${bg} p-4 rounded-2xl shadow-sm border mb-3 flex items-center gap-4 cursor-pointer hover:shadow-md transition active:scale-[0.98]" onclick="viewErpDetails('${tab}', '${item.id}')">
-          <div class="w-12 h-12 rounded-full ${isOff ? 'bg-red-200 text-red-700' : (inc ? 'bg-orange-200 text-orange-700' : 'bg-blue-100 text-blue-600')} flex items-center justify-center shrink-0 text-xl"><i class="fa-solid ${cfg.i}"></i></div>
-          <div class="flex-1 min-w-0">
-            <div class="flex items-center gap-2"><h4 class="font-bold text-[14px] sm:text-base leading-tight text-slate-800 wrap-two-lines">${item.nome || '-'}</h4>${inc ? '<span class="bg-orange-500 text-white text-[10px] px-1.5 py-0.5 rounded font-bold uppercase tracking-wide">Incompleto</span>' : ''}</div>
-            <p class="text-xs sm:text-sm ${isOff ? 'text-red-600' : 'text-slate-500'} font-medium wrap-two-lines">${item[cfg.s] || '---'}</p>
-            <p class="text-[10px] mt-1 font-bold text-slate-400 uppercase tracking-wide"><i class="fa-solid fa-clock-rotate-left mr-1"></i>Última Compra: <span class="${isOff ? 'text-red-500' : 'text-blue-500'}">${calcularDiasAtrasLastPurchase(item.id, idFieldMap[tab])}</span></p>
+    function renderDashboard(){
+      const ctx=document.getElementById('mainChart'); if(!ctx)return;
+      const compras=AppState.data.compras.filter(c=>c.status==='confirmada');
+      const months=["Jan","Fev","Mar","Abr","Mai","Jun","Jul","Ago","Set","Out","Nov","Dez"];
+      const labels=[], data=[]; let total=0; const d=new Date();
+      for(let i=5;i>=0;i--){ const dt=new Date(d.getFullYear(),d.getMonth()-i,1); const mk=`${dt.getFullYear()}-${String(dt.getMonth()+1).padStart(2,'0')}`; labels.push(`${months[dt.getMonth()]} ${dt.getFullYear().toString().slice(2)}`); const mc=compras.filter(c=>c.data.startsWith(mk)); if(AppState.chartType==='count'){ data.push(mc.length); total+=mc.length; }else{ const s=mc.reduce((a,b)=>a+(parseFloat(b.valor)||0),0); data.push(s); total+=s; } }
+      document.getElementById('chart-total-label').innerText=AppState.chartType==='count'?`${total} Compras`:formatCurrency(total);
+      if(myChart) myChart.destroy();
+      myChart=new Chart(ctx,{type:'bar',data:{labels,datasets:[{data,backgroundColor:'#3b82f6',borderRadius:4}]},plugins:[dataLabelsPlugin],options:{responsive:true,maintainAspectRatio:false,layout:{padding:{top:20}},plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,grace:'15%',grid:{borderDash:[4,4]}},x:{grid:{display:false}}}}});
+      const recent=[...compras].sort((a,b)=>new Date(b.data)-new Date(a.data)).slice(0,3);
+      document.getElementById('dashboard-recent-compras').innerHTML=recent.length?recent.map(c=>{
+        const farm=AppState.data.farmacias.find(x=>x.id===c.farmaciaId)?.nome||'-';
+        const pac=AppState.data.pacientes.find(x=>x.id===c.pacienteId)?.nome||'-';
+        const med=AppState.data.medicos.find(x=>x.id===c.medicoId)?.nome||'-';
+        const clin=AppState.data.clinicas.find(x=>x.id===c.clinicaId)?.nome||'-';
+        return`<div class="p-3 bg-white hover:bg-slate-50 rounded-xl border border-slate-100 mb-2 shadow-[0_1px_3px_rgba(0,0,0,0.02)] transition flex flex-col gap-1.5">
+          <div class="flex justify-between items-center"><h4 class="font-black text-slate-800 text-[13px] truncate pr-2"><i class="fa-solid fa-shop text-purple-600 mr-1.5"></i>${farm}</h4><span class="text-[10px] font-black text-blue-700 bg-blue-100 px-2 py-0.5 rounded-md shrink-0 uppercase tracking-wide">${calcularDiasAtras(c.data)}</span></div>
+          <div class="flex flex-wrap gap-x-3 gap-y-1 text-[11px] font-medium text-slate-500">
+            <span class="flex items-center gap-1 min-w-0"><i class="fa-solid fa-user text-slate-300"></i><span class="truncate">${pac}</span></span>
+            <span class="flex items-center gap-1 min-w-0"><i class="fa-solid fa-user-doctor text-slate-300"></i><span class="truncate">${med}</span></span>
+            <span class="flex items-center gap-1 min-w-0"><i class="fa-solid fa-house-medical text-slate-300"></i><span class="truncate">${clin}</span></span>
           </div>
-          <button class="px-3 py-1.5 bg-slate-100 text-slate-600 rounded-lg text-xs font-bold hover:bg-slate-200 shadow-[0_1px_2px_rgba(0,0,0,0.05)]">Ver Mais</button>
+        </div>`;
+      }).join(''):`<div class="text-center py-6 text-slate-400"><i class="fa-solid fa-box-open text-3xl mb-2"></i><p class="text-sm">Nenhuma compra registrada.</p></div>`;
+    }
+
+    function fillSelect(id,items){
+      const el=document.getElementById(id); if(!el)return; const curr=el.value;
+      const sorted=[...items].sort((a,b)=>(a.nome||'').localeCompare(b.nome||'','pt-BR'));
+      el.innerHTML=`<option value="">Todas</option>`+sorted.map(i=>`<option value="${i.id}">${i.nome||'Sem nome'}${i.status==='inativo'?' (Inativo)':''}${i.incomplete?' (Incompleto)':''}</option>`).join('');
+      if(curr&&sorted.some(i=>i.id===curr)) el.value=curr;
+    }
+    function renderCompraFilterOptions(){ fillSelect('filter-farmacia',AppState.data.farmacias); fillSelect('filter-paciente',AppState.data.pacientes); fillSelect('filter-clinica',AppState.data.clinicas); fillSelect('filter-medico',AppState.data.medicos); fillSelect('filter-remedio',AppState.data.remedios); updateCompraFilterBadge(); }
+    window.toggleCompraFilters = ()=>{ const p=document.getElementById('compra-filters-panel'),c=document.getElementById('filter-chevron'); if(p){ p.classList.toggle('hidden'); if(c) c.classList.toggle('rotate-180',!p.classList.contains('hidden')); } };
+    window.handleCompraFilterChange = ()=>{ updateCompraFilterBadge(); renderCompras(); };
+    function updateCompraFilterBadge(){ const ids=['filter-farmacia','filter-paciente','filter-clinica','filter-medico','filter-remedio']; const n=ids.filter(id=>document.getElementById(id)?.value).length; const b=document.getElementById('filter-count-badge'); if(b){ if(n>0){ b.innerText=n; b.classList.remove('hidden'); }else b.classList.add('hidden'); } }
+    window.clearCompraFilters = ()=>{['filter-farmacia','filter-paciente','filter-clinica','filter-medico','filter-remedio'].forEach(id=>{ const e=document.getElementById(id); if(e) e.value=''; }); updateCompraFilterBadge(); renderCompras(); };
+
+    function renderCompras(){
+      let compras=[...AppState.data.compras];
+      const fF=document.getElementById('filter-farmacia')?.value||'', fP=document.getElementById('filter-paciente')?.value||'', fC=document.getElementById('filter-clinica')?.value||'', fM=document.getElementById('filter-medico')?.value||'', fR=document.getElementById('filter-remedio')?.value||'';
+      compras=compras.filter(c=>(!fF||c.farmaciaId===fF)&&(!fP||c.pacienteId===fP)&&(!fC||c.clinicaId===fC)&&(!fM||c.medicoId===fM)&&(!fR||c.remedioId===fR));
+      compras.sort((a,b)=>{ if(a.status==='agendada'&&b.status!=='agendada')return -1; if(a.status!=='agendada'&&b.status==='agendada')return 1; return new Date(b.data)-new Date(a.data); });
+      const cont=document.getElementById('list-compras'); if(!cont)return;
+      if(!compras.length)return cont.innerHTML='<div class="text-center py-10 text-slate-400"><i class="fa-solid fa-box-open text-3xl mb-2"></i><p>Nenhuma compra.</p></div>';
+      cont.innerHTML=compras.map(c=>{
+        const f=AppState.data.farmacias.find(x=>x.id===c.farmaciaId)?.nome||'Farmácia não informada';
+        const pac=AppState.data.pacientes.find(x=>x.id===c.pacienteId)?.nome||'-';
+        const rem=AppState.data.remedios.find(x=>x.id===c.remedioId)?.nome||'-';
+        const clin=AppState.data.clinicas.find(x=>x.id===c.clinicaId)?.nome||'-';
+        const med=AppState.data.medicos.find(x=>x.id===c.medicoId)?.nome||'-';
+        const ag=c.status==='agendada';
+        return`<div class="p-4 rounded-xl shadow-sm border ${ag?'border-orange-300 border-l-4 border-l-orange-500 bg-orange-50/30':'border-slate-100 bg-white'} mb-3">
+          <div class="flex justify-between items-start mb-2"><div class="min-w-0 pr-2 flex-1"><h4 class="font-black text-slate-800 text-sm line-clamp-2">${f}</h4><p class="text-xs text-slate-500 line-clamp-2 mt-0.5"><i class="fa-regular fa-user mr-1 text-slate-400"></i>${pac}</p></div><div class="text-right shrink-0"><span class="block font-black ${ag?'text-orange-600':'text-blue-600'} text-base">${calcularDiasAtras(c.data)}</span><span class="text-[10px] text-slate-400 font-bold">${c.data.split('-').reverse().join('/')}</span></div></div>
+          <div class="flex flex-col gap-1.5 text-[11px] text-slate-600 bg-slate-50/80 p-2.5 rounded-lg mb-3 font-medium border border-slate-100/80"><div class="flex items-start gap-2"><i class="fa-solid fa-pills w-3.5 text-slate-400 mt-1"></i><span class="font-bold text-slate-700 line-clamp-2">${rem}</span></div><div class="flex items-start gap-2"><i class="fa-solid fa-house-medical w-3.5 text-slate-400 mt-1"></i><span class="line-clamp-2">${clin}</span></div><div class="flex items-start gap-2"><i class="fa-solid fa-user-doctor w-3.5 text-slate-400 mt-1"></i><span class="line-clamp-2">${med}</span></div></div>
+          <div class="flex justify-end gap-2"><button onclick="editCompra('${c.id}')" class="px-4 py-2 text-xs font-bold text-slate-600 bg-slate-100 rounded-lg hover:bg-slate-200 transition active:scale-95">Editar</button>${ag?`<button onclick="confirmarCompra('${c.id}')" class="px-4 py-2 text-xs font-bold text-white bg-green-500 rounded-lg hover:bg-green-600 shadow-sm transition active:scale-95"><i class="fa-solid fa-check mr-1"></i>Confirmar</button>`:''}</div>
         </div>`;
       }).join('');
     }
 
-    function calcularDiasAtrasLastPurchase(id, fieldId) {
-      const compras = AppState.data.compras.filter(c => c.status === 'confirmada' && c[fieldId] === id).sort((a,b) => new Date(b.data) - new Date(a.data));
-      if (!compras.length) return 'Nunca';
-      return calcularDiasAtras(compras[0].data);
+    window.confirmarCompra = async (id)=>{ const c=AppState.data.compras.find(x=>x.id===id); if(c){ c.status='confirmada'; c.data=new Date().toISOString().split('T')[0]; await dbSave('compras',c,id); } };
+    window.filterErpList = ()=> renderErpList();
+
+    function renderErpList(){
+      const tab=AppState.erpTab, term=document.getElementById('erp-search').value.toLowerCase();
+      let items=AppState.data[tab].filter(i=>Object.values(i).some(v=>String(v).toLowerCase().includes(term)));
+
+      const idMap={pacientes:'pacienteId',medicos:'medicoId',clinicas:'clinicaId',farmacias:'farmaciaId',remedios:'remedioId'};
+
+      items.sort((a,b)=>{
+        if(a.incomplete && !b.incomplete) return -1;
+        if(!a.incomplete && b.incomplete) return 1;
+        if(a.status==='ativo' && b.status==='inativo') return -1;
+        if(a.status==='inativo' && b.status==='ativo') return 1;
+
+        if(AppState.erpSort === 'recente'){
+          const comprasA = AppState.data.compras.filter(c=>c.status==='confirmada'&&c[idMap[tab]]===a.id).sort((x,y)=>new Date(y.data)-new Date(x.data));
+          const comprasB = AppState.data.compras.filter(c=>c.status==='confirmada'&&c[idMap[tab]]===b.id).sort((x,y)=>new Date(y.data)-new Date(x.data));
+          const dataA = comprasA.length ? comprasA[0].data : '0000-00-00';
+          const dataB = comprasB.length ? comprasB[0].data : '0000-00-00';
+          if(dataA !== dataB) return new Date(dataB) - new Date(dataA);
+        }
+        return (a.nome||'').localeCompare(b.nome||'');
+      });
+
+      const cont=document.getElementById('list-erp'); if(!items.length) return cont.innerHTML='<p class="text-center text-slate-500 py-10">Vazio.</p>';
+      const cfg={pacientes:{i:'fa-user',s:'cpf'},medicos:{i:'fa-user-doctor',s:'especialidade'},clinicas:{i:'fa-house-medical',s:'especialidade'},farmacias:{i:'fa-shop',s:'telefone'},remedios:{i:'fa-pills',s:'tipo'}}[tab];
+
+      cont.innerHTML = items.map(item=>{
+        const isOff=item.status==='inativo', inc=item.incomplete;
+        let bg=isOff?"bg-red-50 border-red-200 opacity-70":(inc?"bg-orange-50 border-orange-300 border-l-4 border-l-orange-500":"bg-white border-slate-100");
+        let infoHtml='';
+        if(tab==='farmacias'){
+          const rede=item.rede||'', tel=item.telefone||'';
+          infoHtml = `${rede?`<p class="text-xs font-medium text-slate-700 line-clamp-1">${rede}</p>`:''}<p class="text-xs ${isOff?'text-red-600':'text-slate-500'} font-medium line-clamp-1">${tel||'---'}</p>`;
+        }else{
+          infoHtml = `<p class="text-xs line-clamp-2 ${isOff?'text-red-600':'text-slate-500'} font-medium mt-0.5">${item[cfg.s]||'---'}</p>`;
+        }
+        return`<div class="${bg} p-4 rounded-2xl shadow-sm border mb-3 flex items-start gap-4 cursor-pointer hover:shadow-md transition active:scale-[0.98]" onclick="viewErpDetails('${tab}','${item.id}')">
+          <div class="w-12 h-12 rounded-full ${isOff?'bg-red-200 text-red-700':(inc?'bg-orange-200 text-orange-700':'bg-blue-100 text-blue-600')} flex items-center justify-center shrink-0 text-xl"><i class="fa-solid ${cfg.i}"></i></div>
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center gap-2"><h4 class="font-bold line-clamp-2 text-sm text-slate-800">${item.nome||'-'}</h4>${inc?'<span class="bg-orange-500 text-white text-[10px] px-1.5 py-0.5 rounded font-bold uppercase tracking-wide shrink-0">Incompleto</span>':''}</div>
+            ${infoHtml}
+            <p class="text-[10px] mt-1 font-bold text-slate-400 uppercase tracking-wide"><i class="fa-solid fa-clock-rotate-left mr-1"></i>Última Compra: <span class="${isOff?'text-red-500':'text-blue-500'}">${calcularDiasAtrasLastPurchase(item.id,idMap[tab])}</span></p>
+          </div>
+          <button class="px-3 py-1.5 bg-slate-100 text-slate-600 rounded-lg text-xs font-bold hover:bg-slate-200 self-center">Ver Mais</button>
+        </div>`;
+      }).join('');
     }
 
-    window.viewErpDetails = (tab, id) => {
-      const data = AppState.data[tab].find(i => i.id === id);
-      if (!data) return;
+    function calcularDiasAtrasLastPurchase(id,fid){
+      const compras=AppState.data.compras.filter(c=>c.status==='confirmada'&&c[fid]===id).sort((a,b)=>new Date(b.data)-new Date(a.data));
+      return compras.length?calcularDiasAtras(compras[0].data):'Nunca';
+    }
 
-      const fieldsDef = getErpFieldsConfig(tab);
-      let html = `<div class="space-y-4">`;
-      if (data.incomplete) html += `<div class="bg-orange-100 text-orange-800 p-3 rounded-xl text-sm font-bold border border-orange-200 flex items-center gap-2"><i class="fa-solid fa-triangle-exclamation"></i> Cadastro pendente de finalização.</div>`;
-      if (data.status === 'inativo') html += `<div class="bg-red-100 text-red-800 p-3 rounded-xl text-sm font-bold border border-red-200 flex items-center gap-2"><i class="fa-solid fa-ban"></i> Cadastro Inativo.</div>`;
-
-      html += `<div class="bg-slate-50 p-5 rounded-2xl border border-slate-100 grid grid-cols-1 md:grid-cols-2 gap-4">`;
-      fieldsDef.forEach(f => {
-        if (f.hidden || f.type === 'textarea') return;
-        let val = data[f.name] || '-';
-        if (f.type === 'db-select' && data[f.name]) val = AppState.data[f.collection].find(x => x.id === data[f.name])?.nome || '-';
-        if (f.name === 'dataNascimento' && val !== '-') val = val.split('-').reverse().join('/');
-        if (f.name === 'status' && val !== '-') val = val.charAt(0).toUpperCase() + val.slice(1);
-        html += `<div><span class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">${f.label}</span><span class="block font-medium text-slate-800 break-words">${val}</span></div>`;
-      });
-      html += `</div>`;
-
-      if (data.obs) html += `<div class="bg-amber-50 p-4 rounded-2xl border border-amber-100"><span class="block text-[10px] font-bold text-amber-600 uppercase tracking-wider mb-1">Observações</span><p class="text-sm font-medium text-slate-700">${data.obs}</p></div>`;
-      if (tab === 'medicos' && data.crm) html += `<button onclick="consultarCRM('${data.crm}')" class="w-full bg-blue-100 text-blue-700 font-bold py-3.5 rounded-xl shadow-sm hover:bg-blue-200 transition mt-2"><i class="fa-solid fa-magnifying-glass mr-2"></i> Consultar CRM no CREMESP</button>`;
-      if ((tab === 'pacientes' || tab === 'medicos') && data.documentoBase64) html += `<div class="mt-4"><button onclick="viewDocumentFromDetails('${tab}', '${id}')" class="w-full bg-slate-800 text-white font-bold py-3.5 rounded-xl shadow-md hover:bg-slate-700 transition"><i class="fa-regular fa-image mr-2"></i> Ver Documento Anexo</button></div>`;
-      html += `</div>`;
-
-      const footerHtml = `<button onclick="deleteErpConfirm('${tab}', '${id}')" class="px-4 py-2.5 bg-red-100 text-red-600 rounded-xl font-bold hover:bg-red-200 mr-auto transition flex items-center gap-2"><i class="fa-solid fa-trash"></i> <span class="hidden md:inline">Excluir</span></button><button onclick="closeModal()" class="px-5 py-2.5 bg-slate-200 text-slate-700 rounded-xl font-bold hover:bg-slate-300 transition">Voltar</button><button onclick="openErpForm('${id}')" class="px-6 py-2.5 bg-blue-600 text-white rounded-xl font-bold shadow-md hover:bg-blue-700 transition"><i class="fa-solid fa-pen-to-square mr-2"></i>Editar</button>`;
-      openModal(data.nome || 'Detalhes', html, footerHtml);
+    window.viewErpDetails = (tab,id)=>{
+      const data=AppState.data[tab].find(i=>i.id===id); if(!data)return;
+      const fields=getErpFieldsConfig(tab);
+      let html='<div class="space-y-4">';
+      if(data.incomplete)html+='<div class="bg-orange-100 text-orange-800 p-3 rounded-xl text-sm font-bold border border-orange-200"><i class="fa-solid fa-triangle-exclamation"></i> Cadastro pendente.</div>';
+      if(data.status==='inativo')html+='<div class="bg-red-100 text-red-800 p-3 rounded-xl text-sm font-bold border border-red-200"><i class="fa-solid fa-ban"></i> Inativo.</div>';
+      html+='<div class="bg-slate-50 p-5 rounded-2xl border border-slate-100 grid grid-cols-1 md:grid-cols-2 gap-4">';
+      fields.forEach(f=>{ if(f.hidden||f.type==='textarea')return; let v=data[f.name]||'-'; if(f.type==='db-select'&&data[f.name])v=AppState.data[f.collection].find(x=>x.id===data[f.name])?.nome||'-'; if(f.name==='dataNascimento'&&v!=='-')v=v.split('-').reverse().join('/'); if(f.name==='status')v=v.charAt(0).toUpperCase()+v.slice(1); html+=`<div><span class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">${f.label}</span><span class="block font-medium text-slate-800 break-words">${v}</span></div>`; });
+      html+='</div>';
+      if(data.obs)html+=`<div class="bg-amber-50 p-4 rounded-2xl border border-amber-100"><span class="block text-[10px] font-bold text-amber-600 uppercase tracking-wider mb-1">Observações</span><p class="text-sm font-medium text-slate-700">${data.obs}</p></div>`;
+      if(tab==='medicos'&&data.crm)html+=`<button onclick="consultarCRM('${data.crm}')" class="w-full bg-blue-100 text-blue-700 font-bold py-3.5 rounded-xl mt-2"><i class="fa-solid fa-magnifying-glass mr-2"></i>Consultar CRM no CREMESP</button>`;
+      if((tab==='pacientes'||tab==='medicos')&&data.documentoBase64)html+=`<div class="mt-4"><button onclick="viewDocumentFromDetails('${tab}','${id}')" class="w-full bg-slate-800 text-white font-bold py-3.5 rounded-xl"><i class="fa-regular fa-image mr-2"></i>Ver Documento</button></div>`;
+      html+='</div>';
+      const footer=`<button onclick="deleteErpConfirm('${tab}','${id}')" class="px-4 py-2.5 bg-red-100 text-red-600 rounded-xl font-bold hover:bg-red-200 mr-auto"><i class="fa-solid fa-trash"></i></button><button onclick="closeModal()" class="px-5 py-2.5 bg-slate-200 text-slate-700 rounded-xl font-bold">Voltar</button><button onclick="openErpForm('${id}')" class="px-6 py-2.5 bg-blue-600 text-white rounded-xl font-bold shadow-md"><i class="fa-solid fa-pen-to-square mr-2"></i>Editar</button>`;
+      openModal(data.nome||'Detalhes',html,footer);
     };
 
-    window.viewDocumentFromDetails = (tab, id) => {
-      const p = AppState.data[tab].find(x => x.id === id);
-      if (p && p.documentoBase64) {
-        document.getElementById('image-viewer-img').src = p.documentoBase64;
-        document.getElementById('image-viewer').classList.remove('hidden');
-        document.getElementById('image-viewer').classList.add('flex');
-      }
-    };
+    window.viewDocumentFromDetails = (tab,id)=>{ const p=AppState.data[tab].find(x=>x.id===id); if(p?.documentoBase64){ document.getElementById('image-viewer-img').src=p.documentoBase64; document.getElementById('image-viewer').classList.remove('hidden'); document.getElementById('image-viewer').classList.add('flex'); } };
+    window.deleteErpConfirm = (tab,id)=>{ if(confirm("⚠️ Excluir permanentemente?")){ dbDelete(tab,id).then(()=>closeModal()); } };
 
-    window.deleteErpConfirm = (tab, id) => {
-      if (confirm("⚠️ ATENÇÃO EXTREMA!\n\nVocê está prestes a excluir este registro PERMANENTEMENTE.\n\nDeseja continuar?")) dbDelete(tab, id).then(() => closeModal());
-    };
-
-    function getErpFieldsConfig(tab) {
-      const b = [
-        { name: 'status', label: 'Status do Cadastro', type: 'select', options: [{val:'ativo', label:'Ativo'}, {val:'inativo', label:'Inativo (Vermelho)'}] },
-        { name: 'obs', label: 'Observações', type: 'textarea' }
-      ];
-      if (tab === 'pacientes') return [
-        { name: 'nome', label: 'Nome Completo' }, { name: 'cpf', label: 'CPF' }, { name: 'rg', label: 'RG' }, { name: 'dataNascimento', label: 'Data Nasc.', type: 'date-calc' },
-        { name: 'signo', label: 'Signo', readonly: true }, { name: 'cep', label: 'CEP', type: 'cep' }, { name: 'logradouro', label: 'Endereço' }, { name: 'numero', label: 'Número' },
-        { name: 'complemento', label: 'Complemento' }, { name: 'bairro', label: 'Bairro' }, { name: 'cidade', label: 'Cidade' }, { name: 'uf', label: 'UF' },
-        { name: 'telefone', label: 'Telefone' }, { name: 'email', label: 'E-mail' }, ...b
-      ];
-      if (tab === 'medicos') return [{ name: 'nome', label: 'Nome' }, { name: 'especialidade', label: 'Especialidade' }, { name: 'crm', label: 'CRM' }, { name: 'uf', label: 'UF do CRM' }, { name: 'rqe', label: 'RQE' }, ...b];
-      if (tab === 'clinicas') return [{ name: 'nome', label: 'Nome' }, { name: 'especialidade', label: 'Especialidade' }, { name: 'medicoResponsavelId', label: 'Méd. Responsável', type: 'db-select', collection: 'medicos' }, ...b];
-      if (tab === 'farmacias') return [{ name: 'nome', label: 'Nome' }, { name: 'rede', label: 'Rede', type: 'select', options: [{val:'Droga Raia', label:'Droga Raia'}, {val:'Drogaria São Paulo', label:'Drogaria São Paulo'}, {val:'Nissei', label:'Nissei'}, {val:'Farma Conde', label:'Farma Conde'}, {val:'Outros', label:'Outros'}] }, { name: 'cep', label: 'CEP', type: 'cep' }, { name: 'logradouro', label: 'Endereço' }, { name: 'telefone', label: 'Telefone' }, ...b];
-      if (tab === 'remedios') return [{ name: 'nome', label: 'Nome' }, { name: 'tipo', label: 'Tipo' }, { name: 'dosagem', label: 'Dosagem' }, { name: 'preco', label: 'Preço (R$)' }, ...b];
+    function getErpFieldsConfig(tab){
+      const b=[{name:'status',label:'Status',type:'select',options:[{val:'ativo',label:'Ativo'},{val:'inativo',label:'Inativo'}]},{name:'obs',label:'Observações',type:'textarea'}];
+      if(tab==='pacientes') return [{name:'nome',label:'Nome Completo'},{name:'cpf',label:'CPF'},{name:'rg',label:'RG'},{name:'dataNascimento',label:'Data Nasc.',type:'date-calc'},{name:'signo',label:'Signo',readonly:true},{name:'cep',label:'CEP',type:'cep'},{name:'logradouro',label:'Endereço'},{name:'numero',label:'Número'},{name:'complemento',label:'Complemento'},{name:'bairro',label:'Bairro'},{name:'cidade',label:'Cidade'},{name:'uf',label:'UF'},{name:'telefone',label:'Telefone'},{name:'email',label:'E-mail'},...b];
+      if(tab==='medicos') return [{name:'nome',label:'Nome'},{name:'especialidade',label:'Especialidade'},{name:'crm',label:'CRM'},{name:'uf',label:'UF do CRM'},{name:'rqe',label:'RQE'},...b];
+      if(tab==='clinicas') return [{name:'nome',label:'Nome'},{name:'especialidade',label:'Especialidade'},{name:'medicoResponsavelId',label:'Méd. Responsável',type:'db-select',collection:'medicos'},...b];
+      if(tab==='farmacias') return [{name:'nome',label:'Nome'},{name:'rede',label:'Rede',type:'select',options:[{val:'Droga Raia',label:'Droga Raia'},{val:'Drogaria São Paulo',label:'Drogaria São Paulo'},{val:'Nissei',label:'Nissei'},{val:'Farma Conde',label:'Farma Conde'},{val:'Outros',label:'Outros'}]},{name:'cep',label:'CEP',type:'cep'},{name:'logradouro',label:'Endereço'},{name:'telefone',label:'Telefone'},...b];
+      if(tab==='remedios') return [{name:'nome',label:'Nome'},{name:'tipo',label:'Tipo'},{name:'dosagem',label:'Dosagem'},{name:'preco',label:'Preço (R$)'},...b];
       return [];
     }
 
-    window.openErpForm = (id = null) => {
-      const tab = AppState.erpTab;
-      const data = id ? AppState.data[tab].find(i => i.id === id) : { status: 'ativo' };
-      let html = generateFormFields(getErpFieldsConfig(tab), data);
-
-      if (tab === 'pacientes' || tab === 'medicos') {
-        const docBase64 = data.documentoBase64 || '';
-        html += `<div class="mt-6 border-t border-slate-200 pt-5">
-          <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-3">Documento Anexo</label>
-          <input type="hidden" id="field-documentoBase64" value="${docBase64}">
-          <div id="doc-upload-area" class="${docBase64 ? 'hidden' : 'block'}">
-            <label class="flex flex-col items-center justify-center w-full h-32 border-2 border-slate-300 border-dashed rounded-xl cursor-pointer bg-slate-50 hover:bg-slate-100 transition">
-              <i class="fa-solid fa-cloud-arrow-up text-3xl text-slate-400 mb-2"></i>
-              <span class="text-sm font-bold text-slate-600">Enviar Documento</span>
-              <input type="file" class="hidden" accept="image/*" onchange="handleImageUpload(event)" />
-            </label>
-          </div>
-          <div id="doc-view-area" class="${docBase64 ? 'block' : 'hidden'}">
-            <button type="button" onclick="viewDocument()" class="w-full bg-slate-800 text-white font-bold py-3.5 rounded-xl shadow-md"><i class="fa-regular fa-image mr-2"></i> Ver / Excluir Imagem</button>
-          </div>
-        </div>`;
+    window.openErpForm = (id=null)=>{
+      const tab=AppState.erpTab, data=id?AppState.data[tab].find(i=>i.id===id):{status:'ativo'};
+      let html=generateFormFields(getErpFieldsConfig(tab),data);
+      if(tab==='pacientes'||tab==='medicos'){
+        const b64=data.documentoBase64||'';
+        html+=`<div class="mt-6 border-t border-slate-200 pt-5"><label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-3">Documento</label><input type="hidden" id="field-documentoBase64" value="${b64}"><div id="doc-upload-area" class="${b64?'hidden':'block'}"><label class="flex flex-col items-center justify-center w-full h-32 border-2 border-slate-300 border-dashed rounded-xl cursor-pointer bg-slate-50 hover:bg-slate-100"><i class="fa-solid fa-cloud-arrow-up text-3xl text-slate-400 mb-2"></i><span class="text-sm font-bold text-slate-600">Enviar Documento</span><input type="file" class="hidden" accept="image/*" onchange="handleImageUpload(event)"/></label></div><div id="doc-view-area" class="${b64?'block':'hidden'}"><button type="button" onclick="viewDocument()" class="w-full bg-slate-800 text-white font-bold py-3.5 rounded-xl"><i class="fa-regular fa-image mr-2"></i>Ver/Excluir Imagem</button></div></div>`;
       }
-
-      const footerHtml = `<button onclick="${id ? `viewErpDetails('${tab}','${id}')` : 'closeModal()'}" class="px-5 py-2.5 bg-slate-200 text-slate-700 rounded-xl font-bold hover:bg-slate-300 mr-auto">Cancelar</button><button onclick="saveErp('${tab}', '${id || ''}')" class="px-8 py-2.5 bg-blue-600 text-white rounded-xl font-bold shadow-md hover:bg-blue-700">Salvar Dados</button>`;
-      openModal(`${id ? 'Editar' : 'Novo'} Registro`, html, footerHtml);
-      if (tab === 'pacientes') setTimeout(calcPacienteData, 100);
+      const footer=`<button onclick="${id?`viewErpDetails('${tab}','${id}')`:'closeModal()'}" class="px-5 py-2.5 bg-slate-200 text-slate-700 rounded-xl font-bold mr-auto">Cancelar</button><button onclick="saveErp('${tab}','${id||''}')" class="px-8 py-2.5 bg-blue-600 text-white rounded-xl font-bold shadow-md">Salvar</button>`;
+      openModal(`${id?'Editar':'Novo'} Registro`,html,footer);
+      if(tab==='pacientes') setTimeout(calcPacienteData,100);
     };
 
-    window.openCompraForm = (id = null) => {
-      const data = id ? AppState.data.compras.find(i => i.id === id) : { status: 'confirmada', data: new Date().toISOString().split('T')[0] };
-      const fields = [
-        { name: 'data', label: 'Data da Compra', type: 'date' },
-        { name: 'farmaciaId', label: 'Farmácia', type: 'db-select', collection: 'farmacias' },
-        { name: 'remedioId', label: 'Remédio', type: 'db-select', collection: 'remedios' },
-        { name: 'qtd', label: 'Qtd de Caixas', type: 'number' },
-        { name: 'pacienteId', label: 'Paciente', type: 'db-select', collection: 'pacientes' },
-        { name: 'clinicaId', label: 'Clínica', type: 'db-select', collection: 'clinicas' },
-        { name: 'medicoId', label: 'Médico', type: 'db-select', collection: 'medicos' },
-        { name: 'valor', label: 'Valor Total (R$)' },
-        { name: 'pagamento', label: 'Forma de Pagto' },
-        { name: 'obs', label: 'Observações', type: 'textarea' },
-      ];
-
-      let footerHtml = '';
-      if (id) {
-        footerHtml += `<button onclick="deleteErpConfirm('compras', '${id}')" class="px-4 py-2.5 bg-red-100 text-red-600 rounded-xl font-bold hover:bg-red-200 mr-auto"><i class="fa-solid fa-trash"></i></button><button onclick="closeModal()" class="px-5 py-2.5 bg-slate-200 text-slate-700 rounded-xl font-bold">Cancelar</button><button onclick="saveCompra('${id}', '${data.status}')" class="px-6 py-2.5 bg-blue-600 text-white rounded-xl font-bold shadow-md">Atualizar</button>`;
-      } else {
-        footerHtml += `<button onclick="closeModal()" class="px-5 py-2.5 bg-slate-200 text-slate-700 rounded-xl font-bold mr-auto">Cancelar</button><button onclick="saveCompra('', 'agendada')" class="px-5 py-2.5 bg-orange-100 text-orange-700 border border-orange-300 rounded-xl font-bold shadow-sm">Agendar</button><button onclick="saveCompra('', 'confirmada')" class="px-6 py-2.5 bg-blue-600 text-white rounded-xl font-bold shadow-md">Confirmar</button>`;
-      }
-
-      openModal(id ? 'Editar Compra' : 'Nova Compra', generateFormFields(fields, data), footerHtml);
-
-      const valInp = document.getElementById('field-valor');
-      if (valInp) valInp.addEventListener('input', e => {
-        let v = e.target.value.replace(/\D/g, "");
-        if (v) {
-          v = (parseInt(v) / 100).toFixed(2).replace(".", ",").replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.");
-          e.target.value = v;
-        }
-      });
+    window.openCompraForm = (id=null)=>{
+      const data=id?AppState.data.compras.find(i=>i.id===id):{status:'confirmada',data:new Date().toISOString().split('T')[0]};
+      const fields=[{name:'data',label:'Data',type:'date'},{name:'farmaciaId',label:'Farmácia',type:'db-select',collection:'farmacias'},{name:'remedioId',label:'Remédio',type:'db-select',collection:'remedios'},{name:'qtd',label:'Qtd Caixas',type:'number'},{name:'pacienteId',label:'Paciente',type:'db-select',collection:'pacientes'},{name:'clinicaId',label:'Clínica',type:'db-select',collection:'clinicas'},{name:'medicoId',label:'Médico',type:'db-select',collection:'medicos'},{name:'valor',label:'Valor Total (R$)'},{name:'pagamento',label:'Forma Pagto'},{name:'obs',label:'Observações',type:'textarea'}];
+      let footer=''; if(id){ footer=`<button onclick="deleteErpConfirm('compras','${id}')" class="px-4 py-2.5 bg-red-100 text-red-600 rounded-xl font-bold mr-auto"><i class="fa-solid fa-trash"></i></button><button onclick="closeModal()" class="px-5 py-2.5 bg-slate-200 text-slate-700 rounded-xl font-bold">Cancelar</button><button onclick="saveCompra('${id}','${data.status}')" class="px-6 py-2.5 bg-blue-600 text-white rounded-xl font-bold shadow-md">Atualizar</button>`; }else{ footer=`<button onclick="closeModal()" class="px-5 py-2.5 bg-slate-200 text-slate-700 rounded-xl font-bold mr-auto">Cancelar</button><button onclick="saveCompra('','agendada')" class="px-5 py-2.5 bg-orange-100 text-orange-700 border border-orange-300 rounded-xl font-bold shadow-sm">Agendar</button><button onclick="saveCompra('','confirmada')" class="px-6 py-2.5 bg-blue-600 text-white rounded-xl font-bold shadow-md">Confirmar</button>`; }
+      openModal(id?'Editar Compra':'Nova Compra',generateFormFields(fields,data),footer);
+      const vi=document.getElementById('field-valor'); if(vi) vi.addEventListener('input',e=>{ let v=e.target.value.replace(/\D/g,""); if(v){ v=(parseInt(v)/100).toFixed(2).replace(".",",").replace(/(\d)(?=(\d{3})+(?!\d))/g,"$1."); e.target.value=v; } });
     };
+    window.editCompra = (id)=>openCompraForm(id);
 
-    window.editCompra = (id) => openCompraForm(id);
-
-    function generateFormFields(fields, data = {}) {
-      return fields.map(f => {
-        const val = data[f.name] || '';
-        const lClass = "block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1.5";
-        const iClass = "w-full bg-slate-50 border border-slate-200 rounded-xl p-3.5 text-sm font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition shadow-[inset_0_1px_2px_rgba(0,0,0,0.02)]";
-
-        if (f.type === 'select') return `<div class="mb-4"><label class="${lClass}">${f.label}</label><select id="field-${f.name}" class="${iClass}">${f.options.map(o => `<option value="${o.val}" ${val === o.val ? 'selected' : ''}>${o.label}</option>`).join('')}</select></div>`;
-
-        if (f.type === 'textarea') return `<div class="mb-4"><label class="${lClass}">${f.label}</label><textarea id="field-${f.name}" rows="3" class="${iClass}">${val}</textarea></div>`;
-
-        if (f.type === 'db-select') {
-          const items = [...AppState.data[f.collection]].sort((a,b) => (a.nome || '').localeCompare(b.nome || '', 'pt-BR'));
-          return `<div class="mb-4"><label class="${lClass}">${f.label}</label><div class="flex gap-2"><select id="field-${f.name}" class="${iClass} flex-1"><option value="">Selecione...</option>${items.map(i => `<option value="${i.id}" ${val === i.id ? 'selected' : ''}>${i.nome}</option>`).join('')}</select><button type="button" onclick="openQuickAdd('${f.collection}', 'field-${f.name}')" class="w-12 bg-blue-100 text-blue-600 rounded-xl hover:bg-blue-200 transition font-bold shrink-0 shadow-sm border border-blue-200 text-lg"><i class="fa-solid fa-plus"></i></button></div></div>`;
+    function generateFormFields(fields,data={}){
+      return fields.map(f=>{
+        const val=data[f.name]||'';
+        const l="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1.5";
+        const i="w-full bg-slate-50 border border-slate-200 rounded-xl p-3.5 text-sm font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500 transition";
+        if(f.type==='select') return`<div class="mb-4"><label class="${l}">${f.label}</label><select id="field-${f.name}" class="${i}">${f.options.map(o=>`<option value="${o.val}" ${val===o.val?'selected':''}>${o.label}</option>`).join('')}</select></div>`;
+        if(f.type==='textarea') return`<div class="mb-4"><label class="${l}">${f.label}</label><textarea id="field-${f.name}" rows="3" class="${i}">${val}</textarea></div>`;
+        if(f.type==='db-select'){
+          const items=[...AppState.data[f.collection]].sort((a,b)=>(a.nome||'').localeCompare(b.nome||''));
+          return`<div class="mb-4"><label class="${l}">${f.label}</label><div class="flex gap-2"><select id="field-${f.name}" class="${i} flex-1"><option value="">Selecione...</option>${items.map(it=>`<option value="${it.id}" ${val===it.id?'selected':''}>${it.nome}</option>`).join('')}</select><button type="button" onclick="openQuickAdd('${f.collection}','field-${f.name}')" class="w-12 bg-blue-100 text-blue-600 rounded-xl hover:bg-blue-200 font-bold shrink-0"><i class="fa-solid fa-plus"></i></button></div></div>`;
         }
-
-        if (f.type === 'cep') return `<div class="mb-4"><label class="${lClass}">${f.label}</label><input type="text" id="field-${f.name}" value="${val}" placeholder="00000-000" class="${iClass}" onblur="buscarCEP(this.value)"></div>`;
-
-        if (f.type === 'date-calc') return `<div class="mb-4"><label class="${lClass}">${f.label}</label><input type="date" id="field-${f.name}" value="${val}" class="${iClass}" onchange="calcPacienteData()"><div id="calc-result-dataNascimento" class="text-xs text-blue-600 font-bold mt-1.5 ml-1 h-4"></div></div>`;
-
-        return `<div class="mb-4"><label class="${lClass}">${f.label}</label><input type="${f.type || 'text'}" id="field-${f.name}" value="${val}" ${f.readonly ? 'readonly' : ''} class="${iClass} ${f.readonly ? 'bg-slate-100 text-slate-500' : ''}"></div>`;
+        if(f.type==='cep') return`<div class="mb-4"><label class="${l}">${f.label}</label><input type="text" id="field-${f.name}" value="${val}" placeholder="00000-000" class="${i}" onblur="buscarCEP(this.value)"></div>`;
+        if(f.type==='date-calc') return`<div class="mb-4"><label class="${l}">${f.label}</label><input type="date" id="field-${f.name}" value="${val}" class="${i}" onchange="calcPacienteData()"><div id="calc-result-dataNascimento" class="text-xs text-blue-600 font-bold mt-1.5 ml-1 h-4"></div></div>`;
+        return`<div class="mb-4"><label class="${l}">${f.label}</label><input type="${f.type||'text'}" id="field-${f.name}" value="${val}" ${f.readonly?'readonly':''} class="${i} ${f.readonly?'bg-slate-100 text-slate-500':''}"></div>`;
       }).join('');
     }
 
-    window.openQuickAdd = (collection, selectId) => {
-      document.getElementById('quick-add-collection').value = collection;
-      document.getElementById('quick-add-select-id').value = selectId;
-      document.getElementById('quick-add-input').value = '';
-      const overlay = document.getElementById('quick-add-overlay');
-      const content = document.getElementById('quick-add-content');
-      overlay.classList.remove('hidden');
-      setTimeout(() => {
-        overlay.classList.remove('opacity-0');
-        content.classList.remove('scale-95');
-        document.getElementById('quick-add-input').focus();
-      }, 10);
+    window.openQuickAdd = (col,sel)=>{
+      document.getElementById('quick-add-collection').value=col; document.getElementById('quick-add-select-id').value=sel; document.getElementById('quick-add-input').value='';
+      const ov=document.getElementById('quick-add-overlay'), ct=document.getElementById('quick-add-content');
+      ov.classList.remove('hidden'); setTimeout(()=>{ ov.classList.remove('opacity-0'); ct.classList.remove('scale-95'); document.getElementById('quick-add-input').focus(); },10);
+    };
+    window.closeQuickAdd = ()=>{ const ov=document.getElementById('quick-add-overlay'), ct=document.getElementById('quick-add-content'); ov.classList.add('opacity-0'); ct.classList.add('scale-95'); setTimeout(()=>ov.classList.add('hidden'),300); };
+    window.confirmQuickAdd = async ()=>{
+      const nm=document.getElementById('quick-add-input').value.trim(); if(!nm) return showToast("Digite um nome!","error");
+      const col=document.getElementById('quick-add-collection').value, sel=document.getElementById('quick-add-select-id').value;
+      const nid=await dbSave(col,{nome:nm,status:'ativo',incomplete:true});
+      if(nid){ const s=document.getElementById(sel); if(s){ const o=document.createElement('option'); o.value=nid; o.text=nm; o.selected=true; s.appendChild(o); } closeQuickAdd(); }
     };
 
-    window.closeQuickAdd = () => {
-      const overlay = document.getElementById('quick-add-overlay');
-      const content = document.getElementById('quick-add-content');
-      overlay.classList.add('opacity-0');
-      content.classList.add('scale-95');
-      setTimeout(() => overlay.classList.add('hidden'), 300);
+    window.saveErp = async (col,id)=>{
+      const obj={}; document.querySelectorAll('#modal-body input, #modal-body select, #modal-body textarea').forEach(i=>{ if(i.id?.startsWith('field-')) obj[i.id.replace('field-','')]=i.value; });
+      obj.incomplete=false; const sid=await dbSave(col,obj,id); if(sid){ closeModal(); viewErpDetails(col,id||sid); }
+    };
+    window.saveCompra = async (id,status)=>{
+      const obj={status}; document.querySelectorAll('#modal-body input, #modal-body select, #modal-body textarea').forEach(i=>{ if(i.id?.startsWith('field-')){ let k=i.id.replace('field-',''), v=i.value; if(k==='valor') v=parseFloat(v.replace(/\./g,'').replace(',','.'))||0; obj[k]=v; } });
+      if(!obj.remedioId||!obj.data) return showToast("Data e Remédio obrigatórios.","error");
+      if(await dbSave('compras',obj,id)){ closeModal(); renderCompras(); }
     };
 
-    window.confirmQuickAdd = async () => {
-      const name = document.getElementById('quick-add-input').value.trim();
-      if (!name) return showToast("Digite um nome!", "error");
-      const collection = document.getElementById('quick-add-collection').value;
-      const selectId = document.getElementById('quick-add-select-id').value;
-      const newId = await dbSave(collection, { nome: name, status: 'ativo', incomplete: true });
-      if (newId) {
-        const select = document.getElementById(selectId);
-        if (select) {
-          const opt = document.createElement('option');
-          opt.value = newId;
-          opt.text = name;
-          opt.selected = true;
-          select.appendChild(opt);
-        }
-        closeQuickAdd();
-      }
+    window.openModal = (title,body,footer)=>{
+      document.getElementById('modal-title').innerText=title; document.getElementById('modal-body').innerHTML=body; document.getElementById('modal-footer').innerHTML=footer;
+      const ov=document.getElementById('modal-overlay'), ct=document.getElementById('modal-content');
+      ov.classList.remove('hidden'); setTimeout(()=>{ ov.classList.remove('opacity-0'); if(window.innerWidth<768) ct.classList.remove('translate-y-full'); else ct.classList.remove('scale-95'); },10);
+    };
+    window.closeModal = ()=>{ const ov=document.getElementById('modal-overlay'), ct=document.getElementById('modal-content'); ov.classList.add('opacity-0'); if(window.innerWidth<768) ct.classList.add('translate-y-full'); else ct.classList.add('scale-95'); setTimeout(()=>{ ov.classList.add('hidden'); document.getElementById('modal-body').innerHTML=''; },300); };
+    window.showToast = (msg,type="info")=>{
+      const t=document.getElementById('toast'), ic=document.getElementById('toast-icon');
+      document.getElementById('toast-msg').innerText=msg;
+      t.className=`fixed top-20 left-1/2 transform -translate-x-1/2 px-5 py-3 rounded-xl shadow-xl z-[110] transition-opacity duration-300 flex items-center gap-3 font-bold text-white ${type==='error'?'bg-red-600':(type==='success'?'bg-green-600':'bg-slate-800')}`;
+      ic.className=`text-lg fa-solid ${type==='error'?'fa-triangle-exclamation':(type==='success'?'fa-check-circle':'fa-info-circle')}`;
+      t.classList.remove('opacity-0'); setTimeout(()=>t.classList.add('opacity-0'),3000);
     };
 
-    window.saveErp = async (colName, id) => {
-      const dataObj = {};
-      document.querySelectorAll('#modal-body input, #modal-body select, #modal-body textarea').forEach(i => {
-        if (i.id?.startsWith('field-')) dataObj[i.id.replace('field-', '')] = i.value;
-      });
-      dataObj.incomplete = false;
-      if (await dbSave(colName, dataObj, id)) {
-        closeModal();
-        if (id) viewErpDetails(colName, id);
-        renderCompraFilterOptions();
-      }
-    };
+    window.buscarCEP = async (c)=>{ c=c.replace(/\D/g,''); if(c.length===8){ try{ const d=await(await fetch(`https://viacep.com.br/ws/${c}/json/`)).json(); if(!d.erro){['logradouro','bairro','localidade','uf'].forEach(k=>{ const el=document.getElementById(`field-${k==='localidade'?'cidade':k}`); if(el) el.value=d[k]; }); showToast("Endereço preenchido!","success"); } }catch(e){} } };
+    window.calcPacienteData = ()=>{const f=document.getElementById('field-dataNascimento');if(!f)return;const v=f.value;if(!v)return;const dt=new Date(v+'T12:00:00'),td=new Date();let age=td.getFullYear()-dt.getFullYear();let m=td.getMonth()-dt.getMonth();if(m<0||(m===0&&td.getDate()<dt.getDate()))age--;const d=dt.getDate(),mo=dt.getMonth()+1;let sign="";if((mo==1&&d<=20)||(mo==12&&d>=22))sign="Capricórnio";else if((mo==1&&d>=21)||(mo==2&&d<=18))sign="Aquário";else if((mo==2&&d>=19)||(mo==3&&d<=20))sign="Peixes";else if((mo==3&&d>=21)||(mo==4&&d<=20))sign="Áries";else if((mo==4&&d>=21)||(mo==5&&d<=20))sign="Touro";else if((mo==5&&d>=21)||(mo==6&&d<=20))sign="Gêmeos";else if((mo==6&&d>=21)||(mo==7&&d<=22))sign="Câncer";else if((mo==7&&d>=23)||(mo==8&&d<=23))sign="Leão";else if((mo==8&&d>=24)||(mo==9&&d<=23))sign="Virgem";else if((mo==9&&d>=24)||(mo==10&&d<=23))sign="Libra";else if((mo==10&&d>=24)||(mo==11&&d<=22))sign="Escorpião";else if((mo==11&&d>=23)||(mo==12&&d<=21))sign="Sagitário";document.getElementById('calc-result-dataNascimento').innerText=`${age} anos`;document.getElementById('field-signo').value=sign;};
+    window.consultarCRM = (crm)=>{ navigator.clipboard.writeText(crm).then(()=>{ showToast("Copiado! Redirecionando..."); setTimeout(()=>window.open('https://guiamedico.cremesp.org.br/','_blank'),800); }).catch(()=>{ const t=document.createElement("textarea"); t.value=crm; document.body.appendChild(t); t.select(); try{document.execCommand('copy'); showToast("Copiado!"); setTimeout(()=>window.open('https://guiamedico.cremesp.org.br/','_blank'),800);}catch(e){showToast("Erro ao copiar.","error");} document.body.removeChild(t); }); };
+    window.handleImageUpload = (e)=>{ const file=e.target.files[0]; if(!file)return; const r=new FileReader(); r.onload=function(ev){ const img=new Image(); img.onload=function(){ const cv=document.createElement('canvas'),cx=cv.getContext('2d'); let w=img.width,h=img.height; if(w>h){if(w>800){h*=800/w;w=800;}}else{if(h>800){w*=800/h;h=800;}} cv.width=w; cv.height=h; cx.drawImage(img,0,0,w,h); document.getElementById('field-documentoBase64').value=cv.toDataURL('image/jpeg',0.6); document.getElementById('doc-upload-area').classList.add('hidden'); document.getElementById('doc-view-area').classList.remove('hidden'); showToast("Documento processado!","success"); }; img.src=ev.target.result; }; r.readAsDataURL(file); };
+    window.viewDocument = ()=>{ const b64=document.getElementById('field-documentoBase64').value; if(b64){ document.getElementById('image-viewer-img').src=b64; document.getElementById('image-viewer').classList.remove('hidden'); document.getElementById('image-viewer').classList.add('flex'); } };
+    window.closeImageViewer = ()=>{ document.getElementById('image-viewer').classList.add('hidden'); document.getElementById('image-viewer').classList.remove('flex'); };
+    window.deleteCurrentDocument = ()=>{ if(confirm('Apagar documento?')){ document.getElementById('field-documentoBase64').value=''; document.getElementById('doc-upload-area').classList.remove('hidden'); document.getElementById('doc-view-area').classList.add('hidden'); closeImageViewer(); } };
 
-    window.saveCompra = async (id, status) => {
-      const dataObj = { status };
-      document.querySelectorAll('#modal-body input, #modal-body select, #modal-body textarea').forEach(i => {
-        if (i.id?.startsWith('field-')) {
-          let k = i.id.replace('field-', '');
-          let v = i.value;
-          if (k === 'valor') v = parseFloat(v.replace(/\./g, '').replace(',', '.')) || 0;
-          dataObj[k] = v;
-        }
-      });
-
-      if (!dataObj.remedioId || !dataObj.data) return showToast("Data e Remédio obrigatórios.", "error");
-
-      if (await dbSave('compras', dataObj, id)) {
-        closeModal();
-        renderCompras();
-      }
-    };
-
-    window.openModal = (title, bodyHtml, footerHtml) => {
-      document.getElementById('modal-title').innerText = title;
-      document.getElementById('modal-body').innerHTML = bodyHtml;
-      document.getElementById('modal-footer').innerHTML = footerHtml;
-      const overlay = document.getElementById('modal-overlay');
-      const content = document.getElementById('modal-content');
-      overlay.classList.remove('hidden');
-      setTimeout(() => {
-        overlay.classList.remove('opacity-0');
-        if (window.innerWidth < 768) content.classList.remove('translate-y-full');
-        else content.classList.remove('scale-95');
-      }, 10);
-    };
-
-    window.closeModal = () => {
-      const overlay = document.getElementById('modal-overlay');
-      const content = document.getElementById('modal-content');
-      overlay.classList.add('opacity-0');
-      if (window.innerWidth < 768) content.classList.add('translate-y-full');
-      else content.classList.add('scale-95');
-      setTimeout(() => {
-        overlay.classList.add('hidden');
-        document.getElementById('modal-body').innerHTML = '';
-      }, 300);
-    };
-
-    window.showToast = (msg, type = "info") => {
-      const toast = document.getElementById('toast');
-      const icon = document.getElementById('toast-icon');
-      document.getElementById('toast-msg').innerText = msg;
-      toast.className = `fixed top-20 left-1/2 transform -translate-x-1/2 px-5 py-3 rounded-xl shadow-xl z-[110] transition-opacity duration-300 flex items-center gap-3 font-bold text-white ${type === 'error' ? 'bg-red-600' : (type === 'success' ? 'bg-green-600' : 'bg-slate-800')}`;
-      icon.className = `text-lg fa-solid ${type === 'error' ? 'fa-triangle-exclamation' : (type === 'success' ? 'fa-check-circle' : 'fa-info-circle')}`;
-      toast.classList.remove('opacity-0');
-      setTimeout(() => toast.classList.add('opacity-0'), 3000);
-    };
-
-    window.buscarCEP = async (cep) => {
-      if ((cep = cep.replace(/\D/g, '')).length === 8) {
-        try {
-          const d = await (await fetch(`https://viacep.com.br/ws/${cep}/json/`)).json();
-          if (!d.erro) {
-            ['logradouro', 'bairro', 'localidade', 'uf'].forEach(k => {
-              const el = document.getElementById(`field-${k === 'localidade' ? 'cidade' : k}`);
-              if (el) el.value = d[k];
-            });
-            showToast("Endereço preenchido!", "success");
-          }
-        } catch(e) {}
-      }
-    };
-
-    window.calcPacienteData = () => {
-      const val = document.getElementById('field-dataNascimento')?.value;
-      if (!val) return;
-      const date = new Date(val + 'T12:00:00');
-      const today = new Date();
-      let age = today.getFullYear() - date.getFullYear();
-      let m = today.getMonth() - date.getMonth();
-      if (m < 0 || (m === 0 && today.getDate() < date.getDate())) age--;
-
-      const d = date.getDate();
-      const mo = date.getMonth() + 1;
-      let sign = "";
-      if ((mo == 1 && d <= 20) || (mo == 12 && d >= 22)) sign = "Capricórnio";
-      else if ((mo == 1 && d >= 21) || (mo == 2 && d <= 18)) sign = "Aquário";
-      else if ((mo == 2 && d >= 19) || (mo == 3 && d <= 20)) sign = "Peixes";
-      else if ((mo == 3 && d >= 21) || (mo == 4 && d <= 20)) sign = "Áries";
-      else if ((mo == 4 && d >= 21) || (mo == 5 && d <= 20)) sign = "Touro";
-      else if ((mo == 5 && d >= 21) || (mo == 6 && d <= 20)) sign = "Gêmeos";
-      else if ((mo == 6 && d >= 21) || (mo == 7 && d <= 22)) sign = "Câncer";
-      else if ((mo == 7 && d >= 23) || (mo == 8 && d <= 23)) sign = "Leão";
-      else if ((mo == 8 && d >= 24) || (mo == 9 && d <= 23)) sign = "Virgem";
-      else if ((mo == 9 && d >= 24) || (mo == 10 && d <= 23)) sign = "Libra";
-      else if ((mo == 10 && d >= 24) || (mo == 11 && d <= 22)) sign = "Escorpião";
-      else if ((mo == 11 && d >= 23) || (mo == 12 && d <= 21)) sign = "Sagitário";
-
-      const result = document.getElementById('calc-result-dataNascimento');
-      if (result) result.innerText = `${age} anos`;
-      const fSigno = document.getElementById('field-signo');
-      if (fSigno) fSigno.value = sign;
-    };
-
-    window.consultarCRM = (crm) => {
-      navigator.clipboard.writeText(crm).then(() => {
-        showToast("Copiado! Redirecionando...");
-        setTimeout(() => window.open('https://guiamedico.cremesp.org.br/', '_blank'), 800);
-      }).catch(() => {
-        const t = document.createElement("textarea");
-        t.value = crm;
-        document.body.appendChild(t);
-        t.select();
-        try {
-          document.execCommand('copy');
-          showToast("Copiado! Redirecionando...");
-          setTimeout(() => window.open('https://guiamedico.cremesp.org.br/', '_blank'), 800);
-        } catch(e) {
-          showToast("Erro ao copiar.", "error");
-        }
-        document.body.removeChild(t);
-      });
-    };
-
-    window.handleImageUpload = (e) => {
-      const file = e.target.files[0];
-      if (!file) return;
-      const r = new FileReader();
-      r.onload = function(ev) {
-        const img = new Image();
-        img.onload = function() {
-          const canvas = document.createElement('canvas');
-          const ctx = canvas.getContext('2d');
-          let w = img.width;
-          let h = img.height;
-          if (w > h) {
-            if (w > 800) { h *= 800 / w; w = 800; }
-          } else {
-            if (h > 800) { w *= 800 / h; h = 800; }
-          }
-          canvas.width = w;
-          canvas.height = h;
-          ctx.drawImage(img, 0, 0, w, h);
-          document.getElementById('field-documentoBase64').value = canvas.toDataURL('image/jpeg', 0.6);
-          document.getElementById('doc-upload-area').classList.add('hidden');
-          document.getElementById('doc-view-area').classList.remove('hidden');
-          showToast("Documento processado!", "success");
-        };
-        img.src = ev.target.result;
-      };
-      r.readAsDataURL(file);
-    };
-
-    window.viewDocument = () => {
-      const b64 = document.getElementById('field-documentoBase64').value;
-      if (b64) {
-        document.getElementById('image-viewer-img').src = b64;
-        document.getElementById('image-viewer').classList.remove('hidden');
-        document.getElementById('image-viewer').classList.add('flex');
-      }
-    };
-
-    window.closeImageViewer = () => {
-      document.getElementById('image-viewer').classList.add('hidden');
-      document.getElementById('image-viewer').classList.remove('flex');
-    };
-
-    window.deleteCurrentDocument = () => {
-      if (confirm('Apagar documento atual?')) {
-        document.getElementById('field-documentoBase64').value = '';
-        document.getElementById('doc-upload-area').classList.remove('hidden');
-        document.getElementById('doc-view-area').classList.add('hidden');
-        closeImageViewer();
-      }
-    };
-
-    document.addEventListener('DOMContentLoaded', () => initApp());
+    document.addEventListener('DOMContentLoaded',initApp);
   </script>
 </body>
 </html>
