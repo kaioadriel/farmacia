@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -23,7 +22,7 @@
 </head>
 <body class="bg-slate-50 text-slate-800 font-sans antialiased pb-20 md:pb-0 md:pt-16 hidden" id="app-body">
 
-  <!-- AUTHENTICATION SCREEN -->
+  <!-- AUTH SCREEN -->
   <div id="auth-screen" class="fixed inset-0 z-[100] auth-bg flex items-center justify-center p-4">
     <div class="bg-white p-8 rounded-3xl shadow-2xl w-full max-w-md flex flex-col items-center">
       <div class="w-24 h-24 mb-4 rounded-3xl overflow-hidden flex items-center justify-center bg-white shadow-sm p-1 border-2 border-slate-100">
@@ -44,7 +43,7 @@
     </div>
   </div>
 
-  <!-- Header -->
+  <!-- HEADER -->
   <header id="main-header" class="bg-white text-blue-700 p-4 shadow-sm md:fixed md:top-0 md:w-full md:z-40 flex justify-between items-center border-b border-slate-200 hidden">
     <div class="flex items-center gap-3 min-w-0">
       <img src="https://farmacia.kaioadriel.com.br/icone/images.png" alt="Logo" class="h-8 w-8 object-contain rounded-md shrink-0">
@@ -56,6 +55,7 @@
     </div>
   </header>
 
+  <!-- MAIN -->
   <main id="main-content" class="w-full max-w-6xl mx-auto md:p-4 md:flex md:gap-6 mt-4 md:mt-0 hidden">
     <aside class="hidden md:block w-64 shrink-0">
       <div class="bg-white rounded-xl shadow-sm p-4 sticky top-24 border border-slate-100">
@@ -72,16 +72,24 @@
     </aside>
 
     <div class="flex-1 px-4 md:px-0 w-full" id="main-view-container">
-      <!-- Dashboard -->
+
+      <!-- DASHBOARD -->
       <section id="view-dashboard" class="view-section active">
         <div class="flex justify-between items-center mb-4 md:mb-6"><h2 class="text-2xl font-bold text-slate-800">Visão Geral</h2><button onclick="openCompraForm()" class="bg-blue-600 text-white px-4 py-2.5 text-sm md:text-base rounded-xl font-bold shadow-md hover:bg-blue-700 transition active:scale-95 flex items-center gap-2"><i class="fa-solid fa-cart-plus"></i> <span class="hidden sm:inline">Nova Compra</span><span class="sm:hidden">Comprar</span></button></div>
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6">
-          <div class="bg-white p-4 md:p-5 rounded-2xl shadow-sm border border-slate-100 flex flex-col h-full"><div class="flex justify-between items-center mb-4"><h3 class="font-bold text-slate-700"><i class="fa-solid fa-clock-rotate-left text-orange-500 mr-2"></i>Últimas Compras</h3><button onclick="switchView('compras')" class="text-xs font-bold text-blue-600 hover:underline">Ver Todas</button></div><div id="dashboard-recent-compras" class="space-y-3 flex-1 overflow-y-auto"></div></div>
-          <div class="bg-white p-4 md:p-5 rounded-2xl shadow-sm border border-slate-100 flex flex-col"><div class="flex justify-between items-center mb-2"><h3 class="font-bold text-slate-700">Histórico (6 Meses)</h3><button id="btn-toggle-chart" onclick="toggleChartType()" class="text-xs bg-slate-100 px-3 py-1.5 rounded-lg text-slate-600 hover:bg-slate-200 font-bold transition">Ver Gastos (R$)</button></div><div class="text-3xl font-black text-blue-600 mb-4" id="chart-total-label">0</div><div class="h-56 w-full relative mt-auto"><canvas id="mainChart"></canvas></div></div>
+          <div class="bg-white p-4 md:p-5 rounded-2xl shadow-sm border border-slate-100 flex flex-col h-full order-1 lg:order-none">
+            <div class="flex justify-between items-center mb-4"><h3 class="font-bold text-slate-700"><i class="fa-solid fa-clock-rotate-left text-orange-500 mr-2"></i>Últimas Compras</h3><button onclick="switchView('compras')" class="text-xs font-bold text-blue-600 hover:underline">Ver Todas</button></div>
+            <div id="dashboard-recent-compras" class="space-y-3 flex-1 overflow-y-auto"></div>
+          </div>
+          <div class="bg-white p-4 md:p-5 rounded-2xl shadow-sm border border-slate-100 flex flex-col order-2 lg:order-none">
+            <div class="flex justify-between items-center mb-2"><h3 class="font-bold text-slate-700">Histórico (6 Meses)</h3><button id="btn-toggle-chart" onclick="toggleChartType()" class="text-xs bg-slate-100 px-3 py-1.5 rounded-lg text-slate-600 hover:bg-slate-200 font-bold transition">Ver Gastos (R$)</button></div>
+            <div class="text-3xl font-black text-blue-600 mb-4" id="chart-total-label">0</div>
+            <div class="h-56 w-full relative mt-auto"><canvas id="mainChart"></canvas></div>
+          </div>
         </div>
       </section>
 
-      <!-- Compras -->
+      <!-- COMPRAS -->
       <section id="view-compras" class="view-section hidden">
         <div class="flex justify-between items-center mb-6"><h2 class="text-2xl font-bold text-slate-800">Compras</h2><button onclick="openCompraForm()" class="bg-blue-600 text-white w-12 h-12 rounded-full shadow-lg flex items-center justify-center hover:bg-blue-700 transition active:scale-95 text-xl"><i class="fa-solid fa-plus"></i></button></div>
         <div class="mb-4">
@@ -103,7 +111,7 @@
         <div id="list-compras" class="space-y-3 pb-6"></div>
       </section>
 
-      <!-- ERP Categories -->
+      <!-- ERP CATEGORIES -->
       <section id="view-erp-categories" class="view-section hidden">
         <h2 class="text-2xl font-bold text-slate-800 mb-6">Módulo ERP</h2>
         <div class="grid grid-cols-2 gap-4">
@@ -115,18 +123,27 @@
         </div>
       </section>
 
-      <!-- ERP List -->
+      <!-- ERP LIST -->
       <section id="view-erp-list" class="view-section hidden">
         <div class="flex justify-between items-center mb-4">
           <div class="flex items-center gap-3"><button onclick="switchView('erp-categories')" class="w-10 h-10 rounded-full bg-slate-200 text-slate-600 flex items-center justify-center hover:bg-slate-300 transition"><i class="fa-solid fa-arrow-left"></i></button><h2 class="text-2xl font-bold text-slate-800 flex items-center gap-2" id="erp-list-title">Lista</h2></div>
           <button onclick="openErpForm()" class="bg-blue-600 text-white w-12 h-12 rounded-full shadow-lg flex items-center justify-center hover:bg-blue-700 transition active:scale-95 text-xl"><i class="fa-solid fa-plus"></i></button>
         </div>
-        <div class="relative mb-4"><i class="fa-solid fa-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i><input type="text" id="erp-search" onkeyup="filterErpList()" placeholder="Buscar..." class="w-full bg-white border border-slate-200 rounded-xl py-3 pl-12 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm"></div>
+        <div class="relative mb-3">
+          <i class="fa-solid fa-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
+          <input type="text" id="erp-search" onkeyup="filterErpList()" placeholder="Buscar..." class="w-full bg-white border border-slate-200 rounded-xl py-3 pl-12 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm">
+        </div>
+        <div class="flex items-center gap-2 mb-4">
+          <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Ordenar:</span>
+          <button onclick="setErpSort('alfabetica')" id="btn-sort-alfa" class="text-xs font-bold px-3 py-2 rounded-lg bg-blue-600 text-white shadow-sm transition active:scale-95">A-Z</button>
+          <button onclick="setErpSort('recente')" id="btn-sort-recente" class="text-xs font-bold px-3 py-2 rounded-lg bg-slate-100 text-slate-600 hover:bg-slate-200 transition active:scale-95">Última Compra</button>
+        </div>
         <div id="list-erp" class="space-y-3 pb-6"></div>
       </section>
     </div>
   </main>
 
+  <!-- MOBILE NAV -->
   <nav id="mobile-nav" class="md:hidden fixed bottom-0 w-full bg-white border-t border-slate-200 z-40 pb-safe hidden">
     <div class="flex justify-around items-center h-[68px]">
       <button onclick="switchView('dashboard')" class="nav-btn relative flex flex-col items-center justify-center w-full h-full text-slate-400 hover:text-blue-600 transition" data-target="dashboard"><div class="nav-indicator hidden absolute top-0 w-1/2 h-1 bg-blue-600 rounded-b-md"></div><i class="fa-solid fa-chart-column text-xl mb-1 mt-1"></i><span class="text-[11px] font-bold">Dash</span></button>
@@ -135,29 +152,10 @@
     </div>
   </nav>
 
-  <div id="modal-overlay" class="fixed inset-0 bg-slate-900/40 z-50 hidden flex items-end md:items-center justify-center transition-opacity opacity-0 backdrop-blur-sm">
-    <div id="modal-content" class="bg-white w-full max-w-2xl md:rounded-2xl rounded-t-3xl h-[90vh] md:h-auto md:max-h-[90vh] flex flex-col shadow-2xl transform translate-y-full md:translate-y-0 transition-transform duration-300">
-      <div class="flex justify-between items-center p-5 border-b border-slate-100"><h3 id="modal-title" class="text-xl font-bold text-slate-800">Título</h3><button onclick="closeModal()" class="w-8 h-8 flex items-center justify-center rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200 transition"><i class="fa-solid fa-times"></i></button></div>
-      <div id="modal-body" class="p-5 overflow-y-auto flex-1 hide-scroll"></div>
-      <div id="modal-footer" class="p-5 border-t border-slate-100 bg-slate-50 flex gap-3 justify-end md:rounded-b-2xl pb-safe"></div>
-    </div>
-  </div>
-
-  <div id="quick-add-overlay" class="fixed inset-0 bg-slate-900/60 z-[80] hidden flex items-center justify-center p-4 transition-opacity opacity-0 backdrop-blur-sm">
-    <div id="quick-add-content" class="bg-white rounded-2xl p-6 w-full max-w-sm shadow-2xl transform scale-95 transition-transform duration-300">
-      <div class="flex items-center justify-between mb-2"><h3 class="font-bold text-lg text-slate-800">Cadastro Rápido ⚡</h3><button onclick="closeQuickAdd()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-times"></i></button></div>
-      <p class="text-sm text-slate-500 mb-5">Insira apenas o nome. Este cadastro ficará marcado como Incompleto no ERP.</p>
-      <input type="hidden" id="quick-add-collection"><input type="hidden" id="quick-add-select-id">
-      <input type="text" id="quick-add-input" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 mb-5 focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-800 font-medium" placeholder="Digite o nome aqui...">
-      <div class="flex gap-3 justify-end"><button onclick="closeQuickAdd()" class="px-5 py-2.5 bg-slate-100 rounded-xl text-slate-600 font-medium hover:bg-slate-200 transition">Cancelar</button><button onclick="confirmQuickAdd()" class="px-5 py-2.5 bg-blue-600 rounded-xl text-white font-bold shadow-md hover:bg-blue-700 transition">Salvar & Usar</button></div>
-    </div>
-  </div>
-
-  <div id="image-viewer" class="fixed inset-0 bg-black z-[90] hidden flex-col items-center justify-center">
-    <div class="absolute top-6 right-6 flex gap-4"><button onclick="deleteCurrentDocument()" class="w-12 h-12 flex items-center justify-center rounded-full bg-red-600/90 text-white text-xl backdrop-blur-md shadow-lg"><i class="fa-solid fa-trash"></i></button><button onclick="closeImageViewer()" class="w-12 h-12 flex items-center justify-center rounded-full bg-white/20 text-white text-xl backdrop-blur-md hover:bg-white/30 transition"><i class="fa-solid fa-times"></i></button></div>
-    <img id="image-viewer-img" src="" class="max-w-full max-h-full object-contain p-2">
-  </div>
-
+  <!-- MODALS ETC (inalterados) -->
+  <div id="modal-overlay" class="fixed inset-0 bg-slate-900/40 z-50 hidden flex items-end md:items-center justify-center transition-opacity opacity-0 backdrop-blur-sm"><div id="modal-content" class="bg-white w-full max-w-2xl md:rounded-2xl rounded-t-3xl h-[90vh] md:h-auto md:max-h-[90vh] flex flex-col shadow-2xl transform translate-y-full md:translate-y-0 transition-transform duration-300"><div class="flex justify-between items-center p-5 border-b border-slate-100"><h3 id="modal-title" class="text-xl font-bold text-slate-800">Título</h3><button onclick="closeModal()" class="w-8 h-8 flex items-center justify-center rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200 transition"><i class="fa-solid fa-times"></i></button></div><div id="modal-body" class="p-5 overflow-y-auto flex-1 hide-scroll"></div><div id="modal-footer" class="p-5 border-t border-slate-100 bg-slate-50 flex gap-3 justify-end md:rounded-b-2xl pb-safe"></div></div></div>
+  <div id="quick-add-overlay" class="fixed inset-0 bg-slate-900/60 z-[80] hidden flex items-center justify-center p-4 transition-opacity opacity-0 backdrop-blur-sm"><div id="quick-add-content" class="bg-white rounded-2xl p-6 w-full max-w-sm shadow-2xl transform scale-95 transition-transform duration-300"><div class="flex items-center justify-between mb-2"><h3 class="font-bold text-lg text-slate-800">Cadastro Rápido ⚡</h3><button onclick="closeQuickAdd()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-times"></i></button></div><p class="text-sm text-slate-500 mb-5">Insira apenas o nome. Este cadastro ficará marcado como Incompleto no ERP.</p><input type="hidden" id="quick-add-collection"><input type="hidden" id="quick-add-select-id"><input type="text" id="quick-add-input" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 mb-5 focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-800 font-medium" placeholder="Digite o nome aqui..."><div class="flex gap-3 justify-end"><button onclick="closeQuickAdd()" class="px-5 py-2.5 bg-slate-100 rounded-xl text-slate-600 font-medium hover:bg-slate-200 transition">Cancelar</button><button onclick="confirmQuickAdd()" class="px-5 py-2.5 bg-blue-600 rounded-xl text-white font-bold shadow-md hover:bg-blue-700 transition">Salvar & Usar</button></div></div></div>
+  <div id="image-viewer" class="fixed inset-0 bg-black z-[90] hidden flex-col items-center justify-center"><div class="absolute top-6 right-6 flex gap-4"><button onclick="deleteCurrentDocument()" class="w-12 h-12 flex items-center justify-center rounded-full bg-red-600/90 text-white text-xl backdrop-blur-md shadow-lg"><i class="fa-solid fa-trash"></i></button><button onclick="closeImageViewer()" class="w-12 h-12 flex items-center justify-center rounded-full bg-white/20 text-white text-xl backdrop-blur-md hover:bg-white/30 transition"><i class="fa-solid fa-times"></i></button></div><img id="image-viewer-img" src="" class="max-w-full max-h-full object-contain p-2"></div>
   <div id="toast" class="fixed top-20 left-1/2 transform -translate-x-1/2 text-white px-5 py-3 rounded-xl shadow-xl z-[110] transition-opacity duration-300 opacity-0 pointer-events-none flex items-center gap-3 font-medium"><i id="toast-icon" class="fa-solid fa-info-circle text-lg"></i><span id="toast-msg" class="text-sm"></span></div>
 
   <script type="module">
@@ -175,7 +173,7 @@
     injectPWA();
 
     const firebaseConfig = { apiKey:"AIzaSyB1HRg4rqLgyGMQ8GL6wP6zq9GSHUZlIZc", authDomain:"farmacia-d7bb3.firebaseapp.com", projectId:"farmacia-d7bb3", storageBucket:"farmacia-d7bb3.firebasestorage.app", messagingSenderId:"999252393322", appId:"1:999252393322:web:2cd640bc6deac648cfb913" };
-    window.AppState = { user:null, userId:null, view:'dashboard', erpTab:'pacientes', data:{ pacientes:[], medicos:[], clinicas:[], farmacias:[], remedios:[], compras:[] }, chartType:'count' };
+    window.AppState = { user:null, userId:null, view:'dashboard', erpTab:'pacientes', erpSort:'alfabetica', data:{ pacientes:[], medicos:[], clinicas:[], farmacias:[], remedios:[], compras:[] }, chartType:'count' };
     let app, db, auth, provider, listeners=[], myChart=null;
 
     function initApp() {
@@ -233,7 +231,27 @@
       if(viewName==='erp-list') renderErpList();
       updateUI();
     };
-    window.openErpList = (tab)=>{ AppState.erpTab=tab; document.getElementById('erp-list-title').innerHTML={pacientes:'👤 Pacientes',medicos:'👨‍⚕️ Médicos',clinicas:'🏥 Clínicas',farmacias:'💊 Farmácias',remedios:'💉 Remédios'}[tab]; document.getElementById('erp-search').value=''; switchView('erp-list'); };
+    window.openErpList = (tab)=>{ AppState.erpTab=tab; document.getElementById('erp-list-title').innerHTML={pacientes:'👤 Pacientes',medicos:'👨‍⚕️ Médicos',clinicas:'🏥 Clínicas',farmacias:'💊 Farmácias',remedios:'💉 Remédios'}[tab]; document.getElementById('erp-search').value=''; updateErpSortButtons(); switchView('erp-list'); };
+
+    window.setErpSort = (sort)=>{
+      AppState.erpSort = sort;
+      updateErpSortButtons();
+      renderErpList();
+    };
+
+    function updateErpSortButtons(){
+      const btnA = document.getElementById('btn-sort-alfa');
+      const btnR = document.getElementById('btn-sort-recente');
+      if(btnA && btnR){
+        if(AppState.erpSort === 'alfabetica'){
+          btnA.className = 'text-xs font-bold px-3 py-2 rounded-lg bg-blue-600 text-white shadow-sm transition active:scale-95';
+          btnR.className = 'text-xs font-bold px-3 py-2 rounded-lg bg-slate-100 text-slate-600 hover:bg-slate-200 transition active:scale-95';
+        } else {
+          btnR.className = 'text-xs font-bold px-3 py-2 rounded-lg bg-blue-600 text-white shadow-sm transition active:scale-95';
+          btnA.className = 'text-xs font-bold px-3 py-2 rounded-lg bg-slate-100 text-slate-600 hover:bg-slate-200 transition active:scale-95';
+        }
+      }
+    }
 
     function updateUI(){ if(!AppState.user) return; if(AppState.view==='dashboard') renderDashboard(); else if(AppState.view==='compras'){ renderCompraFilterOptions(); renderCompras(); } else if(AppState.view==='erp' && !document.getElementById('view-erp-list').classList.contains('hidden')) renderErpList(); }
 
@@ -255,9 +273,19 @@
       myChart=new Chart(ctx,{type:'bar',data:{labels,datasets:[{data,backgroundColor:'#3b82f6',borderRadius:4}]},plugins:[dataLabelsPlugin],options:{responsive:true,maintainAspectRatio:false,layout:{padding:{top:20}},plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,grace:'15%',grid:{borderDash:[4,4]}},x:{grid:{display:false}}}}});
       const recent=[...compras].sort((a,b)=>new Date(b.data)-new Date(a.data)).slice(0,5);
       document.getElementById('dashboard-recent-compras').innerHTML=recent.length?recent.map(c=>{
-        const f=AppState.data.farmacias.find(x=>x.id===c.farmaciaId)?.nome||'-';
-        return`<div class="p-3 bg-white hover:bg-slate-50 rounded-xl border border-slate-100 mb-2 transition flex flex-col gap-1.5"><div class="flex justify-between"><h4 class="font-black text-slate-800 text-[13px] truncate"><i class="fa-solid fa-shop text-purple-600 mr-1"></i>${f}</h4><span class="text-[10px] font-black text-blue-700 bg-blue-100 px-2 py-0.5 rounded-md">${calcularDiasAtras(c.data)}</span></div></div>`;
-      }).join(''):`<div class="text-center py-6 text-slate-400"><i class="fa-solid fa-box-open text-3xl mb-2"></i><p>Nenhuma compra.</p></div>`;
+        const farm=AppState.data.farmacias.find(x=>x.id===c.farmaciaId)?.nome||'-';
+        const pac=AppState.data.pacientes.find(x=>x.id===c.pacienteId)?.nome||'-';
+        const med=AppState.data.medicos.find(x=>x.id===c.medicoId)?.nome||'-';
+        const clin=AppState.data.clinicas.find(x=>x.id===c.clinicaId)?.nome||'-';
+        return`<div class="p-3 bg-white hover:bg-slate-50 rounded-xl border border-slate-100 mb-2 shadow-[0_1px_3px_rgba(0,0,0,0.02)] transition flex flex-col gap-1.5">
+          <div class="flex justify-between items-center"><h4 class="font-black text-slate-800 text-[13px] truncate pr-2"><i class="fa-solid fa-shop text-purple-600 mr-1.5"></i>${farm}</h4><span class="text-[10px] font-black text-blue-700 bg-blue-100 px-2 py-0.5 rounded-md shrink-0 uppercase tracking-wide">${calcularDiasAtras(c.data)}</span></div>
+          <div class="flex flex-wrap gap-x-3 gap-y-1 text-[11px] font-medium text-slate-500">
+            <span class="flex items-center gap-1 min-w-0"><i class="fa-solid fa-user text-slate-300"></i><span class="truncate">${pac}</span></span>
+            <span class="flex items-center gap-1 min-w-0"><i class="fa-solid fa-user-doctor text-slate-300"></i><span class="truncate">${med}</span></span>
+            <span class="flex items-center gap-1 min-w-0"><i class="fa-solid fa-house-medical text-slate-300"></i><span class="truncate">${clin}</span></span>
+          </div>
+        </div>`;
+      }).join(''):`<div class="text-center py-6 text-slate-400"><i class="fa-solid fa-box-open text-3xl mb-2"></i><p class="text-sm">Nenhuma compra registrada.</p></div>`;
     }
 
     function fillSelect(id,items){
@@ -300,11 +328,27 @@
     function renderErpList(){
       const tab=AppState.erpTab, term=document.getElementById('erp-search').value.toLowerCase();
       let items=AppState.data[tab].filter(i=>Object.values(i).some(v=>String(v).toLowerCase().includes(term)));
-      items.sort((a,b)=>{ if(a.incomplete&&!b.incomplete)return -1; if(!a.incomplete&&b.incomplete)return 1; if(a.status==='ativo'&&b.status==='inativo')return -1; if(a.status==='inativo'&&b.status==='ativo')return 1; return (a.nome||'').localeCompare(b.nome||''); });
-      const cont=document.getElementById('list-erp'); if(!items.length) return cont.innerHTML='<p class="text-center text-slate-500 py-10">Vazio.</p>';
 
-      const cfg={pacientes:{i:'fa-user',s:'cpf'},medicos:{i:'fa-user-doctor',s:'especialidade'},clinicas:{i:'fa-house-medical',s:'especialidade'},farmacias:{i:'fa-shop',s:'telefone'},remedios:{i:'fa-pills',s:'tipo'}}[tab];
       const idMap={pacientes:'pacienteId',medicos:'medicoId',clinicas:'clinicaId',farmacias:'farmaciaId',remedios:'remedioId'};
+
+      items.sort((a,b)=>{
+        if(a.incomplete && !b.incomplete) return -1;
+        if(!a.incomplete && b.incomplete) return 1;
+        if(a.status==='ativo' && b.status==='inativo') return -1;
+        if(a.status==='inativo' && b.status==='ativo') return 1;
+
+        if(AppState.erpSort === 'recente'){
+          const comprasA = AppState.data.compras.filter(c=>c.status==='confirmada'&&c[idMap[tab]]===a.id).sort((x,y)=>new Date(y.data)-new Date(x.data));
+          const comprasB = AppState.data.compras.filter(c=>c.status==='confirmada'&&c[idMap[tab]]===b.id).sort((x,y)=>new Date(y.data)-new Date(x.data));
+          const dataA = comprasA.length ? comprasA[0].data : '0000-00-00';
+          const dataB = comprasB.length ? comprasB[0].data : '0000-00-00';
+          if(dataA !== dataB) return new Date(dataB) - new Date(dataA);
+        }
+        return (a.nome||'').localeCompare(b.nome||'');
+      });
+
+      const cont=document.getElementById('list-erp'); if(!items.length) return cont.innerHTML='<p class="text-center text-slate-500 py-10">Vazio.</p>';
+      const cfg={pacientes:{i:'fa-user',s:'cpf'},medicos:{i:'fa-user-doctor',s:'especialidade'},clinicas:{i:'fa-house-medical',s:'especialidade'},farmacias:{i:'fa-shop',s:'telefone'},remedios:{i:'fa-pills',s:'tipo'}}[tab];
 
       cont.innerHTML = items.map(item=>{
         const isOff=item.status==='inativo', inc=item.incomplete;
