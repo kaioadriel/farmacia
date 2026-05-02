@@ -251,17 +251,14 @@
         </div>
 
         <!-- Ordenação da lista ERP -->
-        <div class="bg-white border border-slate-100 rounded-2xl shadow-sm p-3 mb-4 flex items-center gap-3">
-          <div class="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
-            <i class="fa-solid fa-arrow-down-a-z"></i>
-          </div>
-          <div class="flex-1 min-w-0">
-            <label for="erp-sort" class="block text-[9px] font-black text-slate-400 uppercase tracking-wider mb-1">Ordenar lista</label>
-            <select id="erp-sort" onchange="handleErpSortChange()" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs font-bold text-slate-700 outline-none focus:ring-2 focus:ring-blue-500">
-              <option value="alpha">Ordem alfabética</option>
-              <option value="lastPurchase">Última Compra</option>
-            </select>
-          </div>
+        <div class="mb-4 flex items-center gap-3 overflow-x-auto hide-scroll">
+          <span class="text-[11px] font-black text-slate-500 uppercase tracking-wider shrink-0">Ordenar:</span>
+          <button id="erp-sort-alpha" onclick="setErpSortMode('alpha')" class="erp-sort-btn shrink-0 bg-blue-600 text-white px-4 py-3 rounded-xl text-sm font-black shadow-md active:scale-95 transition">
+            A-Z
+          </button>
+          <button id="erp-sort-lastPurchase" onclick="setErpSortMode('lastPurchase')" class="erp-sort-btn shrink-0 bg-slate-100 text-slate-600 px-4 py-3 rounded-xl text-sm font-black active:scale-95 transition">
+            Última Compra
+          </button>
         </div>
 
         <div id="list-erp" class="space-y-3 pb-6"></div>
@@ -393,7 +390,8 @@
       view: 'dashboard',
       erpTab: 'pacientes',
       data: { pacientes: [], medicos: [], clinicas: [], farmacias: [], remedios: [], compras: [] },
-      chartType: 'count'
+      chartType: 'count',
+      erpSort: 'alpha'
     };
 
     let app, db, auth, provider, listeners = [];
@@ -533,8 +531,7 @@
       const titles = { pacientes: '👤 Pacientes', medicos: '👨‍⚕️ Médicos', clinicas: '🏥 Clínicas', farmacias: '💊 Farmácias', remedios: '💉 Remédios' };
       document.getElementById('erp-list-title').innerHTML = titles[tab];
       document.getElementById('erp-search').value = '';
-      const erpSort = document.getElementById('erp-sort');
-      if (erpSort) erpSort.value = 'alpha';
+      AppState.erpSort = 'alpha';
       switchView('erp-list');
     };
 
@@ -794,13 +791,30 @@
     };
 
     window.filterErpList = () => renderErpList();
-    window.handleErpSortChange = () => renderErpList();
+
+    window.setErpSortMode = (mode) => {
+      AppState.erpSort = mode === 'lastPurchase' ? 'lastPurchase' : 'alpha';
+      updateErpSortButtons();
+      renderErpList();
+    };
+
+    function updateErpSortButtons() {
+      const active = 'bg-blue-600 text-white shadow-md';
+      const inactive = 'bg-slate-100 text-slate-600';
+      const btnAlpha = document.getElementById('erp-sort-alpha');
+      const btnLast = document.getElementById('erp-sort-lastPurchase');
+      if (!btnAlpha || !btnLast) return;
+
+      btnAlpha.className = `erp-sort-btn shrink-0 px-4 py-3 rounded-xl text-sm font-black active:scale-95 transition ${AppState.erpSort === 'alpha' ? active : inactive}`;
+      btnLast.className = `erp-sort-btn shrink-0 px-4 py-3 rounded-xl text-sm font-black active:scale-95 transition ${AppState.erpSort === 'lastPurchase' ? active : inactive}`;
+    }
 
     function renderErpList() {
       const tab = AppState.erpTab;
       const term = document.getElementById('erp-search').value.toLowerCase();
       let items = AppState.data[tab].filter(i => Object.values(i).some(v => String(v).toLowerCase().includes(term)));
-      const sortMode = document.getElementById('erp-sort')?.value || 'alpha';
+      const sortMode = AppState.erpSort || 'alpha';
+      updateErpSortButtons();
       const idFieldMap = { pacientes: 'pacienteId', medicos: 'medicoId', clinicas: 'clinicaId', farmacias: 'farmaciaId', remedios: 'remedioId' };
       const currentIdField = idFieldMap[tab];
 
@@ -827,7 +841,7 @@
       const cont = document.getElementById('list-erp');
       if (!items.length) return cont.innerHTML = `<p class="text-center text-slate-500 py-10">Vazio.</p>`;
 
-      const cfg = { pacientes:{i:'fa-user',s:'cpf'}, medicos:{i:'fa-user-doctor',s:'especialidade'}, clinicas:{i:'fa-house-medical',s:'especialidade'}, farmacias:{i:'fa-shop',s:'telefone'}, remedios:{i:'fa-pills',s:'tipo'} }[tab];
+      const cfg = { pacientes:{i:'fa-user',s:'cpf'}, medicos:{i:'fa-user-doctor',s:'especialidade'}, clinicas:{i:'fa-house-medical',s:'especialidade'}, farmacias:{i:'fa-shop',s:'rede'}, remedios:{i:'fa-pills',s:'tipo'} }[tab];
 
       cont.innerHTML = items.map(item => {
         const isOff = item.status === 'inativo';
@@ -906,7 +920,7 @@
       ];
       if (tab === 'medicos') return [{ name: 'nome', label: 'Nome' }, { name: 'especialidade', label: 'Especialidade' }, { name: 'crm', label: 'CRM' }, { name: 'uf', label: 'UF do CRM' }, { name: 'rqe', label: 'RQE' }, ...b];
       if (tab === 'clinicas') return [{ name: 'nome', label: 'Nome' }, { name: 'especialidade', label: 'Especialidade' }, { name: 'medicoResponsavelId', label: 'Méd. Responsável', type: 'db-select', collection: 'medicos' }, ...b];
-      if (tab === 'farmacias') return [{ name: 'nome', label: 'Nome' }, { name: 'cep', label: 'CEP', type: 'cep' }, { name: 'logradouro', label: 'Endereço' }, { name: 'telefone', label: 'Telefone' }, ...b];
+      if (tab === 'farmacias') return [{ name: 'nome', label: 'Nome' }, { name: 'rede', label: 'Rede', type: 'select', options: [{val:'Droga Raia', label:'Droga Raia'}, {val:'Drogaria São Paulo', label:'Drogaria São Paulo'}, {val:'Nissei', label:'Nissei'}, {val:'Farma Conde', label:'Farma Conde'}, {val:'Outros', label:'Outros'}] }, { name: 'cep', label: 'CEP', type: 'cep' }, { name: 'logradouro', label: 'Endereço' }, { name: 'telefone', label: 'Telefone' }, ...b];
       if (tab === 'remedios') return [{ name: 'nome', label: 'Nome' }, { name: 'tipo', label: 'Tipo' }, { name: 'dosagem', label: 'Dosagem' }, { name: 'preco', label: 'Preço (R$)' }, ...b];
       return [];
     }
