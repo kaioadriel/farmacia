@@ -1,0 +1,538 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#2563eb">
+    <title>Controle de Farmácias</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        body { -webkit-tap-highlight-color: transparent; }
+        .hide-scroll::-webkit-scrollbar { display: none; }
+        .hide-scroll { -ms-overflow-style: none; scrollbar-width: none; }
+        .auth-bg { background: linear-gradient(135deg, #eff6ff 0%, #bfdbfe 100%); }
+        
+        /* Melhoria para nomes longos */
+        .wrap-title {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            line-height: 1.2;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans antialiased pb-20 md:pb-0 md:pt-16 hidden" id="app-body">
+
+<div id="auth-screen" class="fixed inset-0 z-[100] auth-bg flex items-center justify-center p-4">
+    <div class="bg-white p-8 rounded-3xl shadow-2xl w-full max-w-md flex flex-col items-center">
+        <div class="w-24 h-24 mb-4 rounded-3xl overflow-hidden flex items-center justify-center bg-white shadow-sm p-1 border-2 border-slate-100">
+            <img src="https://farmacia.kaioadriel.com.br/icone/images.png" alt="Logo Controle de Farmácias" class="w-full h-full object-contain">
+        </div>
+        <h1 class="text-2xl font-black text-slate-800 mb-2 text-center">Controle de Farmácias</h1>
+        <p class="text-sm text-slate-500 mb-8 text-center font-medium">Faça login para acessar e sincronizar seus dados.</p>
+        <div class="w-full space-y-4">
+            <div>
+                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5 ml-1">E-mail</label>
+                <input type="email" id="auth-email" placeholder="seu@email.com" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3.5 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
+            </div>
+            <div>
+                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5 ml-1">Senha</label>
+                <input type="password" id="auth-pass" placeholder="••••••••" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3.5 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
+            </div>
+            <div class="flex gap-3 pt-2">
+                <button onclick="handleLoginEmail()" class="flex-1 bg-blue-600 text-white font-bold py-3.5 rounded-xl shadow-md hover:bg-blue-700 transition active:scale-95">Entrar</button>
+                <button onclick="handleRegisterEmail()" class="flex-1 bg-slate-100 text-slate-600 font-bold py-3.5 rounded-xl shadow-sm hover:bg-slate-200 transition active:scale-95">Criar Conta</button>
+            </div>
+            <div class="relative flex py-4 items-center">
+                <div class="flex-grow border-t border-slate-200"></div>
+                <span class="flex-shrink-0 mx-4 text-slate-400 text-xs font-bold uppercase">Ou</span>
+                <div class="flex-grow border-t border-slate-200"></div>
+            </div>
+            <button onclick="handleLoginGoogle()" class="w-full bg-white border-2 border-slate-100 text-slate-700 font-bold py-3.5 rounded-xl shadow-sm hover:bg-slate-50 transition active:scale-95 flex items-center justify-center gap-3">
+                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" class="w-5 h-5"> Entrar com Google
+            </button>
+        </div>
+    </div>
+</div>
+
+<header id="main-header" class="bg-white text-blue-700 p-4 shadow-sm md:fixed md:top-0 md:w-full md:z-40 flex justify-between items-center border-b border-slate-200 hidden">
+    <div class="flex items-center gap-3">
+        <img src="https://farmacia.kaioadriel.com.br/icone/images.png" alt="Logo" class="h-8 w-8 object-contain rounded-md">
+        <h1 class="text-xl font-bold truncate max-w-[150px] sm:max-w-xs text-slate-800">Controle de Farmácias</h1>
+    </div>
+    <div class="flex items-center gap-2">
+        <button id="btn-install-app" onclick="installApp()" class="hidden bg-yellow-400 text-yellow-900 text-[10px] sm:text-xs font-bold px-3 py-1.5 rounded-full shadow-sm hover:bg-yellow-500 transition flex items-center gap-1 active:scale-95">
+            <i class="fa-solid fa-download"></i> <span class="hidden sm:inline">Instalar App</span>
+        </button>
+        <button onclick="logoutApp()" class="bg-slate-100 text-slate-600 text-[10px] sm:text-xs font-bold px-3 py-1.5 rounded-full hover:bg-slate-200 transition flex items-center gap-1 active:scale-95">
+            <i class="fa-solid fa-right-from-bracket"></i> Sair
+        </button>
+    </div>
+</header>
+
+<main id="main-content" class="w-full max-w-6xl mx-auto md:p-4 md:flex md:gap-6 mt-4 md:mt-0 hidden">
+    <aside class="hidden md:block w-64 shrink-0">
+        <div class="bg-white rounded-xl shadow-sm p-4 sticky top-24 border border-slate-100">
+            <div class="flex items-center gap-3 mb-6 p-2 bg-slate-50 rounded-lg border border-slate-100">
+                <div class="w-10 h-10 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center font-bold" id="sidebar-avatar">KA</div>
+                <div class="min-w-0">
+                    <p class="text-xs text-slate-500 font-bold uppercase tracking-wider">Logado como</p>
+                    <p class="text-sm font-bold text-slate-800 truncate" id="sidebar-username">...</p>
+                </div>
+            </div>
+            <nav class="flex flex-col gap-2">
+                <button onclick="switchView('dashboard')" class="nav-btn-desktop text-left p-3 rounded-lg hover:bg-slate-100 flex items-center gap-3 active-nav-desktop" data-target="dashboard">
+                    <i class="fa-solid fa-chart-column w-5 text-blue-500"></i> Dash
+                </button>
+                <button onclick="switchView('compras')" class="nav-btn-desktop text-left p-3 rounded-lg hover:bg-slate-100 flex items-center gap-3" data-target="compras">
+                    <i class="fa-solid fa-cart-shopping w-5 text-orange-500"></i> Compras
+                </button>
+                <button onclick="switchView('erp-categories')" class="nav-btn-desktop text-left p-3 rounded-lg hover:bg-slate-100 flex items-center gap-3" data-target="erp">
+                    <i class="fa-regular fa-folder-open w-5 text-yellow-500"></i> Cadastros
+                </button>
+            </nav>
+        </div>
+    </aside>
+
+    <div class="flex-1 px-4 md:px-0 w-full" id="main-view-container">
+        <section id="view-dashboard" class="view-section active">
+            <div class="flex justify-between items-center mb-4 md:mb-6">
+                <h2 class="text-2xl font-bold text-slate-800">Visão Geral</h2>
+                <button onclick="openCompraForm()" class="bg-blue-600 text-white px-4 py-2.5 text-sm md:text-base rounded-xl font-bold shadow-md hover:bg-blue-700 transition active:scale-95 flex items-center gap-2">
+                    <i class="fa-solid fa-cart-plus"></i> <span class="hidden sm:inline">Nova Compra</span><span class="sm:hidden">Comprar</span>
+                </button>
+            </div>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6">
+                <div class="bg-white p-4 md:p-5 rounded-2xl shadow-sm border border-slate-100 flex flex-col h-full order-1 lg:order-none">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="font-bold text-slate-700"><i class="fa-solid fa-clock-rotate-left text-orange-500 mr-2"></i>Últimas Compras</h3>
+                        <button onclick="switchView('compras')" class="text-xs font-bold text-blue-600 hover:underline">Ver Todas</button>
+                    </div>
+                    <div id="dashboard-recent-compras" class="space-y-3 flex-1 overflow-y-auto"></div>
+                </div>
+                <div class="bg-white p-4 md:p-5 rounded-2xl shadow-sm border border-slate-100 flex flex-col order-2 lg:order-none">
+                    <div class="flex justify-between items-center mb-2">
+                        <h3 class="font-bold text-slate-700">Histórico (6 Meses)</h3>
+                        <button id="btn-toggle-chart" onclick="toggleChartType()" class="text-xs bg-slate-100 px-3 py-1.5 rounded-lg text-slate-600 hover:bg-slate-200 font-bold transition"> Ver Gastos (R$) </button>
+                    </div>
+                    <div class="text-3xl font-black text-blue-600 mb-4" id="chart-total-label">0</div>
+                    <div class="h-56 w-full relative mt-auto">
+                        <canvas id="mainChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="view-compras" class="view-section hidden">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold text-slate-800">Compras</h2>
+                <button onclick="openCompraForm()" class="bg-blue-600 text-white w-12 h-12 rounded-full shadow-lg flex items-center justify-center hover:bg-blue-700 transition active:scale-95 text-xl">
+                    <i class="fa-solid fa-plus"></i>
+                </button>
+            </div>
+            <div class="mb-4">
+                <div class="flex items-center gap-2">
+                    <button onclick="toggleCompraFilters()" class="flex-1 bg-white border border-slate-200 rounded-2xl px-4 py-3 shadow-sm flex items-center justify-between active:scale-[0.98] transition">
+                        <span class="flex items-center gap-2 font-black text-slate-700 text-sm">
+                            <i class="fa-solid fa-filter text-blue-600"></i> Filtros <span id="filter-count-badge" class="hidden bg-blue-600 text-white text-[10px] px-2 py-0.5 rounded-full font-black">0</span>
+                        </span>
+                        <i id="filter-chevron" class="fa-solid fa-chevron-down text-slate-400 text-xs transition-transform"></i>
+                    </button>
+                    <button onclick="clearCompraFilters()" class="bg-slate-100 text-slate-600 border border-slate-200 rounded-2xl px-3 py-3 shadow-sm active:scale-95 transition">
+                        <i class="fa-solid fa-eraser"></i>
+                    </button>
+                </div>
+                <div id="compra-filters-panel" class="hidden bg-white p-4 rounded-2xl shadow-sm border border-slate-100 mt-3">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+                        <div class="space-y-1"><label class="text-[9px] font-black text-slate-400 uppercase ml-1">Farmácia</label><select id="filter-farmacia" onchange="handleCompraFilterChange()" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs font-bold outline-none focus:ring-2 focus:ring-blue-500"></select></div>
+                        <div class="space-y-1"><label class="text-[9px] font-black text-slate-400 uppercase ml-1">Paciente</label><select id="filter-paciente" onchange="handleCompraFilterChange()" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs font-bold outline-none focus:ring-2 focus:ring-blue-500"></select></div>
+                        <div class="space-y-1"><label class="text-[9px] font-black text-slate-400 uppercase ml-1">Clínica</label><select id="filter-clinica" onchange="handleCompraFilterChange()" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs font-bold outline-none focus:ring-2 focus:ring-blue-500"></select></div>
+                        <div class="space-y-1"><label class="text-[9px] font-black text-slate-400 uppercase ml-1">Médico</label><select id="filter-medico" onchange="handleCompraFilterChange()" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs font-bold outline-none focus:ring-2 focus:ring-blue-500"></select></div>
+                        <div class="space-y-1"><label class="text-[9px] font-black text-slate-400 uppercase ml-1">Remédio</label><select id="filter-remedio" onchange="handleCompraFilterChange()" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs font-bold outline-none focus:ring-2 focus:ring-blue-500"></select></div>
+                    </div>
+                </div>
+            </div>
+            <div id="list-compras" class="space-y-3 pb-6"></div>
+        </section>
+
+        <section id="view-erp-categories" class="view-section hidden">
+            <h2 class="text-2xl font-bold text-slate-800 mb-6">Módulo ERP</h2>
+            <div class="grid grid-cols-2 gap-4">
+                <button onclick="openErpList('pacientes')" class="bg-white p-6 rounded-2xl shadow-sm border border-slate-50 flex flex-col items-center justify-center gap-3 hover:bg-slate-50 transition active:scale-95">
+                    <span class="text-5xl">👤</span> <span class="font-bold text-slate-700 text-sm md:text-base">Pacientes</span>
+                </button>
+                <button onclick="openErpList('medicos')" class="bg-white p-6 rounded-2xl shadow-sm border border-slate-50 flex flex-col items-center justify-center gap-3 hover:bg-slate-50 transition active:scale-95">
+                    <span class="text-5xl">👨‍⚕️</span> <span class="font-bold text-slate-700 text-sm md:text-base">Médicos</span>
+                </button>
+                <button onclick="openErpList('clinicas')" class="bg-white p-6 rounded-2xl shadow-sm border border-slate-50 flex flex-col items-center justify-center gap-3 hover:bg-slate-50 transition active:scale-95">
+                    <span class="text-5xl">🏥</span> <span class="font-bold text-slate-700 text-sm md:text-base">Clínicas</span>
+                </button>
+                <button onclick="openErpList('farmacias')" class="bg-white p-6 rounded-2xl shadow-sm border border-slate-50 flex flex-col items-center justify-center gap-3 hover:bg-slate-50 transition active:scale-95">
+                    <span class="text-5xl">💊</span> <span class="font-bold text-slate-700 text-sm md:text-base">Farmácias</span>
+                </button>
+                <button onclick="openErpList('remedios')" class="bg-white p-6 rounded-2xl shadow-sm border border-slate-50 flex flex-col items-center justify-center gap-3 hover:bg-slate-50 transition active:scale-95">
+                    <span class="text-5xl">💉</span> <span class="font-bold text-slate-700 text-sm md:text-base">Remédios</span>
+                </button>
+            </div>
+        </section>
+
+        <section id="view-erp-list" class="view-section hidden">
+            <div class="flex justify-between items-center mb-4">
+                <div class="flex items-center gap-3">
+                    <button onclick="switchView('erp-categories')" class="w-10 h-10 rounded-full bg-slate-200 text-slate-600 flex items-center justify-center hover:bg-slate-300 transition">
+                        <i class="fa-solid fa-arrow-left"></i>
+                    </button>
+                    <h2 class="text-2xl font-bold text-slate-800 flex items-center gap-2" id="erp-list-title">Lista</h2>
+                </div>
+                <button onclick="openErpForm()" class="bg-blue-600 text-white w-12 h-12 rounded-full shadow-lg flex items-center justify-center hover:bg-blue-700 transition active:scale-95 text-xl">
+                    <i class="fa-solid fa-plus"></i>
+                </button>
+            </div>
+            <div class="relative mb-4">
+                <i class="fa-solid fa-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                <input type="text" id="erp-search" onkeyup="filterErpList()" placeholder="Buscar..." class="w-full bg-white border border-slate-200 rounded-xl py-3 pl-12 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm">
+            </div>
+            <div id="list-erp" class="space-y-3 pb-6"></div>
+        </section>
+    </div>
+</main>
+
+<nav id="mobile-nav" class="md:hidden fixed bottom-0 w-full bg-white border-t border-slate-200 z-40 pb-safe hidden">
+    <div class="flex justify-around items-center h-[68px]">
+        <button onclick="switchView('dashboard')" class="nav-btn relative flex flex-col items-center justify-center w-full h-full text-slate-400 hover:text-blue-600 transition" data-target="dashboard">
+            <div class="nav-indicator hidden absolute top-0 w-1/2 h-1 bg-blue-600 rounded-b-md"></div>
+            <i class="fa-solid fa-chart-column text-xl mb-1 mt-1"></i>
+            <span class="text-[11px] font-bold">Dash</span>
+        </button>
+        <button onclick="switchView('compras')" class="nav-btn relative flex flex-col items-center justify-center w-full h-full text-slate-400 hover:text-blue-600 transition" data-target="compras">
+            <div class="nav-indicator hidden absolute top-0 w-1/2 h-1 bg-blue-600 rounded-b-md"></div>
+            <i class="fa-solid fa-cart-shopping text-xl mb-1 mt-1"></i>
+            <span class="text-[11px] font-bold">Compras</span>
+        </button>
+        <button onclick="switchView('erp-categories')" class="nav-btn relative flex flex-col items-center justify-center w-full h-full text-slate-400 hover:text-blue-600 transition" data-target="erp">
+            <div class="nav-indicator hidden absolute top-0 w-1/2 h-1 bg-blue-600 rounded-b-md"></div>
+            <i class="fa-regular fa-folder-open text-xl mb-1 mt-1"></i>
+            <span class="text-[11px] font-bold">Cadastros</span>
+        </button>
+    </div>
+</nav>
+
+<div id="modal-overlay" class="fixed inset-0 bg-slate-900/40 z-50 hidden flex items-end md:items-center justify-center transition-opacity opacity-0 backdrop-blur-sm">
+    <div id="modal-content" class="bg-white w-full max-w-2xl md:rounded-2xl rounded-t-3xl h-[90vh] md:h-auto md:max-h-[90vh] flex flex-col shadow-2xl transform translate-y-full md:translate-y-0 transition-transform duration-300">
+        <div class="flex justify-between items-center p-5 border-b border-slate-100">
+            <h3 id="modal-title" class="text-xl font-bold text-slate-800">Título</h3>
+            <button onclick="closeModal()" class="w-8 h-8 flex items-center justify-center rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200 transition">
+                <i class="fa-solid fa-times"></i>
+            </button>
+        </div>
+        <div id="modal-body" class="p-5 overflow-y-auto flex-1 hide-scroll"></div>
+        <div id="modal-footer" class="p-5 border-t border-slate-100 bg-slate-50 flex gap-3 justify-end md:rounded-b-2xl pb-safe"></div>
+    </div>
+</div>
+
+<div id="quick-add-overlay" class="fixed inset-0 bg-slate-900/60 z-[80] hidden flex items-center justify-center p-4 transition-opacity opacity-0 backdrop-blur-sm">
+    <div id="quick-add-content" class="bg-white rounded-2xl p-6 w-full max-w-sm shadow-2xl transform scale-95 transition-transform duration-300">
+        <div class="flex items-center justify-between mb-2">
+            <h3 class="font-bold text-lg text-slate-800">Cadastro Rápido ⚡</h3>
+            <button onclick="closeQuickAdd()" class="text-slate-400 hover:text-slate-600">
+                <i class="fa-solid fa-times"></i>
+            </button>
+        </div>
+        <p class="text-sm text-slate-500 mb-5">Insira apenas o nome. Este cadastro ficará marcado como Incompleto no ERP.</p>
+        <input type="hidden" id="quick-add-collection">
+        <input type="hidden" id="quick-add-select-id">
+        <input type="text" id="quick-add-input" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 mb-5 focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-800 font-medium" placeholder="Digite o nome aqui...">
+        <div class="flex gap-3 justify-end">
+            <button onclick="closeQuickAdd()" class="px-5 py-2.5 bg-slate-100 rounded-xl text-slate-600 font-medium hover:bg-slate-200 transition">Cancelar</button>
+            <button onclick="confirmQuickAdd()" class="px-5 py-2.5 bg-blue-600 rounded-xl text-white font-bold shadow-md hover:bg-blue-700 transition">Salvar & Usar</button>
+        </div>
+    </div>
+</div>
+
+<div id="image-viewer" class="fixed inset-0 bg-black z-[90] hidden flex-col items-center justify-center">
+    <div class="absolute top-6 right-6 flex gap-4">
+        <button onclick="deleteCurrentDocument()" class="w-12 h-12 flex items-center justify-center rounded-full bg-red-600/90 text-white text-xl backdrop-blur-md shadow-lg">
+            <i class="fa-solid fa-trash"></i>
+        </button>
+        <button onclick="closeImageViewer()" class="w-12 h-12 flex items-center justify-center rounded-full bg-white/20 text-white text-xl backdrop-blur-md hover:bg-white/30 transition">
+            <i class="fa-solid fa-times"></i>
+        </button>
+    </div>
+    <img id="image-viewer-img" src="" class="max-w-full max-h-full object-contain p-2">
+</div>
+
+<div id="toast" class="fixed top-20 left-1/2 transform -translate-x-1/2 text-white px-5 py-3 rounded-xl shadow-xl z-[110] transition-opacity duration-300 opacity-0 pointer-events-none flex items-center gap-3 font-medium">
+    <i id="toast-icon" class="fa-solid fa-info-circle text-lg"></i>
+    <span id="toast-msg" class="text-sm"></span>
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import { getFirestore, collection, onSnapshot, doc, setDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+    function injectPWA() {
+        const manifest = { "name": "Controle de Farmácias - PharmaSync", "short_name": "PharmaSync", "start_url": ".", "display": "standalone", "background_color": "#f8fafc", "theme_color": "#2563eb", "icons": [{ "src": "https://farmacia.kaioadriel.com.br/icone/images.png", "sizes": "512x512", "type": "image/png" }] };
+        const manifestBlob = new Blob([JSON.stringify(manifest)], {type: 'application/json'});
+        const link = document.createElement('link'); link.rel = 'manifest'; link.href = URL.createObjectURL(manifestBlob); document.head.appendChild(link);
+        if ('serviceWorker' in navigator) {
+            const swCode = `self.addEventListener('install', (e) => self.skipWaiting()); self.addEventListener('activate', (e) => e.waitUntil(clients.claim())); self.addEventListener('fetch', (e) => {});`;
+            const swBlob = new Blob([swCode], {type: 'text/javascript'});
+            navigator.serviceWorker.register(URL.createObjectURL(swBlob)).catch(() => {});
+        }
+    }
+    injectPWA();
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyB1HRg4rqLgyGMQ8GL6wP6zq9GSHUZlIZc",
+        authDomain: "farmacia-d7bb3.firebaseapp.com",
+        projectId: "farmacia-d7bb3",
+        storageBucket: "farmacia-d7bb3.firebasestorage.app",
+        messagingSenderId: "999252393322",
+        appId: "1:999252393322:web:2cd640bc6deac648cfb913"
+    };
+
+    window.AppState = { user: null, userId: null, view: 'dashboard', erpTab: 'pacientes', data: { pacientes: [], medicos: [], clinicas: [], farmacias: [], remedios: [], compras: [] }, chartType: 'count' };
+    let db, auth, provider, listeners = [];
+    let myChart = null;
+
+    function initApp() {
+        document.getElementById('app-body').classList.remove('hidden');
+        const app = initializeApp(firebaseConfig);
+        auth = getAuth(app);
+        db = getFirestore(app);
+        provider = new GoogleAuthProvider();
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                AppState.user = user; AppState.userId = user.uid;
+                document.getElementById('auth-screen').classList.add('hidden');
+                document.getElementById('main-header').classList.remove('hidden');
+                document.getElementById('main-content').classList.remove('hidden');
+                document.getElementById('mobile-nav').classList.remove('hidden');
+                const name = user.displayName || user.email.split('@')[0];
+                document.getElementById('sidebar-username').innerText = name;
+                document.getElementById('sidebar-avatar').innerText = name.substring(0, 2).toUpperCase();
+                setupDatabaseListeners();
+            } else {
+                AppState.user = null; AppState.userId = null;
+                document.getElementById('auth-screen').classList.remove('hidden');
+                document.getElementById('main-header').classList.add('hidden');
+                document.getElementById('main-content').classList.add('hidden');
+                document.getElementById('mobile-nav').classList.add('hidden');
+            }
+        });
+    }
+
+    window.handleLoginEmail = async () => {
+        const em = document.getElementById('auth-email').value; const pw = document.getElementById('auth-pass').value;
+        if (!em || !pw) return showToast("Preencha e-mail e senha.", "error");
+        try { await signInWithEmailAndPassword(auth, em, pw); } catch(e) { showToast("Erro no login.", "error"); }
+    };
+    window.handleRegisterEmail = async () => {
+        const em = document.getElementById('auth-email').value; const pw = document.getElementById('auth-pass').value;
+        if (!em || !pw) return showToast("Preencha e-mail e senha.", "error");
+        try { await createUserWithEmailAndPassword(auth, em, pw); } catch(e) { showToast("Erro ao criar conta.", "error"); }
+    };
+    window.handleLoginGoogle = async () => { try { await signInWithPopup(auth, provider); } catch(e) {} };
+    window.logoutApp = () => { signOut(auth); };
+
+    function setupDatabaseListeners() {
+        listeners.forEach(unsub => unsub()); listeners = [];
+        ['pacientes', 'medicos', 'clinicas', 'farmacias', 'remedios', 'compras'].forEach(colName => {
+            const colRef = collection(db, 'users', AppState.userId, colName);
+            listeners.push(onSnapshot(colRef, (snapshot) => {
+                const items = []; snapshot.forEach(doc => items.push({ id: doc.id, ...doc.data() }));
+                AppState.data[colName] = items; updateUI();
+            }));
+        });
+    }
+
+    window.dbSave = async (colName, dataObj, id = null) => {
+        const docId = id || crypto.randomUUID();
+        await setDoc(doc(db, 'users', AppState.userId, colName, docId), dataObj);
+        showToast(id ? "Atualizado!" : "Salvo!", "success");
+        return docId;
+    };
+    window.dbDelete = async (colName, id) => { await deleteDoc(doc(db, 'users', AppState.userId, colName, id)); showToast("Excluído.", "success"); };
+
+    window.switchView = (viewName) => {
+        AppState.view = viewName.startsWith('erp') ? 'erp' : viewName;
+        document.querySelectorAll('.view-section').forEach(el => el.classList.add('hidden'));
+        document.getElementById(`view-${viewName}`).classList.remove('hidden');
+        document.querySelectorAll('.nav-btn').forEach(btn => {
+            btn.classList.toggle('text-blue-600', btn.dataset.target === AppState.view);
+            btn.classList.toggle('text-slate-400', btn.dataset.target !== AppState.view);
+            btn.querySelector('.nav-indicator').classList.toggle('hidden', btn.dataset.target !== AppState.view);
+        });
+        if (viewName === 'erp-list') renderErpList();
+        updateUI();
+    };
+
+    window.openErpList = (tab) => {
+        AppState.erpTab = tab;
+        const titles = { pacientes: '👤 Pacientes', medicos: '👨‍⚕️ Médicos', clinicas: '🏥 Clínicas', farmacias: '💊 Farmácias', remedios: '💉 Remédios' };
+        document.getElementById('erp-list-title').innerHTML = titles[tab];
+        switchView('erp-list');
+    };
+
+    function updateUI() {
+        if (!AppState.user) return;
+        if (AppState.view === 'dashboard') renderDashboard();
+        else if (AppState.view === 'compras') { renderCompraFilterOptions(); renderCompras(); }
+        else if (AppState.view === 'erp' && !document.getElementById('view-erp-list').classList.contains('hidden')) renderErpList();
+    }
+
+    function calcularDiasAtras(dataStr) {
+        const diff = Math.floor((new Date().setHours(0,0,0,0) - new Date(dataStr + 'T00:00:00')) / 86400000);
+        if (diff === 0) return 'Hoje'; if (diff === 1) return 'Ontem'; if (diff === -1) return 'Amanhã';
+        return diff > 1 ? `Há ${diff} dias` : `Em ${Math.abs(diff)} dias`;
+    }
+
+    function formatCurrency(val) { return (parseFloat(val) || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }); }
+
+    function renderDashboard() {
+        const ctx = document.getElementById('mainChart');
+        if (!ctx) return;
+        const recentCont = document.getElementById('dashboard-recent-compras');
+        const compras = AppState.data.compras.filter(c => c.status === 'confirmada').sort((a,b) => new Date(b.data) - new Date(a.data));
+        recentCont.innerHTML = compras.slice(0,5).map(c => {
+            const farm = AppState.data.farmacias.find(f => f.id === c.farmaciaId)?.nome || '-';
+            const pac = AppState.data.pacientes.find(p => p.id === c.pacienteId)?.nome || '-';
+            return `<div class="p-3 bg-white rounded-xl border border-slate-100 flex flex-col gap-1">
+                <div class="flex justify-between items-start">
+                    <h4 class="font-black text-slate-800 text-[13px] wrap-title pr-2">${farm}</h4>
+                    <span class="text-[10px] font-black text-blue-700 bg-blue-100 px-2 py-0.5 rounded-md uppercase shrink-0">${calcularDiasAtras(c.data)}</span>
+                </div>
+                <div class="text-[11px] text-slate-500 truncate"><i class="fa-solid fa-user mr-1 text-slate-300"></i>${pac}</div>
+            </div>`;
+        }).join('') || '<p class="text-center text-slate-400 py-4">Sem dados.</p>';
+    }
+
+    window.toggleCompraFilters = () => {
+        document.getElementById('compra-filters-panel').classList.toggle('hidden');
+        document.getElementById('filter-chevron').classList.toggle('rotate-180');
+    };
+
+    function renderCompraFilterOptions() {
+        const ids = ['filter-farmacia', 'filter-paciente', 'filter-clinica', 'filter-medico', 'filter-remedio'];
+        const cols = ['farmacias', 'pacientes', 'clinicas', 'medicos', 'remedios'];
+        ids.forEach((id, idx) => {
+            const el = document.getElementById(id); if (!el) return;
+            el.innerHTML = '<option value="">Todas</option>' + AppState.data[cols[idx]].sort((a,b) => (a.nome||'').localeCompare(b.nome||'')).map(i => `<option value="${i.id}">${i.nome}</option>`).join('');
+        });
+    }
+
+    window.handleCompraFilterChange = () => renderCompras();
+
+    function renderCompras() {
+        let compras = [...AppState.data.compras];
+        const fFarm = document.getElementById('filter-farmacia')?.value;
+        if (fFarm) compras = compras.filter(c => c.farmaciaId === fFarm);
+        
+        compras.sort((a,b) => new Date(b.data) - new Date(a.data));
+        const cont = document.getElementById('list-compras');
+        cont.innerHTML = compras.map(c => {
+            const farmName = AppState.data.farmacias.find(f => f.id === c.farmaciaId)?.nome || 'Farmácia';
+            const pacName = AppState.data.pacientes.find(p => p.id === c.pacienteId)?.nome || '-';
+            const remName = AppState.data.remedios.find(r => r.id === c.remedioId)?.nome || '-';
+            const isAgendada = c.status === 'agendada';
+            return `<div class="p-4 rounded-xl border ${isAgendada ? 'border-orange-300 bg-orange-50/30' : 'border-slate-100 bg-white'} mb-3">
+                <div class="flex justify-between items-start mb-2">
+                    <div class="flex-1 pr-2">
+                        <h4 class="font-black text-slate-800 text-[15px] wrap-title">${farmName}</h4>
+                        <p class="text-[11px] text-slate-500 mt-0.5"><i class="fa-regular fa-user mr-1"></i>${pacName}</p>
+                    </div>
+                    <div class="text-right shrink-0">
+                        <span class="block font-black ${isAgendada ? 'text-orange-600' : 'text-blue-600'} text-base">${calcularDiasAtras(c.data)}</span>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2 text-[11px] text-slate-600 bg-slate-50 p-2 rounded-lg font-medium">
+                    <i class="fa-solid fa-pills text-slate-400"></i><span class="truncate">${remName}</span>
+                </div>
+                <div class="flex justify-end gap-2 mt-3">
+                    <button onclick="editCompra('${c.id}')" class="px-4 py-2 text-xs font-bold text-slate-600 bg-slate-100 rounded-lg">Editar</button>
+                    ${isAgendada ? `<button onclick="confirmarCompra('${c.id}')" class="px-4 py-2 text-xs font-bold text-white bg-green-500 rounded-lg">Confirmar</button>` : ''}
+                </div>
+            </div>`;
+        }).join('') || '<p class="text-center text-slate-400 py-10">Vazio.</p>';
+    }
+
+    function renderErpList() {
+        const tab = AppState.erpTab;
+        const term = document.getElementById('erp-search').value.toLowerCase();
+        let items = AppState.data[tab].filter(i => (i.nome||'').toLowerCase().includes(term));
+        const cont = document.getElementById('list-erp');
+        
+        const cfg = { pacientes: 'fa-user', medicos: 'fa-user-doctor', clinicas: 'fa-house-medical', farmacias: 'fa-shop', remedios: 'fa-pills' };
+
+        cont.innerHTML = items.map(item => {
+            const inc = item.incomplete;
+            return `<div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 mb-3 flex items-center gap-4 cursor-pointer active:scale-95 transition" onclick="viewErpDetails('${tab}', '${item.id}')">
+                <div class="w-12 h-12 rounded-full ${inc ? 'bg-orange-100 text-orange-600' : 'bg-blue-100 text-blue-600'} flex items-center justify-center shrink-0 text-xl">
+                    <i class="fa-solid ${cfg[tab]}"></i>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <h4 class="font-bold text-slate-800 text-[14px] wrap-title leading-tight">${item.nome || '-'}</h4>
+                    <p class="text-xs text-slate-500 truncate mt-0.5">${item.cpf || item.crm || item.especialidade || item.tipo || ''}</p>
+                </div>
+                <i class="fa-solid fa-chevron-right text-slate-300 text-xs"></i>
+            </div>`;
+        }).join('') || '<p class="text-center py-10">Vazio.</p>';
+    }
+
+    window.filterErpList = () => renderErpList();
+
+    window.viewErpDetails = (tab, id) => {
+        const data = AppState.data[tab].find(i => i.id === id);
+        openModal(data.nome, `<div class="p-2 text-sm space-y-2"><p><b>ID:</b> ${id}</p><p><b>Status:</b> ${data.status}</p></div>`, 
+            `<button onclick="openErpForm('${id}')" class="bg-blue-600 text-white px-6 py-2 rounded-xl font-bold">Editar</button>`);
+    };
+
+    window.openErpForm = (id = null) => {
+        const tab = AppState.erpTab;
+        const data = id ? AppState.data[tab].find(i => i.id === id) : {};
+        openModal(id ? 'Editar' : 'Novo', `<div class="space-y-4">
+            <div><label class="text-[10px] font-bold text-slate-400 uppercase">Nome</label>
+            <input id="field-nome" value="${data.nome||''}" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3.5 text-sm font-medium"></div>
+        </div>`, `<button onclick="saveErp('${tab}', '${id||''}')" class="bg-blue-600 text-white px-6 py-2 rounded-xl font-bold">Salvar</button>`);
+    };
+
+    window.saveErp = async (colName, id) => {
+        const nome = document.getElementById('field-nome').value;
+        await dbSave(colName, { nome, status: 'ativo', incomplete: false }, id);
+        closeModal();
+    };
+
+    window.openModal = (title, body, footer) => {
+        document.getElementById('modal-title').innerText = title;
+        document.getElementById('modal-body').innerHTML = body;
+        document.getElementById('modal-footer').innerHTML = footer;
+        document.getElementById('modal-overlay').classList.remove('hidden');
+        setTimeout(() => { document.getElementById('modal-overlay').classList.remove('opacity-0'); document.getElementById('modal-content').classList.remove('translate-y-full'); }, 10);
+    };
+
+    window.closeModal = () => {
+        document.getElementById('modal-overlay').classList.add('opacity-0');
+        document.getElementById('modal-content').classList.add('translate-y-full');
+        setTimeout(() => document.getElementById('modal-overlay').classList.add('hidden'), 300);
+    };
+
+    window.showToast = (msg, type) => {
+        const t = document.getElementById('toast');
+        t.innerText = msg; t.className = `fixed top-20 left-1/2 -translate-x-1/2 px-5 py-3 rounded-xl shadow-xl text-white font-bold transition-opacity ${type === 'error' ? 'bg-red-600' : 'bg-green-600'}`;
+        t.classList.remove('opacity-0'); setTimeout(() => t.classList.add('opacity-0'), 3000);
+    };
+
+    document.addEventListener('DOMContentLoaded', initApp);
+</script>
+</body>
+</html>
