@@ -889,6 +889,14 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
       }
 
       items.sort((a,b) => {
+        const aInactive = a.status === 'inativo';
+        const bInactive = b.status === 'inativo';
+
+        // Inativos sempre ficam no final da lista do ERP.
+        // Dentro de cada grupo, respeita o modo escolhido.
+        if (aInactive && !bInactive) return 1;
+        if (!aInactive && bInactive) return -1;
+
         if (sortMode === 'lastPurchase') {
           const lastA = getLastPurchaseTime(a.id);
           const lastB = getLastPurchaseTime(b.id);
