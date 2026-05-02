@@ -1,6 +1,4 @@
-Segue o código completo com o campo Rede no cadastro de Farmácias (abaixo do nome), a exibição inteligente na listagem ERP e o título principal corrigido.
 
-```html
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -48,11 +46,11 @@ Segue o código completo com o campo Rede no cadastro de Farmácias (abaixo do n
 
   <!-- Header -->
   <header id="main-header" class="bg-white text-blue-700 p-4 shadow-sm md:fixed md:top-0 md:w-full md:z-40 flex justify-between items-center border-b border-slate-200 hidden">
-    <div class="flex items-center gap-3">
-      <img src="https://farmacia.kaioadriel.com.br/icone/images.png" alt="Logo" class="h-8 w-8 object-contain rounded-md">
-      <h1 class="text-xl font-bold truncate max-w-[200px] sm:max-w-xs text-slate-800">Controle de Farmácias</h1>
+    <div class="flex items-center gap-3 min-w-0">
+      <img src="https://farmacia.kaioadriel.com.br/icone/images.png" alt="Logo" class="h-8 w-8 object-contain rounded-md shrink-0">
+      <h1 class="text-lg sm:text-xl font-bold leading-tight text-slate-800">Controle de Farmácias</h1>
     </div>
-    <div class="flex items-center gap-2">
+    <div class="flex items-center gap-2 shrink-0">
       <button id="btn-install-app" onclick="installApp()" class="hidden bg-yellow-400 text-yellow-900 text-[10px] sm:text-xs font-bold px-3 py-1.5 rounded-full shadow-sm hover:bg-yellow-500 transition flex items-center gap-1 active:scale-95"><i class="fa-solid fa-download"></i> <span class="hidden sm:inline">Instalar App</span></button>
       <button onclick="logoutApp()" class="bg-slate-100 text-slate-600 text-[10px] sm:text-xs font-bold px-3 py-1.5 rounded-full hover:bg-slate-200 transition flex items-center gap-1 active:scale-95" title="Sair"><i class="fa-solid fa-right-from-bracket"></i> Sair</button>
     </div>
@@ -452,4 +450,3 @@ Segue o código completo com o campo Rede no cadastro de Farmácias (abaixo do n
   </script>
 </body>
 </html>
-```
