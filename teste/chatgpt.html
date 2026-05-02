@@ -198,65 +198,83 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
           </button>
         </div>
 
-        <!-- FILTROS INTEGRADOS AO ERP - PAINEL REFINAR BUSCA -->
-        <div class="mb-5">
-          <button onclick="toggleCompraFilters()" class="w-16 h-16 bg-white border border-slate-200 rounded-2xl shadow-sm flex items-center justify-center active:scale-95 transition relative" title="Refinar busca">
-            <i class="fa-solid fa-sliders text-blue-600 text-xl"></i>
-            <span id="filter-count-badge" class="hidden absolute -top-1 -right-1 bg-blue-600 text-white text-[10px] min-w-[20px] h-5 px-1 rounded-full font-black items-center justify-center">0</span>
-          </button>
+        <!-- FILTROS COM CHIPS RÁPIDOS E DRAWER LATERAL -->
+        <div class="mb-4">
+          <!-- Chips de Filtro Rápido -->
+          <div class="flex items-center gap-2 overflow-x-auto hide-scroll pb-3 mb-3">
+            <span class="text-[11px] font-black text-slate-500 uppercase tracking-wider shrink-0">Status:</span>
+            <button onclick="setQuickFilter('todas')" id="chip-todas" class="quick-filter-chip shrink-0 px-4 py-2 rounded-full text-sm font-bold transition-all bg-blue-600 text-white shadow-md active:scale-95">
+              <i class="fa-solid fa-list mr-1"></i> Todas
+            </button>
+            <button onclick="setQuickFilter('confirmadas')" id="chip-confirmadas" class="quick-filter-chip shrink-0 px-4 py-2 rounded-full text-sm font-bold transition-all bg-slate-100 text-slate-600 active:scale-95 hover:bg-slate-200">
+              <i class="fa-solid fa-check-circle mr-1"></i> Confirmadas
+            </button>
+            <button onclick="setQuickFilter('agendadas')" id="chip-agendadas" class="quick-filter-chip shrink-0 px-4 py-2 rounded-full text-sm font-bold transition-all bg-slate-100 text-slate-600 active:scale-95 hover:bg-slate-200">
+              <i class="fa-solid fa-calendar mr-1"></i> Agendadas
+            </button>
+          </div>
+
+          <!-- Botão de Drawer e Resumo de Filtros -->
+          <div class="flex items-center gap-2">
+            <button onclick="toggleFilterDrawer()" class="flex-1 bg-white border border-slate-200 rounded-2xl px-4 py-3 shadow-sm flex items-center justify-between active:scale-[0.98] transition hover:bg-slate-50">
+              <span class="flex items-center gap-2 font-black text-slate-700 text-sm">
+                <i class="fa-solid fa-sliders text-blue-600"></i>
+                Refinar Busca
+                <span id="filter-count-badge" class="hidden bg-blue-600 text-white text-[10px] px-2 py-0.5 rounded-full font-black">0</span>
+              </span>
+              <i id="filter-drawer-chevron" class="fa-solid fa-chevron-right text-slate-400 text-xs transition-transform"></i>
+            </button>
+
+            <button onclick="clearCompraFilters()" class="bg-slate-100 text-slate-600 border border-slate-200 rounded-2xl px-3 py-3 shadow-sm active:scale-95 transition hover:bg-slate-200" title="Limpar filtros">
+              <i class="fa-solid fa-eraser"></i>
+            </button>
+          </div>
+
+          <!-- Resumo de Filtros Ativos -->
+          <div id="active-filters-summary" class="hidden mt-3 flex flex-wrap gap-2">
+            <!-- Badges de filtros ativos serão inseridos aqui dinamicamente -->
+          </div>
         </div>
 
-        <!-- PAINEL DE FILTROS OTIMIZADO PARA SMARTPHONE -->
-        <div id="compra-filters-panel" class="fixed inset-0 z-[75] hidden">
-          <div id="compra-filters-backdrop" onclick="toggleCompraFilters(false)" class="absolute inset-0 bg-slate-900/45 opacity-0 transition-opacity duration-300"></div>
-
-          <aside id="compra-filters-drawer" class="absolute left-0 right-0 bottom-0 w-full bg-white shadow-2xl translate-y-full transition-transform duration-300 flex flex-col rounded-t-[32px] max-h-[88dvh] md:left-1/2 md:right-auto md:bottom-8 md:w-[92vw] md:max-w-lg md:-translate-x-1/2 md:rounded-[32px]">
-            <div class="shrink-0 px-5 pt-3 pb-4 border-b border-slate-100 bg-white rounded-t-[32px]">
-              <div class="w-12 h-1.5 bg-slate-200 rounded-full mx-auto mb-5"></div>
-              <div class="flex items-center justify-between gap-3">
-                <div>
-                  <h3 class="text-2xl font-black text-slate-900 leading-tight">Refinar Busca</h3>
-                  <p class="text-xs font-bold text-slate-400 mt-1">Escolha um ou mais filtros</p>
-                </div>
-                <button onclick="toggleCompraFilters(false)" class="w-11 h-11 rounded-2xl flex items-center justify-center text-slate-400 bg-slate-50 hover:bg-slate-100 transition shrink-0">
-                  <i class="fa-solid fa-xmark text-2xl"></i>
-                </button>
-              </div>
+        <!-- Drawer Lateral de Refinamento -->
+        <div id="filter-drawer-overlay" class="fixed inset-0 bg-slate-900/40 z-50 hidden transition-opacity opacity-0 backdrop-blur-sm" onclick="closeFilterDrawer()"></div>
+        <div id="filter-drawer" class="fixed top-0 right-0 h-full w-full max-w-sm bg-white shadow-2xl z-50 transform translate-x-full transition-transform duration-300 flex flex-col">
+          <div class="flex justify-between items-center p-5 border-b border-slate-100 shrink-0">
+            <h3 class="text-lg font-bold text-slate-800">Refinar Busca</h3>
+            <button onclick="closeFilterDrawer()" class="w-8 h-8 flex items-center justify-center rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200 transition">
+              <i class="fa-solid fa-times"></i>
+            </button>
+          </div>
+          <div class="p-5 overflow-y-auto flex-1 hide-scroll space-y-4">
+            <div class="space-y-2">
+              <label class="text-xs font-black text-slate-600 uppercase tracking-wider">Farmácia</label>
+              <select id="filter-farmacia" onchange="handleCompraFilterChange()" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm font-bold outline-none focus:ring-2 focus:ring-blue-500"></select>
             </div>
-
-            <div class="flex-1 overflow-y-auto px-5 py-5 hide-scroll space-y-4 pb-4">
-              <div>
-                <label class="block text-[10px] font-black text-slate-400 uppercase tracking-[0.18em] mb-2 ml-1">Farmácia</label>
-                <select id="filter-farmacia" onchange="handleCompraFilterChange()" class="w-full bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3.5 text-sm font-black text-slate-800 outline-none focus:ring-2 focus:ring-blue-500 min-h-[54px]"></select>
-              </div>
-
-              <div>
-                <label class="block text-[10px] font-black text-slate-400 uppercase tracking-[0.18em] mb-2 ml-1">Paciente</label>
-                <select id="filter-paciente" onchange="handleCompraFilterChange()" class="w-full bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3.5 text-sm font-black text-slate-800 outline-none focus:ring-2 focus:ring-blue-500 min-h-[54px]"></select>
-              </div>
-
-              <div>
-                <label class="block text-[10px] font-black text-slate-400 uppercase tracking-[0.18em] mb-2 ml-1">Remédio</label>
-                <select id="filter-remedio" onchange="handleCompraFilterChange()" class="w-full bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3.5 text-sm font-black text-slate-800 outline-none focus:ring-2 focus:ring-blue-500 min-h-[54px]"></select>
-              </div>
-
-              <div>
-                <label class="block text-[10px] font-black text-slate-400 uppercase tracking-[0.18em] mb-2 ml-1">Clínica</label>
-                <select id="filter-clinica" onchange="handleCompraFilterChange()" class="w-full bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3.5 text-sm font-black text-slate-800 outline-none focus:ring-2 focus:ring-blue-500 min-h-[54px]"></select>
-              </div>
-
-              <div>
-                <label class="block text-[10px] font-black text-slate-400 uppercase tracking-[0.18em] mb-2 ml-1">Médico</label>
-                <select id="filter-medico" onchange="handleCompraFilterChange()" class="w-full bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3.5 text-sm font-black text-slate-800 outline-none focus:ring-2 focus:ring-blue-500 min-h-[54px]"></select>
-              </div>
+            <div class="space-y-2">
+              <label class="text-xs font-black text-slate-600 uppercase tracking-wider">Paciente</label>
+              <select id="filter-paciente" onchange="handleCompraFilterChange()" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm font-bold outline-none focus:ring-2 focus:ring-blue-500"></select>
             </div>
-
-            <div class="shrink-0 p-5 border-t border-slate-100 bg-white rounded-b-[32px] pb-[calc(1.25rem+env(safe-area-inset-bottom))]">
-              <button onclick="clearCompraFilters()" class="w-full bg-slate-100 text-slate-700 font-black py-4 rounded-2xl hover:bg-slate-200 transition active:scale-[0.98]">
-                Limpar Tudo
-              </button>
+            <div class="space-y-2">
+              <label class="text-xs font-black text-slate-600 uppercase tracking-wider">Clínica</label>
+              <select id="filter-clinica" onchange="handleCompraFilterChange()" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm font-bold outline-none focus:ring-2 focus:ring-blue-500"></select>
             </div>
-          </aside>
+            <div class="space-y-2">
+              <label class="text-xs font-black text-slate-600 uppercase tracking-wider">Médico</label>
+              <select id="filter-medico" onchange="handleCompraFilterChange()" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm font-bold outline-none focus:ring-2 focus:ring-blue-500"></select>
+            </div>
+            <div class="space-y-2">
+              <label class="text-xs font-black text-slate-600 uppercase tracking-wider">Remédio</label>
+              <select id="filter-remedio" onchange="handleCompraFilterChange()" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm font-bold outline-none focus:ring-2 focus:ring-blue-500"></select>
+            </div>
+          </div>
+          <div class="p-5 border-t border-slate-100 bg-slate-50 flex gap-3 shrink-0">
+            <button onclick="clearCompraFilters()" class="flex-1 text-sm font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 px-4 py-3 rounded-xl transition">
+              <i class="fa-solid fa-eraser mr-1"></i> Limpar
+            </button>
+            <button onclick="closeFilterDrawer()" class="flex-1 text-sm font-bold text-white bg-blue-600 hover:bg-blue-700 px-4 py-3 rounded-xl transition">
+              <i class="fa-solid fa-check mr-1"></i> Aplicar
+            </button>
+          </div>
         </div>
 
         <div id="list-compras" class="space-y-3 pb-6"></div>
@@ -728,30 +746,106 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
       updateCompraFilterBadge();
     }
 
-    window.toggleCompraFilters = (forceOpen = null) => {
-      const panel = document.getElementById('compra-filters-panel');
-      const backdrop = document.getElementById('compra-filters-backdrop');
-      const drawer = document.getElementById('compra-filters-drawer');
+    // Novo sistema de filtros com Chips, Drawer e Badges
+    let AppState_QuickFilter = 'todas';
 
-      if (!panel || !backdrop || !drawer) return;
+    window.setQuickFilter = (filter) => {
+      AppState_QuickFilter = filter;
+      updateQuickFilterChips();
+      renderCompras();
+    };
 
-      const shouldOpen = forceOpen === null ? panel.classList.contains('hidden') : !!forceOpen;
+    function updateQuickFilterChips() {
+      ['todas', 'confirmadas', 'agendadas'].forEach(f => {
+        const chip = document.getElementById(`chip-${f}`);
+        if (!chip) return;
+        if (f === AppState_QuickFilter) {
+          chip.className = 'quick-filter-chip shrink-0 px-4 py-2 rounded-full text-sm font-bold transition-all bg-blue-600 text-white shadow-md active:scale-95';
+        } else {
+          chip.className = 'quick-filter-chip shrink-0 px-4 py-2 rounded-full text-sm font-bold transition-all bg-slate-100 text-slate-600 active:scale-95 hover:bg-slate-200';
+        }
+      });
+    }
 
-      if (shouldOpen) {
-        panel.classList.remove('hidden');
-        requestAnimationFrame(() => {
-          backdrop.classList.remove('opacity-0');
-          drawer.classList.remove('translate-y-full');
-        });
+    window.toggleFilterDrawer = () => {
+      const drawer = document.getElementById('filter-drawer');
+      const overlay = document.getElementById('filter-drawer-overlay');
+      if (!drawer || !overlay) return;
+
+      drawer.classList.toggle('translate-x-full');
+      overlay.classList.toggle('hidden');
+      if (!overlay.classList.contains('hidden')) {
+        setTimeout(() => overlay.classList.toggle('opacity-0'), 10);
       } else {
-        backdrop.classList.add('opacity-0');
-        drawer.classList.add('translate-y-full');
-        setTimeout(() => panel.classList.add('hidden'), 300);
+        overlay.classList.toggle('opacity-0');
       }
+    };
+
+    window.closeFilterDrawer = () => {
+      const drawer = document.getElementById('filter-drawer');
+      const overlay = document.getElementById('filter-drawer-overlay');
+      if (!drawer || !overlay) return;
+
+      drawer.classList.add('translate-x-full');
+      overlay.classList.add('opacity-0');
+      setTimeout(() => {
+        overlay.classList.add('hidden');
+      }, 300);
+    };
+
+    function updateActiveFiltersBadges() {
+      const filterMap = {
+        'filter-farmacia': 'Farmácia',
+        'filter-paciente': 'Paciente',
+        'filter-clinica': 'Clínica',
+        'filter-medico': 'Médico',
+        'filter-remedio': 'Remédio'
+      };
+
+      const summary = document.getElementById('active-filters-summary');
+      if (!summary) return;
+
+      const activeBadges = [];
+      Object.entries(filterMap).forEach(([id, label]) => {
+        const el = document.getElementById(id);
+        if (el && el.value) {
+          const selectedOption = el.options[el.selectedIndex];
+          const selectedText = selectedOption ? selectedOption.text : el.value;
+          activeBadges.push({ id, label, value: el.value, text: selectedText });
+        }
+      });
+
+      if (activeBadges.length === 0) {
+        summary.classList.add('hidden');
+        summary.innerHTML = '';
+      } else {
+        summary.classList.remove('hidden');
+        summary.innerHTML = activeBadges.map(badge => `
+          <div class="inline-flex items-center gap-2 bg-blue-100 text-blue-700 px-3 py-1.5 rounded-full text-xs font-bold">
+            <span>${badge.label}: ${badge.text}</span>
+            <button onclick="removeFilterBadge('${badge.id}')" class="ml-1 hover:text-blue-900 transition">
+              <i class="fa-solid fa-times"></i>
+            </button>
+          </div>
+        `).join('');
+      }
+    }
+
+    window.removeFilterBadge = (filterId) => {
+      const el = document.getElementById(filterId);
+      if (el) {
+        el.value = '';
+        handleCompraFilterChange();
+      }
+    };
+
+    window.toggleCompraFilters = () => {
+      toggleFilterDrawer();
     };
 
     window.handleCompraFilterChange = () => {
       updateCompraFilterBadge();
+      updateActiveFiltersBadges();
       renderCompras();
     };
 
@@ -765,10 +859,8 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
       if (activeCount > 0) {
         badge.innerText = activeCount;
         badge.classList.remove('hidden');
-        badge.classList.add('flex');
       } else {
         badge.classList.add('hidden');
-        badge.classList.remove('flex');
       }
     }
 
@@ -778,12 +870,22 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
         if (el) el.value = '';
       });
 
+      AppState_QuickFilter = 'todas';
+      updateQuickFilterChips();
       updateCompraFilterBadge();
+      updateActiveFiltersBadges();
       renderCompras();
     };
 
     window.renderCompras = function renderCompras() {
       let compras = [...AppState.data.compras];
+
+      // Apply quick filter by status
+      if (AppState_QuickFilter === 'confirmadas') {
+        compras = compras.filter(c => c.status === 'confirmada');
+      } else if (AppState_QuickFilter === 'agendadas') {
+        compras = compras.filter(c => c.status === 'agendada');
+      }
 
       const farmaciaId = document.getElementById('filter-farmacia')?.value || '';
       const pacienteId = document.getElementById('filter-paciente')?.value || '';
@@ -829,6 +931,7 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
               <div class="flex items-start gap-2 flex-wrap">
                 <h4 class="font-black text-slate-800 text-[14px] sm:text-base wrap-two-lines">${farmName}</h4>
                 <span class="status-chip ${isAgendada ? 'status-chip-agendada' : 'status-chip-confirmada'}">${isAgendada ? 'Agendada' : 'Confirmada'}</span>
+                ${c.documentoBase64 ? '<span class="bg-blue-100 text-blue-700 text-[10px] px-1.5 py-0.5 rounded font-bold uppercase tracking-wide"><i class="fa-regular fa-image mr-1"></i>Doc</span>' : ''}
               </div>
               <p class="text-xs text-slate-500 wrap-two-lines mt-0.5"><i class="fa-regular fa-user mr-1 text-slate-400"></i>${pacName}</p>
             </div>
@@ -844,7 +947,8 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
             <div class="flex items-center gap-2 min-w-0"><i class="fa-solid fa-user-doctor w-3.5 text-center text-slate-400"></i> <span class="wrap-two-lines">${medName}</span></div>
           </div>
 
-          <div class="flex justify-end gap-2">
+          <div class="flex justify-end gap-2 flex-wrap">
+            ${c.documentoBase64 ? `<button onclick="viewCompraDocument('${c.id}')" class="px-4 py-2 text-xs font-bold text-blue-700 bg-blue-100 rounded-lg hover:bg-blue-200 transition active:scale-95"><i class="fa-regular fa-image mr-1"></i> Doc</button>` : ''}
             <button onclick="editCompra('${c.id}')" class="px-4 py-2 text-xs font-bold text-slate-600 bg-slate-100 rounded-lg hover:bg-slate-200 transition active:scale-95">Editar</button>
             ${isAgendada ? `<button onclick="confirmarCompra('${c.id}')" class="px-4 py-2 text-xs font-bold text-white bg-green-500 rounded-lg hover:bg-green-600 shadow-sm transition active:scale-95"><i class="fa-solid fa-check mr-1"></i> Confirmar</button>` : ''}
           </div>
@@ -858,6 +962,15 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
         c.status = 'confirmada';
         c.data = new Date().toISOString().split('T')[0];
         await dbSave('compras', c, id);
+      }
+    };
+
+    window.viewCompraDocument = (id) => {
+      const compra = AppState.data.compras.find(x => x.id === id);
+      if (compra && compra.documentoBase64) {
+        document.getElementById('image-viewer-img').src = compra.documentoBase64;
+        document.getElementById('image-viewer').classList.remove('hidden');
+        document.getElementById('image-viewer').classList.add('flex');
       }
     };
 
@@ -902,6 +1015,14 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
       }
 
       items.sort((a,b) => {
+        const aInactive = a.status === 'inativo';
+        const bInactive = b.status === 'inativo';
+
+        // Inativos sempre ficam no final da lista do ERP.
+        // Dentro de cada grupo, respeita o modo escolhido.
+        if (aInactive && !bInactive) return 1;
+        if (!aInactive && bInactive) return -1;
+
         if (sortMode === 'lastPurchase') {
           const lastA = getLastPurchaseTime(a.id);
           const lastB = getLastPurchaseTime(b.id);
@@ -1049,7 +1170,24 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
         footerHtml += `<button onclick="closeModal()" class="px-5 py-2.5 bg-slate-200 text-slate-700 rounded-xl font-bold mr-auto">Cancelar</button><button onclick="saveCompra('', 'agendada')" class="px-5 py-2.5 bg-orange-100 text-orange-700 border border-orange-300 rounded-xl font-bold shadow-sm">Agendar</button><button onclick="saveCompra('', 'confirmada')" class="px-6 py-2.5 bg-blue-600 text-white rounded-xl font-bold shadow-md">Confirmar</button>`;
       }
 
-      openModal(id ? 'Editar Compra' : 'Nova Compra', generateFormFields(fields, data), footerHtml);
+      const docBase64 = data.documentoBase64 || '';
+      let compraFormHtml = generateFormFields(fields, data);
+      compraFormHtml += `<div class="mt-6 border-t border-slate-200 pt-5">
+        <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-3">Documento Anexo</label>
+        <input type="hidden" id="field-documentoBase64" value="${docBase64}">
+        <div id="doc-upload-area" class="${docBase64 ? 'hidden' : 'block'}">
+          <label class="document-upload-card flex flex-col items-center justify-center w-full border-slate-300 cursor-pointer transition">
+            <i class="fa-solid fa-cloud-arrow-up text-5xl text-slate-400 mb-3"></i>
+            <span class="text-lg font-black text-slate-700">Enviar Documento</span>
+            <input type="file" class="hidden" accept="image/*" onchange="handleImageUpload(event)" />
+          </label>
+        </div>
+        <div id="doc-view-area" class="${docBase64 ? 'block' : 'hidden'}">
+          <button type="button" onclick="viewDocument()" class="w-full bg-slate-800 text-white font-bold py-3.5 rounded-xl shadow-md"><i class="fa-regular fa-image mr-2"></i> Ver / Excluir Imagem</button>
+        </div>
+      </div>`;
+
+      openModal(id ? 'Editar Compra' : 'Nova Compra', compraFormHtml, footerHtml);
 
       const valInp = document.getElementById('field-valor');
       if (valInp) valInp.addEventListener('input', e => {
