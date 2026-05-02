@@ -153,7 +153,7 @@
     </div>
   </nav>
 
-  <!-- MODALS ETC (inalterados) -->
+  <!-- MODALS ETC -->
   <div id="modal-overlay" class="fixed inset-0 bg-slate-900/40 z-50 hidden flex items-end md:items-center justify-center transition-opacity opacity-0 backdrop-blur-sm"><div id="modal-content" class="bg-white w-full max-w-2xl md:rounded-2xl rounded-t-3xl h-[90vh] md:h-auto md:max-h-[90vh] flex flex-col shadow-2xl transform translate-y-full md:translate-y-0 transition-transform duration-300"><div class="flex justify-between items-center p-5 border-b border-slate-100"><h3 id="modal-title" class="text-xl font-bold text-slate-800">Título</h3><button onclick="closeModal()" class="w-8 h-8 flex items-center justify-center rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200 transition"><i class="fa-solid fa-times"></i></button></div><div id="modal-body" class="p-5 overflow-y-auto flex-1 hide-scroll"></div><div id="modal-footer" class="p-5 border-t border-slate-100 bg-slate-50 flex gap-3 justify-end md:rounded-b-2xl pb-safe"></div></div></div>
   <div id="quick-add-overlay" class="fixed inset-0 bg-slate-900/60 z-[80] hidden flex items-center justify-center p-4 transition-opacity opacity-0 backdrop-blur-sm"><div id="quick-add-content" class="bg-white rounded-2xl p-6 w-full max-w-sm shadow-2xl transform scale-95 transition-transform duration-300"><div class="flex items-center justify-between mb-2"><h3 class="font-bold text-lg text-slate-800">Cadastro Rápido ⚡</h3><button onclick="closeQuickAdd()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-times"></i></button></div><p class="text-sm text-slate-500 mb-5">Insira apenas o nome. Este cadastro ficará marcado como Incompleto no ERP.</p><input type="hidden" id="quick-add-collection"><input type="hidden" id="quick-add-select-id"><input type="text" id="quick-add-input" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 mb-5 focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-800 font-medium" placeholder="Digite o nome aqui..."><div class="flex gap-3 justify-end"><button onclick="closeQuickAdd()" class="px-5 py-2.5 bg-slate-100 rounded-xl text-slate-600 font-medium hover:bg-slate-200 transition">Cancelar</button><button onclick="confirmQuickAdd()" class="px-5 py-2.5 bg-blue-600 rounded-xl text-white font-bold shadow-md hover:bg-blue-700 transition">Salvar & Usar</button></div></div></div>
   <div id="image-viewer" class="fixed inset-0 bg-black z-[90] hidden flex-col items-center justify-center"><div class="absolute top-6 right-6 flex gap-4"><button onclick="deleteCurrentDocument()" class="w-12 h-12 flex items-center justify-center rounded-full bg-red-600/90 text-white text-xl backdrop-blur-md shadow-lg"><i class="fa-solid fa-trash"></i></button><button onclick="closeImageViewer()" class="w-12 h-12 flex items-center justify-center rounded-full bg-white/20 text-white text-xl backdrop-blur-md hover:bg-white/30 transition"><i class="fa-solid fa-times"></i></button></div><img id="image-viewer-img" src="" class="max-w-full max-h-full object-contain p-2"></div>
@@ -332,21 +332,12 @@
 
       const idMap={pacientes:'pacienteId',medicos:'medicoId',clinicas:'clinicaId',farmacias:'farmaciaId',remedios:'remedioId'};
 
-      // Ordenação: incompletos primeiro, depois status (ativos > inativos), depois alfabético ou data
       items.sort((a,b)=>{
-        // 1. Incompletos primeiro
         if(a.incomplete && !b.incomplete) return -1;
         if(!a.incomplete && b.incomplete) return 1;
+        if(a.status==='ativo' && b.status==='inativo') return -1;
+        if(a.status==='inativo' && b.status==='ativo') return 1;
 
-        // 2. Status: ativo ('ativo') antes de inativo (qualquer outra string)
-        const statusA = (a.status||'').toString().toLowerCase().trim();
-        const statusB = (b.status||'').toString().toLowerCase().trim();
-        const isActiveA = statusA === 'ativo';
-        const isActiveB = statusB === 'ativo';
-        if(isActiveA && !isActiveB) return -1;
-        if(!isActiveA && isActiveB) return 1;
-
-        // 3. Dentro do mesmo grupo de status, aplicar ordenação específica
         if(AppState.erpSort === 'recente'){
           const comprasA = AppState.data.compras.filter(c=>c.status==='confirmada'&&c[idMap[tab]]===a.id).sort((x,y)=>new Date(y.data)-new Date(x.data));
           const comprasB = AppState.data.compras.filter(c=>c.status==='confirmada'&&c[idMap[tab]]===b.id).sort((x,y)=>new Date(y.data)-new Date(x.data));
@@ -354,7 +345,6 @@
           const dataB = comprasB.length ? comprasB[0].data : '0000-00-00';
           if(dataA !== dataB) return new Date(dataB) - new Date(dataA);
         }
-        // 4. Ordem alfabética final (para ambos os casos)
         return (a.nome||'').localeCompare(b.nome||'');
       });
 
@@ -421,7 +411,7 @@
     window.openErpForm = (id=null)=>{
       const tab=AppState.erpTab, data=id?AppState.data[tab].find(i=>i.id===id):{status:'ativo'};
       let html=generateFormFields(getErpFieldsConfig(tab),data);
-      // Upload de documento para todas as abas do ERP
+      // Adiciona upload de documento para todas as abas (menos compras)
       if(tab==='pacientes'||tab==='medicos'||tab==='clinicas'||tab==='farmacias'||tab==='remedios'){
         const b64=data.documentoBase64||'';
         html+=`<div class="mt-6 border-t border-slate-200 pt-5"><label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-3">Documento Anexo</label><input type="hidden" id="field-documentoBase64" value="${b64}"><div id="doc-upload-area" class="${b64?'hidden':'block'}"><label class="flex flex-col items-center justify-center w-full h-32 border-2 border-slate-300 border-dashed rounded-xl cursor-pointer bg-slate-50 hover:bg-slate-100"><i class="fa-solid fa-cloud-arrow-up text-3xl text-slate-400 mb-2"></i><span class="text-sm font-bold text-slate-600">Enviar Documento</span><input type="file" class="hidden" accept="image/*" onchange="handleImageUpload(event)"/></label></div><div id="doc-view-area" class="${b64?'block':'hidden'}"><button type="button" onclick="viewDocument()" class="w-full bg-slate-800 text-white font-bold py-3.5 rounded-xl"><i class="fa-regular fa-image mr-2"></i>Ver / Excluir Imagem</button></div></div>`;
@@ -435,6 +425,7 @@
       const data=id?AppState.data.compras.find(i=>i.id===id):{status:'confirmada',data:new Date().toISOString().split('T')[0]};
       const fields=[{name:'data',label:'Data',type:'date'},{name:'farmaciaId',label:'Farmácia',type:'db-select',collection:'farmacias'},{name:'remedioId',label:'Remédio',type:'db-select',collection:'remedios'},{name:'qtd',label:'Qtd Caixas',type:'number'},{name:'pacienteId',label:'Paciente',type:'db-select',collection:'pacientes'},{name:'clinicaId',label:'Clínica',type:'db-select',collection:'clinicas'},{name:'medicoId',label:'Médico',type:'db-select',collection:'medicos'},{name:'valor',label:'Valor Total (R$)'},{name:'pagamento',label:'Forma Pagto'},{name:'obs',label:'Observações',type:'textarea'}];
       let html=generateFormFields(fields,data);
+      // Adiciona upload de documento para compras
       const b64=data.documentoBase64||'';
       html+=`<div class="mt-6 border-t border-slate-200 pt-5"><label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-3">Documento Anexo</label><input type="hidden" id="field-documentoBase64" value="${b64}"><div id="doc-upload-area" class="${b64?'hidden':'block'}"><label class="flex flex-col items-center justify-center w-full h-32 border-2 border-slate-300 border-dashed rounded-xl cursor-pointer bg-slate-50 hover:bg-slate-100"><i class="fa-solid fa-cloud-arrow-up text-3xl text-slate-400 mb-2"></i><span class="text-sm font-bold text-slate-600">Enviar Documento</span><input type="file" class="hidden" accept="image/*" onchange="handleImageUpload(event)"/></label></div><div id="doc-view-area" class="${b64?'block':'hidden'}"><button type="button" onclick="viewDocument()" class="w-full bg-slate-800 text-white font-bold py-3.5 rounded-xl"><i class="fa-regular fa-image mr-2"></i>Ver / Excluir Imagem</button></div></div>`;
       let footer=''; if(id){ footer=`<button onclick="deleteErpConfirm('compras','${id}')" class="px-4 py-2.5 bg-red-100 text-red-600 rounded-xl font-bold mr-auto"><i class="fa-solid fa-trash"></i></button><button onclick="closeModal()" class="px-5 py-2.5 bg-slate-200 text-slate-700 rounded-xl font-bold">Cancelar</button><button onclick="saveCompra('${id}','${data.status}')" class="px-6 py-2.5 bg-blue-600 text-white rounded-xl font-bold shadow-md">Atualizar</button>`; }else{ footer=`<button onclick="closeModal()" class="px-5 py-2.5 bg-slate-200 text-slate-700 rounded-xl font-bold mr-auto">Cancelar</button><button onclick="saveCompra('','agendada')" class="px-5 py-2.5 bg-orange-100 text-orange-700 border border-orange-300 rounded-xl font-bold shadow-sm">Agendar</button><button onclick="saveCompra('','confirmada')" class="px-6 py-2.5 bg-blue-600 text-white rounded-xl font-bold shadow-md">Confirmar</button>`; }
