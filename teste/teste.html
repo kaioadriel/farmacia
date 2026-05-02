@@ -80,9 +80,7 @@
   <header id="main-header" class="bg-white text-blue-700 p-4 shadow-sm md:fixed md:top-0 md:w-full md:z-40 flex justify-between items-center border-b border-slate-200 hidden">
     <div class="flex items-center gap-3">
       <img src="https://farmacia.kaioadriel.com.br/icone/images.png" alt="Logo" class="h-8 w-8 object-contain rounded-md">
-    <h1 class="text-base sm:text-lg font-bold text-slate-800 leading-tight break-words max-w-[200px] sm:max-w-xs">
-    Controle de Farmácias
-</h1>
+      <h1 class="text-base sm:text-lg font-bold text-slate-800 leading-tight break-words max-w-[200px] sm:max-w-xs">Controle de Farmácias</h1>
     </div>
     <div class="flex items-center gap-2">
       <button id="btn-install-app" onclick="installApp()" class="hidden bg-yellow-400 text-yellow-900 text-[10px] sm:text-xs font-bold px-3 py-1.5 rounded-full shadow-sm hover:bg-yellow-500 transition flex items-center gap-1 active:scale-95">
@@ -247,10 +245,25 @@
             <i class="fa-solid fa-plus"></i>
           </button>
         </div>
-        <div class="relative mb-4">
+        <div class="relative mb-3">
           <i class="fa-solid fa-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
           <input type="text" id="erp-search" onkeyup="filterErpList()" placeholder="Buscar..." class="w-full bg-white border border-slate-200 rounded-xl py-3 pl-12 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm">
         </div>
+
+        <!-- Ordenação da lista ERP -->
+        <div class="bg-white border border-slate-100 rounded-2xl shadow-sm p-3 mb-4 flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
+            <i class="fa-solid fa-arrow-down-a-z"></i>
+          </div>
+          <div class="flex-1 min-w-0">
+            <label for="erp-sort" class="block text-[9px] font-black text-slate-400 uppercase tracking-wider mb-1">Ordenar lista</label>
+            <select id="erp-sort" onchange="renderErpList()" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs font-bold text-slate-700 outline-none focus:ring-2 focus:ring-blue-500">
+              <option value="alpha">Ordem alfabética</option>
+              <option value="lastPurchase">Última compra mais recente</option>
+            </select>
+          </div>
+        </div>
+
         <div id="list-erp" class="space-y-3 pb-6"></div>
       </section>
 
@@ -520,6 +533,8 @@
       const titles = { pacientes: '👤 Pacientes', medicos: '👨‍⚕️ Médicos', clinicas: '🏥 Clínicas', farmacias: '💊 Farmácias', remedios: '💉 Remédios' };
       document.getElementById('erp-list-title').innerHTML = titles[tab];
       document.getElementById('erp-search').value = '';
+      const erpSort = document.getElementById('erp-sort');
+      if (erpSort) erpSort.value = 'alpha';
       switchView('erp-list');
     };
 
@@ -784,19 +799,31 @@
       const tab = AppState.erpTab;
       const term = document.getElementById('erp-search').value.toLowerCase();
       let items = AppState.data[tab].filter(i => Object.values(i).some(v => String(v).toLowerCase().includes(term)));
+      const sortMode = document.getElementById('erp-sort')?.value || 'alpha';
+      const idFieldMap = { pacientes: 'pacienteId', medicos: 'medicoId', clinicas: 'clinicaId', farmacias: 'farmaciaId', remedios: 'remedioId' };
+      const currentIdField = idFieldMap[tab];
+
+      function getLastPurchaseTime(itemId) {
+        const last = AppState.data.compras
+          .filter(c => c.status === 'confirmada' && c[currentIdField] === itemId && c.data)
+          .sort((a, b) => new Date(b.data) - new Date(a.data))[0];
+
+        return last ? new Date(last.data + 'T00:00:00').getTime() : 0;
+      }
+
       items.sort((a,b) => {
-        if (a.incomplete && !b.incomplete) return -1;
-        if (!a.incomplete && b.incomplete) return 1;
-        if (a.status === 'ativo' && b.status === 'inativo') return -1;
-        if (a.status === 'inativo' && b.status === 'ativo') return 1;
+        if (sortMode === 'lastPurchase') {
+          const diff = getLastPurchaseTime(b.id) - getLastPurchaseTime(a.id);
+          if (diff !== 0) return diff;
+        }
+
         return (a.nome || '').localeCompare(b.nome || '', 'pt-BR');
       });
 
       const cont = document.getElementById('list-erp');
       if (!items.length) return cont.innerHTML = `<p class="text-center text-slate-500 py-10">Vazio.</p>`;
 
-      const cfg = { pacientes:{i:'fa-user',s:'cpf'}, medicos:{i:'fa-user-doctor',s:'especialidade'}, clinicas:{i:'fa-house-medical',s:'especialidade'}, farmacias:{i:'fa-shop',s:'rede'}, remedios:{i:'fa-pills',s:'tipo'} }[tab];
-      const idFieldMap = { pacientes: 'pacienteId', medicos: 'medicoId', clinicas: 'clinicaId', farmacias: 'farmaciaId', remedios: 'remedioId' };
+      const cfg = { pacientes:{i:'fa-user',s:'cpf'}, medicos:{i:'fa-user-doctor',s:'especialidade'}, clinicas:{i:'fa-house-medical',s:'especialidade'}, farmacias:{i:'fa-shop',s:'telefone'}, remedios:{i:'fa-pills',s:'tipo'} }[tab];
 
       cont.innerHTML = items.map(item => {
         const isOff = item.status === 'inativo';
@@ -875,7 +902,7 @@
       ];
       if (tab === 'medicos') return [{ name: 'nome', label: 'Nome' }, { name: 'especialidade', label: 'Especialidade' }, { name: 'crm', label: 'CRM' }, { name: 'uf', label: 'UF do CRM' }, { name: 'rqe', label: 'RQE' }, ...b];
       if (tab === 'clinicas') return [{ name: 'nome', label: 'Nome' }, { name: 'especialidade', label: 'Especialidade' }, { name: 'medicoResponsavelId', label: 'Méd. Responsável', type: 'db-select', collection: 'medicos' }, ...b];
-      if (tab === 'farmacias') return [{ name: 'nome', label: 'Nome' }, { name: 'rede', label: 'Rede', type: 'select', options: [{val:'', label:'Selecione...'}, {val:'Droga Raia', label:'Droga Raia'}, {val:'Drogaria São Paulo', label:'Drogaria São Paulo'}, {val:'Nissei', label:'Nissei'}, {val:'Farma Conde', label:'Farma Conde'}, {val:'Outros', label:'Outros'}] }, { name: 'cep', label: 'CEP', type: 'cep' }, { name: 'logradouro', label: 'Endereço' }, { name: 'telefone', label: 'Telefone' }, ...b];
+      if (tab === 'farmacias') return [{ name: 'nome', label: 'Nome' }, { name: 'cep', label: 'CEP', type: 'cep' }, { name: 'logradouro', label: 'Endereço' }, { name: 'telefone', label: 'Telefone' }, ...b];
       if (tab === 'remedios') return [{ name: 'nome', label: 'Nome' }, { name: 'tipo', label: 'Tipo' }, { name: 'dosagem', label: 'Dosagem' }, { name: 'preco', label: 'Preço (R$)' }, ...b];
       return [];
     }
