@@ -35,73 +35,118 @@
       line-height: 1.25;
     }
   
-    :root { --app-radius: 22px; }
-    .wrap-two-lines, .wrap-soft { line-height: 1.22; }
-    #main-header, #mobile-nav, aside > div, .view-section .bg-white, #modal-content, #quick-add-content { transition: all .25s ease; }
-    button { transition: transform .15s ease, box-shadow .2s ease, background .2s ease; }
-    button:active { transform: scale(.97); }
+/* ==== Layout experimental: ajustes visuais sem alterar funções ==== */
+:root { --app-radius: 22px; }
+.wrap-two-lines, .wrap-soft { line-height: 1.22; }
+#main-header, #mobile-nav, aside > div, .view-section .bg-white, #modal-content, #quick-add-content { transition: all .25s ease; }
+button { transition: transform .15s ease, box-shadow .2s ease, background .2s ease; }
+button:active { transform: scale(.97); }
 
-    body#app-body { background: radial-gradient(circle at top left, #dbeafe 0, #f8fafc 32%, #eef2ff 100%) !important; color: #172033; }
-    #main-header { margin: 10px 12px 0; width: calc(100% - 24px) !important; border-radius: 24px; border: 1px solid rgba(148,163,184,0.24) !important; box-shadow: 0 18px 45px rgba(15,23,42,0.08) !important; backdrop-filter: blur(12px); background: rgba(255,255,255,0.86) !important; }
-    @media (min-width: 768px){ #main-header { left: 0; right: 0; } #main-content { padding-top: 20px !important; } }
-    #main-content { max-width: 1180px !important; }
-    aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184,0.22) !important; box-shadow: 0 18px 40px rgba(15,23,42,0.07) !important; background: rgba(255,255,255,0.80) !important; backdrop-filter: blur(14px); }
-    .nav-btn-desktop { border-radius: 18px !important; font-weight: 800; }
-    .nav-btn-desktop.bg-blue-50 { background: linear-gradient(135deg,#2563eb,#60a5fa) !important; color: white !important; box-shadow: 0 12px 24px rgba(37,99,235,0.25); }
-    .view-section > .flex:first-child { background: rgba(255,255,255,0.60); border: 1px solid rgba(148,163,184,0.18); border-radius: 30px; padding: 14px; box-shadow: 0 16px 35px rgba(15,23,42,0.06); }
-    .view-section h2 { letter-spacing: -0.04em; }
-    .view-section .bg-white, #compra-filters-panel { border-radius: 28px !important; border: 1px solid rgba(148,163,184,0.18) !important; box-shadow: 0 18px 38px rgba(15,23,42,0.07) !important; background: rgba(255,255,255,0.86) !important; backdrop-filter: blur(10px); }
-    #erp-search, #auth-email, #auth-pass, select, input, textarea { border-radius: 18px !important; }
-    #mobile-nav { left: 16px; right: 16px; bottom: 14px; width: calc(100% - 32px) !important; border-radius: 28px; border: 1px solid rgba(148,163,184,0.25) !important; box-shadow: 0 18px 45px rgba(15,23,42,0.18); overflow: hidden; }
-    #modal-content { border-radius: 32px !important; }
+/* OPÇÃO 1 — Clean Azul Premium */
+body#app-body { background: radial-gradient(circle at top left, #dbeafe 0, #f8fafc 32%, #eef2ff 100%) !important; color: #172033; }
+#main-header { margin: 10px 12px 0; width: calc(100% - 24px) !important; border-radius: 24px; border: 1px solid rgba(148,163,184,.24) !important; box-shadow: 0 18px 45px rgba(15,23,42,.08) !important; backdrop-filter: blur(12px); background: rgba(255,255,255,.86) !important; }
+@media (min-width: 768px){ #main-header { left: 0; right: 0; } #main-content { padding-top: 20px !important; } }
+#main-content { max-width: 1180px !important; }
+aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184,.22) !important; box-shadow: 0 18px 40px rgba(15,23,42,.07) !important; background: rgba(255,255,255,.80) !important; backdrop-filter: blur(14px); }
+.nav-btn-desktop { border-radius: 18px !important; font-weight: 800; }
+.nav-btn-desktop.bg-blue-50 { background: linear-gradient(135deg,#2563eb,#60a5fa) !important; color: white !important; box-shadow: 0 12px 24px rgba(37,99,235,.25); }
+.view-section > .flex:first-child { background: rgba(255,255,255,.60); border: 1px solid rgba(148,163,184,.18); border-radius: 30px; padding: 14px; box-shadow: 0 16px 35px rgba(15,23,42,.06); }
+.view-section h2 { letter-spacing: -.04em; }
+.view-section .bg-white, #compra-filters-panel { border-radius: 28px !important; border: 1px solid rgba(148,163,184,.18) !important; box-shadow: 0 18px 38px rgba(15,23,42,.07) !important; background: rgba(255,255,255,.86) !important; backdrop-filter: blur(10px); }
+#erp-search, #auth-email, #auth-pass, select, input, textarea { border-radius: 18px !important; }
+#mobile-nav { left: 16px; right: 16px; bottom: 14px; width: calc(100% - 32px) !important; border-radius: 28px; border: 1px solid rgba(148,163,184,.25) !important; box-shadow: 0 18px 45px rgba(15,23,42,.18); overflow: hidden; }
+#modal-content { border-radius: 32px !important; }
 
-    @keyframes fadeSlideUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
-    @keyframes softPulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(37,99,235,0.28); } 50% { box-shadow: 0 0 0 8px rgba(37,99,235,0); } }
-    .view-section:not(.hidden) { animation: fadeSlideUp 0.28s ease both; }
-    #list-erp > div, #list-compras > div, #dashboard-recent-compras > div { animation: fadeSlideUp 0.22s ease both; }
-    #list-erp > div:hover, #list-compras > div:hover, #dashboard-recent-compras > div:hover { transform: translateY(-2px); }
-    .quick-action-card { background: rgba(255,255,255,0.78); border: 1px solid rgba(148,163,184,0.22); border-radius: 22px; box-shadow: 0 12px 30px rgba(15,23,42,0.06); }
-    .status-chip { display:inline-flex; align-items:center; gap:0.35rem; padding:0.25rem 0.55rem; border-radius:999px; font-size:10px; font-weight:900; letter-spacing:0.03em; text-transform:uppercase; white-space:nowrap; }
-    .status-chip-confirmada { background:#dcfce7; color:#15803d; }
-    .status-chip-agendada { background:#ffedd5; color:#c2410c; animation: softPulse 1.8s ease infinite; }
-    .document-upload-card { min-height: 176px; border-style: dashed !important; border-width: 2px !important; border-radius: 26px !important; background: linear-gradient(180deg, rgba(248,250,252,0.96), rgba(241,245,249,0.86)); }
-    .document-upload-card:hover { background: #f8fafc; border-color: #93c5fd !important; }
-    .floating-quick-buy { position: fixed; right: 18px; bottom: 94px; z-index: 45; box-shadow: 0 18px 35px rgba(37,99,235,0.28); }
-    @media (min-width: 768px) { .floating-quick-buy { display: none; } }
+
+/* ==== Upgrades oficiais: animações, indicadores e documento anexo em todo ERP ==== */
+@keyframes fadeSlideUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes softPulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(37,99,235,.28); } 50% { box-shadow: 0 0 0 8px rgba(37,99,235,0); } }
+.view-section:not(.hidden) { animation: fadeSlideUp .28s ease both; }
+#list-erp > div, #list-compras > div, #dashboard-recent-compras > div { animation: fadeSlideUp .22s ease both; }
+#list-erp > div:hover, #list-compras > div:hover, #dashboard-recent-compras > div:hover { transform: translateY(-2px); }
+.quick-action-card { background: rgba(255,255,255,.78); border: 1px solid rgba(148,163,184,.22); border-radius: 22px; box-shadow: 0 12px 30px rgba(15,23,42,.06); }
+.status-chip { display:inline-flex; align-items:center; gap:.35rem; padding:.25rem .55rem; border-radius:999px; font-size:10px; font-weight:900; letter-spacing:.03em; text-transform:uppercase; white-space:nowrap; }
+.status-chip-confirmada { background:#dcfce7; color:#15803d; }
+.status-chip-agendada { background:#ffedd5; color:#c2410c; animation: softPulse 1.8s ease infinite; }
+.document-upload-card { min-height: 176px; border-style: dashed !important; border-width: 2px !important; border-radius: 26px !important; background: linear-gradient(180deg, rgba(248,250,252,.96), rgba(241,245,249,.86)); }
+.document-upload-card:hover { background: #f8fafc; border-color: #93c5fd !important; }
+.floating-quick-buy { position: fixed; right: 18px; bottom: 94px; z-index: 45; box-shadow: 0 18px 35px rgba(37,99,235,.28); }
+@media (min-width: 768px) { .floating-quick-buy { display: none; } }
+
   </style>
 </head>
 
-<body class="bg-slate-50 text-slate-800 font-sans antialiased pb-20 md:pb-0 md:pt-16" id="app-body">
+<body class="bg-slate-50 text-slate-800 font-sans antialiased pb-20 md:pb-0 md:pt-16 hidden" id="app-body">
+
+  <!-- AUTHENTICATION SCREEN -->
+  <div id="auth-screen" class="fixed inset-0 z-[100] auth-bg flex items-center justify-center p-4">
+    <div class="bg-white p-8 rounded-3xl shadow-2xl w-full max-w-md flex flex-col items-center">
+      <div class="w-24 h-24 mb-4 rounded-3xl overflow-hidden flex items-center justify-center bg-white shadow-sm p-1 border-2 border-slate-100">
+        <img src="https://farmacia.kaioadriel.com.br/icone/images.png" alt="Logo Controle de Farmácias" class="w-full h-full object-contain">
+      </div>
+      <h1 class="text-2xl font-black text-slate-800 mb-2 text-center">Controle de Farmácias</h1>
+      <p class="text-sm text-slate-500 mb-8 text-center font-medium">Faça login para acessar e sincronizar seus dados.</p>
+
+      <div class="w-full space-y-4">
+        <div>
+          <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5 ml-1">E-mail</label>
+          <input type="email" id="auth-email" placeholder="seu@email.com" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3.5 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5 ml-1">Senha</label>
+          <input type="password" id="auth-pass" placeholder="••••••••" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3.5 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
+        </div>
+
+        <div class="flex gap-3 pt-2">
+          <button onclick="handleLoginEmail()" class="flex-1 bg-blue-600 text-white font-bold py-3.5 rounded-xl shadow-md hover:bg-blue-700 transition active:scale-95">Entrar</button>
+          <button onclick="handleRegisterEmail()" class="flex-1 bg-slate-100 text-slate-600 font-bold py-3.5 rounded-xl shadow-sm hover:bg-slate-200 transition active:scale-95">Criar Conta</button>
+        </div>
+
+        <div class="relative flex py-4 items-center">
+          <div class="flex-grow border-t border-slate-200"></div>
+          <span class="flex-shrink-0 mx-4 text-slate-400 text-xs font-bold uppercase">Ou</span>
+          <div class="flex-grow border-t border-slate-200"></div>
+        </div>
+
+        <button onclick="handleLoginGoogle()" class="w-full bg-white border-2 border-slate-100 text-slate-700 font-bold py-3.5 rounded-xl shadow-sm hover:bg-slate-50 transition active:scale-95 flex items-center justify-center gap-3">
+          <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" class="w-5 h-5"> Entrar com Google
+        </button>
+      </div>
+    </div>
+  </div>
 
   <!-- Header -->
-  <header id="main-header" class="bg-white text-blue-700 p-4 shadow-sm md:fixed md:top-0 md:w-full md:z-40 flex justify-between items-center border-b border-slate-200">
+  <header id="main-header" class="bg-white text-blue-700 p-4 shadow-sm md:fixed md:top-0 md:w-full md:z-40 flex justify-between items-center border-b border-slate-200 hidden">
     <div class="flex items-center gap-3">
       <img src="https://farmacia.kaioadriel.com.br/icone/images.png" alt="Logo" class="h-8 w-8 object-contain rounded-md">
       <h1 class="text-base sm:text-lg font-bold text-slate-800 leading-tight break-words max-w-[200px] sm:max-w-xs">Controle de Farmácias</h1>
     </div>
     <div class="flex items-center gap-2">
-      <button onclick="location.reload()" class="bg-slate-100 text-slate-600 text-[10px] sm:text-xs font-bold px-3 py-1.5 rounded-full hover:bg-slate-200 transition flex items-center gap-1 active:scale-95">
-        <i class="fa-solid fa-rotate"></i> Recarregar
+      <button id="btn-install-app" onclick="installApp()" class="hidden bg-yellow-400 text-yellow-900 text-[10px] sm:text-xs font-bold px-3 py-1.5 rounded-full shadow-sm hover:bg-yellow-500 transition flex items-center gap-1 active:scale-95">
+        <i class="fa-solid fa-download"></i> <span class="hidden sm:inline">Instalar App</span>
+      </button>
+      <button onclick="logoutApp()" class="bg-slate-100 text-slate-600 text-[10px] sm:text-xs font-bold px-3 py-1.5 rounded-full hover:bg-slate-200 transition flex items-center gap-1 active:scale-95" title="Sair da Conta">
+        <i class="fa-solid fa-right-from-bracket"></i> Sair
       </button>
     </div>
   </header>
 
   <!-- Main Content Area -->
-  <main id="main-content" class="w-full max-w-6xl mx-auto md:p-4 md:flex md:gap-6 mt-4 md:mt-0">
+  <main id="main-content" class="w-full max-w-6xl mx-auto md:p-4 md:flex md:gap-6 mt-4 md:mt-0 hidden">
 
     <!-- Desktop Sidebar -->
     <aside class="hidden md:block w-64 shrink-0">
       <div class="bg-white rounded-xl shadow-sm p-4 sticky top-24 border border-slate-100">
         <div class="flex items-center gap-3 mb-6 p-2 bg-slate-50 rounded-lg border border-slate-100">
-          <div class="w-10 h-10 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center font-bold">U</div>
+          <div class="w-10 h-10 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center font-bold" id="sidebar-avatar">KA</div>
           <div class="min-w-0">
-            <p class="text-xs text-slate-500 font-bold uppercase tracking-wider">Usuário</p>
-            <p class="text-sm font-bold text-slate-800 truncate">Visitante</p>
+            <p class="text-xs text-slate-500 font-bold uppercase tracking-wider">Logado como</p>
+            <p class="text-sm font-bold text-slate-800 truncate" id="sidebar-username">...</p>
           </div>
         </div>
         <nav class="flex flex-col gap-2">
-          <button onclick="switchView('dashboard')" class="nav-btn-desktop text-left p-3 rounded-lg hover:bg-slate-100 flex items-center gap-3 active-nav-desktop bg-blue-50 text-blue-600" data-target="dashboard">
-            <i class="fa-solid fa-house w-5"></i> Dashboard
+          <button onclick="switchView('dashboard')" class="nav-btn-desktop text-left p-3 rounded-lg hover:bg-slate-100 flex items-center gap-3 active-nav-desktop" data-target="dashboard">
+            <i class="fa-solid fa-chart-column w-5 text-blue-500"></i> Dash
           </button>
           <button onclick="switchView('compras')" class="nav-btn-desktop text-left p-3 rounded-lg hover:bg-slate-100 flex items-center gap-3" data-target="compras">
             <i class="fa-solid fa-cart-shopping w-5 text-orange-500"></i> Compras
@@ -116,30 +161,29 @@
     <div class="flex-1 px-4 md:px-0 w-full" id="main-view-container">
 
       <!-- Dashboard View -->
-      <section id="view-dashboard" class="view-section">
+      <section id="view-dashboard" class="view-section active">
         <div class="flex justify-between items-center mb-4 md:mb-6">
           <h2 class="text-2xl font-bold text-slate-800">Visão Geral</h2>
           <button onclick="openCompraForm()" class="bg-blue-600 text-white px-4 py-2.5 text-sm md:text-base rounded-xl font-bold shadow-md hover:bg-blue-700 transition active:scale-95 flex items-center gap-2">
-            <i class="fa-solid fa-cart-plus"></i> <span>Nova Compra</span>
+            <i class="fa-solid fa-cart-plus"></i> <span class="hidden sm:inline">Nova Compra</span><span class="sm:hidden">Comprar</span>
           </button>
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6">
-          <div class="bg-white p-4 md:p-5 rounded-2xl shadow-sm border border-slate-100 flex flex-col h-full">
+          <div class="bg-white p-4 md:p-5 rounded-2xl shadow-sm border border-slate-100 flex flex-col h-full order-1 lg:order-none">
             <div class="flex justify-between items-center mb-4">
               <h3 class="font-bold text-slate-700"><i class="fa-solid fa-clock-rotate-left text-orange-500 mr-2"></i>Últimas Compras</h3>
               <button onclick="switchView('compras')" class="text-xs font-bold text-blue-600 hover:underline">Ver Todas</button>
             </div>
-            <div id="dashboard-recent-compras" class="space-y-3 flex-1 overflow-y-auto">
-              <p class="text-center text-slate-400 py-10 text-sm">Nenhuma compra registrada.</p>
-            </div>
+            <div id="dashboard-recent-compras" class="space-y-3 flex-1 overflow-y-auto"></div>
           </div>
 
-          <div class="bg-white p-4 md:p-5 rounded-2xl shadow-sm border border-slate-100 flex flex-col">
+          <div class="bg-white p-4 md:p-5 rounded-2xl shadow-sm border border-slate-100 flex flex-col order-2 lg:order-none">
             <div class="flex justify-between items-center mb-2">
-              <h3 class="font-bold text-slate-700">Histórico</h3>
+              <h3 class="font-bold text-slate-700">Histórico (6 Meses)</h3>
+              <button id="btn-toggle-chart" onclick="toggleChartType()" class="text-xs bg-slate-100 px-3 py-1.5 rounded-lg text-slate-600 hover:bg-slate-200 font-bold transition">Ver Gastos (R$)</button>
             </div>
-            <div class="text-3xl font-black text-blue-600 mb-4" id="chart-total-label">R$ 0,00</div>
+            <div class="text-3xl font-black text-blue-600 mb-4" id="chart-total-label">0</div>
             <div class="h-56 w-full relative mt-auto"><canvas id="mainChart"></canvas></div>
           </div>
         </div>
@@ -154,541 +198,1260 @@
           </button>
         </div>
 
-        <!-- FILTROS INTEGRADOS -->
+        <!-- FILTROS COM CHIPS RÁPIDOS E DRAWER LATERAL -->
         <div class="mb-4">
+          <!-- Chips de Filtro Rápido -->
+          <div class="flex items-center gap-2 overflow-x-auto hide-scroll pb-3 mb-3">
+            <span class="text-[11px] font-black text-slate-500 uppercase tracking-wider shrink-0">Status:</span>
+            <button onclick="setQuickFilter('todas')" id="chip-todas" class="quick-filter-chip shrink-0 px-4 py-2 rounded-full text-sm font-bold transition-all bg-blue-600 text-white shadow-md active:scale-95">
+              <i class="fa-solid fa-list mr-1"></i> Todas
+            </button>
+            <button onclick="setQuickFilter('confirmadas')" id="chip-confirmadas" class="quick-filter-chip shrink-0 px-4 py-2 rounded-full text-sm font-bold transition-all bg-slate-100 text-slate-600 active:scale-95 hover:bg-slate-200">
+              <i class="fa-solid fa-check-circle mr-1"></i> Confirmadas
+            </button>
+            <button onclick="setQuickFilter('agendadas')" id="chip-agendadas" class="quick-filter-chip shrink-0 px-4 py-2 rounded-full text-sm font-bold transition-all bg-slate-100 text-slate-600 active:scale-95 hover:bg-slate-200">
+              <i class="fa-solid fa-calendar mr-1"></i> Agendadas
+            </button>
+          </div>
+
+          <!-- Botão de Drawer e Resumo de Filtros -->
           <div class="flex items-center gap-2">
-            <button onclick="toggleCompraFilters()" class="flex-1 bg-white border border-slate-200 rounded-2xl px-4 py-3 shadow-sm flex items-center justify-between active:scale-[0.98] transition">
+            <button onclick="toggleFilterDrawer()" class="flex-1 bg-white border border-slate-200 rounded-2xl px-4 py-3 shadow-sm flex items-center justify-between active:scale-[0.98] transition hover:bg-slate-50">
               <span class="flex items-center gap-2 font-black text-slate-700 text-sm">
-                <i class="fa-solid fa-filter text-blue-600"></i>
-                Filtros
+                <i class="fa-solid fa-sliders text-blue-600"></i>
+                Refinar Busca
                 <span id="filter-count-badge" class="hidden bg-blue-600 text-white text-[10px] px-2 py-0.5 rounded-full font-black">0</span>
               </span>
-              <i id="filter-chevron" class="fa-solid fa-chevron-down text-slate-400 text-xs transition-transform"></i>
+              <i id="filter-drawer-chevron" class="fa-solid fa-chevron-right text-slate-400 text-xs transition-transform"></i>
             </button>
 
-            <button onclick="clearCompraFilters()" class="bg-slate-100 text-slate-600 border border-slate-200 rounded-2xl px-3 py-3 shadow-sm active:scale-95 transition" title="Limpar filtros">
+            <button onclick="clearCompraFilters()" class="bg-slate-100 text-slate-600 border border-slate-200 rounded-2xl px-3 py-3 shadow-sm active:scale-95 transition hover:bg-slate-200" title="Limpar filtros">
               <i class="fa-solid fa-eraser"></i>
             </button>
           </div>
 
-          <div id="compra-filters-panel" class="hidden bg-white p-4 rounded-2xl shadow-sm border border-slate-100 mt-3">
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
-              <div class="space-y-1">
-                <label class="text-[9px] font-black text-slate-400 uppercase tracking-wider ml-1">Farmácia</label>
-                <select id="filter-farmacia" onchange="handleCompraFilterChange()" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs font-bold outline-none focus:ring-2 focus:ring-blue-500">
-                  <option value="">Todas</option>
-                </select>
-              </div>
-              <div class="space-y-1">
-                <label class="text-[9px] font-black text-slate-400 uppercase tracking-wider ml-1">Paciente</label>
-                <select id="filter-paciente" onchange="handleCompraFilterChange()" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs font-bold outline-none focus:ring-2 focus:ring-blue-500">
-                  <option value="">Todas</option>
-                </select>
-              </div>
-              <div class="space-y-1">
-                <label class="text-[9px] font-black text-slate-400 uppercase tracking-wider ml-1">Clínica</label>
-                <select id="filter-clinica" onchange="handleCompraFilterChange()" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs font-bold outline-none focus:ring-2 focus:ring-blue-500">
-                  <option value="">Todas</option>
-                </select>
-              </div>
-              <div class="space-y-1">
-                <label class="text-[9px] font-black text-slate-400 uppercase tracking-wider ml-1">Médico</label>
-                <select id="filter-medico" onchange="handleCompraFilterChange()" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs font-bold outline-none focus:ring-2 focus:ring-blue-500">
-                  <option value="">Todas</option>
-                </select>
-              </div>
-              <div class="space-y-1">
-                <label class="text-[9px] font-black text-slate-400 uppercase tracking-wider ml-1">Remédio</label>
-                <select id="filter-remedio" onchange="handleCompraFilterChange()" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs font-bold outline-none focus:ring-2 focus:ring-blue-500">
-                  <option value="">Todas</option>
-                </select>
-              </div>
-            </div>
-            <div class="mt-4 flex justify-end">
-                <button onclick="clearCompraFilters()" class="text-[10px] font-bold text-slate-400 hover:text-blue-600 flex items-center gap-1">
-                    <i class="fa-solid fa-eraser"></i> Limpar filtros
-                </button>
-            </div>
+          <!-- Resumo de Filtros Ativos -->
+          <div id="active-filters-summary" class="hidden mt-3 flex flex-wrap gap-2">
+            <!-- Badges de filtros ativos serão inseridos aqui dinamicamente -->
           </div>
         </div>
 
-        <div id="list-compras" class="space-y-4"></div>
+        <!-- Drawer Lateral de Refinamento -->
+        <div id="filter-drawer-overlay" class="fixed inset-0 bg-slate-900/40 z-50 hidden transition-opacity opacity-0 backdrop-blur-sm" onclick="closeFilterDrawer()"></div>
+        <div id="filter-drawer" class="fixed top-0 right-0 h-full w-full max-w-sm bg-white shadow-2xl z-50 transform translate-x-full transition-transform duration-300 flex flex-col">
+          <div class="flex justify-between items-center p-5 border-b border-slate-100 shrink-0">
+            <h3 class="text-lg font-bold text-slate-800">Refinar Busca</h3>
+            <button onclick="closeFilterDrawer()" class="w-8 h-8 flex items-center justify-center rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200 transition">
+              <i class="fa-solid fa-times"></i>
+            </button>
+          </div>
+          <div class="p-5 overflow-y-auto flex-1 hide-scroll space-y-4">
+            <div class="space-y-2">
+              <label class="text-xs font-black text-slate-600 uppercase tracking-wider">Farmácia</label>
+              <select id="filter-farmacia" onchange="handleCompraFilterChange()" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm font-bold outline-none focus:ring-2 focus:ring-blue-500"></select>
+            </div>
+            <div class="space-y-2">
+              <label class="text-xs font-black text-slate-600 uppercase tracking-wider">Paciente</label>
+              <select id="filter-paciente" onchange="handleCompraFilterChange()" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm font-bold outline-none focus:ring-2 focus:ring-blue-500"></select>
+            </div>
+            <div class="space-y-2">
+              <label class="text-xs font-black text-slate-600 uppercase tracking-wider">Clínica</label>
+              <select id="filter-clinica" onchange="handleCompraFilterChange()" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm font-bold outline-none focus:ring-2 focus:ring-blue-500"></select>
+            </div>
+            <div class="space-y-2">
+              <label class="text-xs font-black text-slate-600 uppercase tracking-wider">Médico</label>
+              <select id="filter-medico" onchange="handleCompraFilterChange()" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm font-bold outline-none focus:ring-2 focus:ring-blue-500"></select>
+            </div>
+            <div class="space-y-2">
+              <label class="text-xs font-black text-slate-600 uppercase tracking-wider">Remédio</label>
+              <select id="filter-remedio" onchange="handleCompraFilterChange()" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm font-bold outline-none focus:ring-2 focus:ring-blue-500"></select>
+            </div>
+          </div>
+          <div class="p-5 border-t border-slate-100 bg-slate-50 flex gap-3 shrink-0">
+            <button onclick="clearCompraFilters()" class="flex-1 text-sm font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 px-4 py-3 rounded-xl transition">
+              <i class="fa-solid fa-eraser mr-1"></i> Limpar
+            </button>
+            <button onclick="closeFilterDrawer()" class="flex-1 text-sm font-bold text-white bg-blue-600 hover:bg-blue-700 px-4 py-3 rounded-xl transition">
+              <i class="fa-solid fa-check mr-1"></i> Aplicar
+            </button>
+          </div>
+        </div>
+
+        <div id="list-compras" class="space-y-3 pb-6"></div>
       </section>
 
       <!-- ERP Categories View -->
       <section id="view-erp-categories" class="view-section hidden">
-        <h2 class="text-2xl font-bold text-slate-800 mb-6">Cadastros</h2>
-        <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
-          <button onclick="switchErpTab('pacientes')" class="quick-action-card p-6 flex flex-col items-center gap-3">
-            <i class="fa-solid fa-user-injured text-3xl text-blue-500"></i>
-            <span class="font-bold text-slate-700">Pacientes</span>
+        <h2 class="text-2xl font-bold text-slate-800 mb-6">Módulo ERP</h2>
+        <div class="grid grid-cols-2 gap-4">
+          <button onclick="openErpList('pacientes')" class="bg-white p-6 rounded-2xl shadow-[0_2px_10px_-3px_rgba(0,0,0,0.1)] border border-slate-50 flex flex-col items-center justify-center gap-3 hover:bg-slate-50 transition active:scale-95">
+            <span class="text-5xl">👤</span><span class="font-bold text-slate-700 text-sm md:text-base">Pacientes</span>
           </button>
-          <button onclick="switchErpTab('farmacias')" class="quick-action-card p-6 flex flex-col items-center gap-3">
-            <i class="fa-solid fa-prescription-bottle-medical text-3xl text-green-500"></i>
-            <span class="font-bold text-slate-700">Farmácias</span>
+          <button onclick="openErpList('medicos')" class="bg-white p-6 rounded-2xl shadow-[0_2px_10px_-3px_rgba(0,0,0,0.1)] border border-slate-50 flex flex-col items-center justify-center gap-3 hover:bg-slate-50 transition active:scale-95">
+            <span class="text-5xl">👨‍⚕️</span><span class="font-bold text-slate-700 text-sm md:text-base">Médicos</span>
           </button>
-          <button onclick="switchErpTab('clinicas')" class="quick-action-card p-6 flex flex-col items-center gap-3">
-            <i class="fa-solid fa-hospital text-3xl text-red-500"></i>
-            <span class="font-bold text-slate-700">Clínicas</span>
+          <button onclick="openErpList('clinicas')" class="bg-white p-6 rounded-2xl shadow-[0_2px_10px_-3px_rgba(0,0,0,0.1)] border border-slate-50 flex flex-col items-center justify-center gap-3 hover:bg-slate-50 transition active:scale-95">
+            <span class="text-5xl">🏥</span><span class="font-bold text-slate-700 text-sm md:text-base">Clínicas</span>
           </button>
-          <button onclick="switchErpTab('medicos')" class="quick-action-card p-6 flex flex-col items-center gap-3">
-            <i class="fa-solid fa-user-doctor text-3xl text-purple-500"></i>
-            <span class="font-bold text-slate-700">Médicos</span>
+          <button onclick="openErpList('farmacias')" class="bg-white p-6 rounded-2xl shadow-[0_2px_10px_-3px_rgba(0,0,0,0.1)] border border-slate-50 flex flex-col items-center justify-center gap-3 hover:bg-slate-50 transition active:scale-95">
+            <span class="text-5xl">🏪</span><span class="font-bold text-slate-700 text-sm md:text-base">Farmácias</span>
           </button>
-          <button onclick="switchErpTab('remedios')" class="quick-action-card p-6 flex flex-col items-center gap-3">
-            <i class="fa-solid fa-pills text-3xl text-orange-500"></i>
-            <span class="font-bold text-slate-700">Remédios</span>
+          <button onclick="openErpList('remedios')" class="bg-white p-6 rounded-2xl shadow-[0_2px_10px_-3px_rgba(0,0,0,0.1)] border border-slate-50 flex flex-col items-center justify-center gap-3 hover:bg-slate-50 transition active:scale-95">
+            <span class="text-5xl">💊</span><span class="font-bold text-slate-700 text-sm md:text-base">Remédios</span>
           </button>
         </div>
       </section>
 
       <!-- ERP List View -->
       <section id="view-erp-list" class="view-section hidden">
-        <div class="flex items-center gap-3 mb-6">
-          <button onclick="switchView('erp-categories')" class="w-10 h-10 rounded-full bg-white border border-slate-200 flex items-center justify-center text-slate-500 hover:bg-slate-50">
-            <i class="fa-solid fa-arrow-left"></i>
-          </button>
-          <h2 id="erp-list-title" class="text-2xl font-bold text-slate-800">...</h2>
-          <button onclick="openErpForm()" class="ml-auto bg-blue-600 text-white w-10 h-10 rounded-full shadow-md flex items-center justify-center hover:bg-blue-700">
+        <div class="flex justify-between items-center mb-4">
+          <div class="flex items-center gap-3">
+            <button onclick="switchView('erp-categories')" class="w-10 h-10 rounded-full bg-slate-200 text-slate-600 flex items-center justify-center hover:bg-slate-300 transition">
+              <i class="fa-solid fa-arrow-left"></i>
+            </button>
+            <h2 class="text-2xl font-bold text-slate-800 flex items-center gap-2" id="erp-list-title">Lista</h2>
+          </div>
+          <button onclick="openErpForm()" class="bg-blue-600 text-white w-12 h-12 rounded-full shadow-lg flex items-center justify-center hover:bg-blue-700 transition active:scale-95 text-xl">
             <i class="fa-solid fa-plus"></i>
           </button>
         </div>
-        <div id="list-erp" class="space-y-3"></div>
+        <div class="relative mb-3">
+          <i class="fa-solid fa-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
+          <input type="text" id="erp-search" onkeyup="filterErpList()" placeholder="Buscar..." class="w-full bg-white border border-slate-200 rounded-xl py-3 pl-12 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm">
+        </div>
+
+        <!-- Ordenação da lista ERP -->
+        <div class="mb-4 flex items-center gap-3 overflow-x-auto hide-scroll">
+          <span class="text-[11px] font-black text-slate-500 uppercase tracking-wider shrink-0">Ordenar:</span>
+          <button id="erp-sort-alpha" onclick="setErpSortMode('alpha')" class="erp-sort-btn shrink-0 bg-blue-600 text-white px-4 py-3 rounded-xl text-sm font-black shadow-md active:scale-95 transition">
+            A-Z
+          </button>
+          <button id="erp-sort-lastPurchase" onclick="setErpSortMode('lastPurchase')" class="erp-sort-btn shrink-0 bg-slate-100 text-slate-600 px-4 py-3 rounded-xl text-sm font-black active:scale-95 transition">
+            Última Compra
+          </button>
+        </div>
+
+        <div id="list-erp" class="space-y-3 pb-6"></div>
       </section>
 
     </div>
   </main>
 
-  <!-- Mobile Nav -->
-  <nav id="mobile-nav" class="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 flex justify-around items-center p-2 md:hidden z-40">
-    <button onclick="switchView('dashboard')" class="flex flex-col items-center gap-1 p-2 text-slate-400" id="nav-mobile-dashboard">
-      <i class="fa-solid fa-chart-simple text-lg"></i>
-      <span class="text-[10px] font-bold">Dash</span>
-    </button>
-    <button onclick="switchView('compras')" class="flex flex-col items-center gap-1 p-2 text-blue-600 border-t-2 border-blue-600" id="nav-mobile-compras">
-      <i class="fa-solid fa-cart-shopping text-lg"></i>
-      <span class="text-[10px] font-bold">Compras</span>
-    </button>
-    <button onclick="switchView('erp-categories')" class="flex flex-col items-center gap-1 p-2 text-slate-400" id="nav-mobile-erp">
-      <i class="fa-solid fa-folder-open text-lg"></i>
-      <span class="text-[10px] font-bold">Cadastros</span>
-    </button>
-  </nav>
 
-  <!-- Floating Button -->
-  <button onclick="openCompraForm()" class="floating-quick-buy w-14 h-14 bg-blue-600 text-white rounded-full shadow-xl flex items-center justify-center text-2xl active:scale-90 transition md:hidden">
+  <button onclick="openCompraForm()" class="floating-quick-buy bg-blue-600 text-white w-14 h-14 rounded-full flex items-center justify-center text-xl active:scale-95 transition" title="Nova Compra">
     <i class="fa-solid fa-cart-plus"></i>
   </button>
 
-  <!-- Modal Overlay -->
-  <div id="modal-overlay" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[60] flex items-end md:items-center justify-center p-0 md:p-4 hidden opacity-0 transition-opacity duration-300">
-    <div id="modal-content" class="bg-white w-full max-w-lg rounded-t-[32px] md:rounded-[32px] shadow-2xl flex flex-col max-h-[90vh] translate-y-full md:translate-y-0 md:scale-95 transition-transform duration-300">
-      <div class="p-6 border-b border-slate-100 flex justify-between items-center">
-        <h3 id="modal-title" class="text-xl font-black text-slate-800">Título</h3>
-        <button onclick="closeModal()" class="w-10 h-10 rounded-full bg-slate-50 text-slate-400 flex items-center justify-center hover:bg-slate-100"><i class="fa-solid fa-xmark"></i></button>
+  <!-- Mobile Bottom Navigation -->
+  <nav id="mobile-nav" class="md:hidden fixed bottom-0 w-full bg-white border-t border-slate-200 z-40 pb-safe hidden">
+    <div class="flex justify-around items-center h-[68px]">
+      <button onclick="switchView('dashboard')" class="nav-btn relative flex flex-col items-center justify-center w-full h-full text-slate-400 hover:text-blue-600 transition" data-target="dashboard">
+        <div class="nav-indicator hidden absolute top-0 w-1/2 h-1 bg-blue-600 rounded-b-md"></div>
+        <i class="fa-solid fa-chart-column text-xl mb-1 mt-1"></i>
+        <span class="text-[11px] font-bold">Dash</span>
+      </button>
+      <button onclick="switchView('compras')" class="nav-btn relative flex flex-col items-center justify-center w-full h-full text-slate-400 hover:text-blue-600 transition" data-target="compras">
+        <div class="nav-indicator hidden absolute top-0 w-1/2 h-1 bg-blue-600 rounded-b-md"></div>
+        <i class="fa-solid fa-cart-shopping text-xl mb-1 mt-1"></i>
+        <span class="text-[11px] font-bold">Compras</span>
+      </button>
+      <button onclick="switchView('erp-categories')" class="nav-btn relative flex flex-col items-center justify-center w-full h-full text-slate-400 hover:text-blue-600 transition" data-target="erp">
+        <div class="nav-indicator hidden absolute top-0 w-1/2 h-1 bg-blue-600 rounded-b-md"></div>
+        <i class="fa-regular fa-folder-open text-xl mb-1 mt-1"></i>
+        <span class="text-[11px] font-bold">Cadastros</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Global Modal Overlay -->
+  <div id="modal-overlay" class="fixed inset-0 bg-slate-900/40 z-50 hidden flex items-end md:items-center justify-center transition-opacity opacity-0 backdrop-blur-sm">
+    <div id="modal-content" class="bg-white w-full max-w-2xl md:rounded-2xl rounded-t-3xl h-[90vh] md:h-auto md:max-h-[90vh] flex flex-col shadow-2xl transform translate-y-full md:translate-y-0 transition-transform duration-300">
+      <div class="flex justify-between items-center p-5 border-b border-slate-100">
+        <h3 id="modal-title" class="text-xl font-bold text-slate-800">Título</h3>
+        <button onclick="closeModal()" class="w-8 h-8 flex items-center justify-center rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200 transition"><i class="fa-solid fa-times"></i></button>
       </div>
-      <div id="modal-body" class="p-6 overflow-y-auto flex-1"></div>
-      <div id="modal-footer" class="p-6 border-t border-slate-100 flex gap-3"></div>
+      <div id="modal-body" class="p-5 overflow-y-auto flex-1 hide-scroll"></div>
+      <div id="modal-footer" class="p-5 border-t border-slate-100 bg-slate-50 flex gap-3 justify-end md:rounded-b-2xl pb-safe"></div>
     </div>
   </div>
 
-  <script>
-    // ESTADO DA APLICAÇÃO
-    const AppState = {
+  <!-- Quick Add Modal -->
+  <div id="quick-add-overlay" class="fixed inset-0 bg-slate-900/60 z-[80] hidden flex items-center justify-center p-4 transition-opacity opacity-0 backdrop-blur-sm">
+    <div id="quick-add-content" class="bg-white rounded-2xl p-6 w-full max-w-sm shadow-2xl transform scale-95 transition-transform duration-300">
+      <div class="flex items-center justify-between mb-2">
+        <h3 class="font-bold text-lg text-slate-800">Cadastro Rápido ⚡</h3>
+        <button onclick="closeQuickAdd()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-times"></i></button>
+      </div>
+      <p class="text-sm text-slate-500 mb-5">Insira apenas o nome. Este cadastro ficará marcado como Incompleto no ERP.</p>
+      <input type="hidden" id="quick-add-collection">
+      <input type="hidden" id="quick-add-select-id">
+      <input type="text" id="quick-add-input" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 mb-5 focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-800 font-medium" placeholder="Digite o nome aqui...">
+      <div class="flex gap-3 justify-end">
+        <button onclick="closeQuickAdd()" class="px-5 py-2.5 bg-slate-100 rounded-xl text-slate-600 font-medium hover:bg-slate-200 transition">Cancelar</button>
+        <button onclick="confirmQuickAdd()" class="px-5 py-2.5 bg-blue-600 rounded-xl text-white font-bold shadow-md hover:bg-blue-700 transition">Salvar & Usar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Fullscreen Image Viewer -->
+  <div id="image-viewer" class="fixed inset-0 bg-black z-[90] hidden flex-col items-center justify-center">
+    <div class="absolute top-6 right-6 flex gap-4">
+      <button onclick="deleteCurrentDocument()" class="w-12 h-12 flex items-center justify-center rounded-full bg-red-600/90 text-white text-xl backdrop-blur-md shadow-lg"><i class="fa-solid fa-trash"></i></button>
+      <button onclick="closeImageViewer()" class="w-12 h-12 flex items-center justify-center rounded-full bg-white/20 text-white text-xl backdrop-blur-md hover:bg-white/30 transition"><i class="fa-solid fa-times"></i></button>
+    </div>
+    <img id="image-viewer-img" src="" class="max-w-full max-h-full object-contain p-2">
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toast" class="fixed top-20 left-1/2 transform -translate-x-1/2 text-white px-5 py-3 rounded-xl shadow-xl z-[110] transition-opacity duration-300 opacity-0 pointer-events-none flex items-center gap-3 font-medium">
+    <i id="toast-icon" class="fa-solid fa-info-circle text-lg"></i>
+    <span id="toast-msg" class="text-sm"></span>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import { getFirestore, collection, onSnapshot, doc, setDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+    function injectPWA() {
+      const manifest = {
+        "name": "Controle de Farmácias - PharmaSync",
+        "short_name": "Controle de Farmácias",
+        "start_url": ".",
+        "display": "standalone",
+        "background_color": "#f8fafc",
+        "theme_color": "#2563eb",
+        "icons": [{"src": "https://farmacia.kaioadriel.com.br/icone/images.png", "sizes": "512x512", "type": "image/png", "purpose": "any"}]
+      };
+      const manifestBlob = new Blob([JSON.stringify(manifest)], {type: 'application/json'});
+      const link = document.createElement('link');
+      link.rel = 'manifest';
+      link.href = URL.createObjectURL(manifestBlob);
+      document.head.appendChild(link);
+
+      const swCode = `self.addEventListener('install', (e) => self.skipWaiting()); self.addEventListener('activate', (e) => e.waitUntil(clients.claim())); self.addEventListener('fetch', (e) => {});`;
+      const swBlob = new Blob([swCode], {type: 'text/javascript'});
+      if ('serviceWorker' in navigator) navigator.serviceWorker.register(URL.createObjectURL(swBlob)).catch(err => console.log('SW falhou', err));
+
+      let deferredPrompt;
+      window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        document.getElementById('btn-install-app').classList.remove('hidden');
+      });
+      window.installApp = async () => {
+        if (deferredPrompt) {
+          deferredPrompt.prompt();
+          const { outcome } = await deferredPrompt.userChoice;
+          if (outcome === 'accepted') document.getElementById('btn-install-app').classList.add('hidden');
+          deferredPrompt = null;
+        }
+      };
+    }
+    injectPWA();
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyB1HRg4rqLgyGMQ8GL6wP6zq9GSHUZlIZc",
+      authDomain: "farmacia-d7bb3.firebaseapp.com",
+      projectId: "farmacia-d7bb3",
+      storageBucket: "farmacia-d7bb3.firebasestorage.app",
+      messagingSenderId: "999252393322",
+      appId: "1:999252393322:web:2cd640bc6deac648cfb913"
+    };
+
+    window.AppState = {
+      user: null,
+      userId: null,
       view: 'dashboard',
       erpTab: 'pacientes',
-      filters: {
-        farmacia: '',
-        paciente: '',
-        clinica: '',
-        medico: '',
-        remedio: ''
-      },
-      data: {
-        compras: [],
-        pacientes: [{id: 'p1', nome: 'João Silva', status: 'ativo'}],
-        farmacias: [{id: 'f1', nome: 'Raia - Xavantes - Tupi', status: 'ativo'}],
-        clinicas: [{id: 'c1', nome: 'Clínica Central', status: 'ativo'}],
-        medicos: [{id: 'm1', nome: 'Dr. Roberto', status: 'ativo'}],
-        remedios: [{id: 'r1', nome: 'Tramadol', status: 'ativo'}]
+      data: { pacientes: [], medicos: [], clinicas: [], farmacias: [], remedios: [], compras: [] },
+      chartType: 'count',
+      erpSort: 'alpha'
+    };
+
+    let app, db, auth, provider, listeners = [];
+    let myChart = null;
+
+    function initApp() {
+      document.getElementById('app-body').classList.remove('hidden');
+      try {
+        app = initializeApp(firebaseConfig);
+        auth = getAuth(app);
+        db = getFirestore(app);
+        provider = new GoogleAuthProvider();
+
+        onAuthStateChanged(auth, (user) => {
+          if (user) {
+            AppState.user = user;
+            AppState.userId = user.uid;
+
+            document.getElementById('auth-screen').classList.add('hidden');
+            document.getElementById('main-header').classList.remove('hidden');
+            document.getElementById('main-content').classList.remove('hidden');
+            document.getElementById('mobile-nav').classList.remove('hidden');
+
+            const name = user.displayName || user.email.split('@')[0];
+            document.getElementById('sidebar-username').innerText = name;
+            document.getElementById('sidebar-avatar').innerText = name.substring(0, 2).toUpperCase();
+
+            setupDatabaseListeners();
+            updateUI();
+          } else {
+            AppState.user = null;
+            AppState.userId = null;
+            document.getElementById('auth-screen').classList.remove('hidden');
+            document.getElementById('main-header').classList.add('hidden');
+            document.getElementById('main-content').classList.add('hidden');
+            document.getElementById('mobile-nav').classList.add('hidden');
+            listeners.forEach(unsub => unsub());
+            listeners = [];
+          }
+        });
+      } catch (error) {
+        showToast("Erro ao inicializar banco de dados.", "error");
+      }
+    }
+
+    window.handleLoginEmail = async () => {
+      const em = document.getElementById('auth-email').value;
+      const pw = document.getElementById('auth-pass').value;
+      if (!em || !pw) return showToast("Preencha e-mail e senha.", "error");
+      try { await signInWithEmailAndPassword(auth, em, pw); showToast("Bem-vindo de volta!", "success"); }
+      catch(e) { showToast("Erro no login. Verifique as credenciais.", "error"); }
+    };
+
+    window.handleRegisterEmail = async () => {
+      const em = document.getElementById('auth-email').value;
+      const pw = document.getElementById('auth-pass').value;
+      if (!em || !pw) return showToast("Preencha e-mail e senha.", "error");
+      try { await createUserWithEmailAndPassword(auth, em, pw); showToast("Conta criada com sucesso!", "success"); }
+      catch(e) { showToast("Erro ao criar conta. Senha fraca ou email já em uso.", "error"); }
+    };
+
+    window.handleLoginGoogle = async () => {
+      try { await signInWithPopup(auth, provider); showToast("Login efetuado!", "success"); }
+      catch(e) { showToast("Login cancelado ou com erro.", "error"); }
+    };
+
+    window.logoutApp = () => { signOut(auth); showToast("Você saiu.", "success"); };
+
+    function setupDatabaseListeners() {
+      listeners.forEach(unsub => unsub());
+      listeners = [];
+
+      ['pacientes', 'medicos', 'clinicas', 'farmacias', 'remedios', 'compras'].forEach(colName => {
+        const colRef = collection(db, 'users', AppState.userId, colName);
+        listeners.push(onSnapshot(colRef, (snapshot) => {
+          const items = [];
+          snapshot.forEach(doc => items.push({ id: doc.id, ...doc.data() }));
+          AppState.data[colName] = items;
+          renderCompraFilterOptions();
+          updateUI();
+        }, (error) => console.error("Sync error:", error)));
+      });
+    }
+
+    window.dbSave = async (colName, dataObj, id = null) => {
+      if (!AppState.userId) return false;
+      try {
+        const cleanData = JSON.parse(JSON.stringify(dataObj));
+        const docId = id || crypto.randomUUID();
+        await setDoc(doc(db, 'users', AppState.userId, colName, docId), cleanData);
+        showToast(id ? "Atualizado!" : "Salvo!", "success");
+        return docId;
+      } catch (error) {
+        showToast("Erro ao salvar (verifique as Regras do Firestore).", "error");
+        return false;
       }
     };
 
-    // INICIALIZAÇÃO
-    document.addEventListener('DOMContentLoaded', () => {
-      loadData();
-      renderCompras();
-      renderCompraFilterOptions();
-      initChart();
-      switchView('dashboard');
-    });
-
-    function loadData() {
-      const saved = localStorage.getItem('farmacia_data');
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        AppState.data = {...AppState.data, ...parsed};
+    window.dbDelete = async (colName, id) => {
+      if (!AppState.userId) return;
+      try {
+        await deleteDoc(doc(db, 'users', AppState.userId, colName, id));
+        showToast("Excluído com sucesso.", "success");
+      } catch (error) {
+        showToast("Erro ao excluir.", "error");
       }
-    }
+    };
 
-    function saveData() {
-      localStorage.setItem('farmacia_data', JSON.stringify(AppState.data));
-    }
+    window.switchView = (viewName) => {
+      AppState.view = viewName.startsWith('erp') ? 'erp' : viewName;
+      document.querySelectorAll('.view-section').forEach(el => el.classList.add('hidden'));
+      document.getElementById(`view-${viewName}`).classList.remove('hidden');
 
-    // NAVEGAÇÃO
-    function switchView(view) {
-      AppState.view = view;
-      document.querySelectorAll('.view-section').forEach(s => s.classList.add('hidden'));
-      
-      if (view === 'erp-categories') {
-        document.getElementById('view-erp-categories').classList.remove('hidden');
-      } else if (view === 'erp-list') {
-        document.getElementById('view-erp-list').classList.remove('hidden');
-      } else {
-        document.getElementById('view-' + view).classList.remove('hidden');
-      }
-
-      // Update Nav
-      document.querySelectorAll('.nav-btn-desktop').forEach(b => {
-        b.classList.remove('bg-blue-50', 'text-blue-600');
-        if (b.getAttribute('data-target') === (view.startsWith('erp') ? 'erp' : view)) {
-          b.classList.add('bg-blue-50', 'text-blue-600');
+      document.querySelectorAll('.nav-btn').forEach(btn => {
+        btn.classList.remove('text-blue-600');
+        btn.classList.add('text-slate-400');
+        btn.querySelector('.nav-indicator').classList.add('hidden');
+        if (btn.dataset.target === AppState.view) {
+          btn.classList.remove('text-slate-400');
+          btn.classList.add('text-blue-600');
+          btn.querySelector('.nav-indicator').classList.remove('hidden');
         }
       });
 
-      // Mobile Nav
-      document.querySelectorAll('#mobile-nav button').forEach(b => {
-        b.classList.remove('text-blue-600', 'border-t-2', 'border-blue-600');
-        b.classList.add('text-slate-400');
+      document.querySelectorAll('.nav-btn-desktop').forEach(btn => {
+        btn.classList.remove('bg-blue-50', 'text-blue-700', 'font-bold');
+        if (btn.dataset.target === AppState.view) btn.classList.add('bg-blue-50', 'text-blue-700', 'font-bold');
       });
-      const activeMobile = document.getElementById('nav-mobile-' + (view.startsWith('erp') ? 'erp' : view));
-      if (activeMobile) {
-        activeMobile.classList.add('text-blue-600', 'border-t-2', 'border-blue-600');
-        activeMobile.classList.remove('text-slate-400');
-      }
-    }
 
-    function switchErpTab(tab) {
+      if (viewName === 'compras') renderCompraFilterOptions();
+      if (viewName === 'erp-list') renderErpList();
+      updateUI();
+    };
+
+    window.openErpList = (tab) => {
       AppState.erpTab = tab;
-      const titles = {pacientes: 'Pacientes', farmacias: 'Farmácias', clinicas: 'Clínicas', medicos: 'Médicos', remedios: 'Remédios'};
-      document.getElementById('erp-list-title').innerText = titles[tab];
-      renderErpList();
+      const titles = { pacientes: '👤 Pacientes', medicos: '👨‍⚕️ Médicos', clinicas: '🏥 Clínicas', farmacias: '🏪 Farmácias', remedios: '💊 Remédios' };
+      document.getElementById('erp-list-title').innerHTML = titles[tab];
+      document.getElementById('erp-search').value = '';
+      AppState.erpSort = 'alpha';
       switchView('erp-list');
+    };
+
+    function updateUI() {
+      if (!AppState.user) return;
+      if (AppState.view === 'dashboard') renderDashboard();
+      else if (AppState.view === 'compras') renderCompras();
+      else if (AppState.view === 'erp' && !document.getElementById('view-erp-list').classList.contains('hidden')) renderErpList();
     }
 
-    // FILTROS DE COMPRAS
-    function toggleCompraFilters() {
-      const panel = document.getElementById('compra-filters-panel');
-      const chevron = document.getElementById('filter-chevron');
-      panel.classList.toggle('hidden');
-      chevron.classList.toggle('rotate-180');
+    function calcularDiasAtras(dataStr) {
+      const diff = Math.floor((new Date().setHours(0,0,0,0) - new Date(dataStr + 'T00:00:00')) / 86400000);
+      if (diff === 0) return 'Hoje';
+      if (diff === 1) return 'Ontem';
+      if (diff === -1) return 'Amanhã';
+      if (diff > 1) return `Há ${diff} dias`;
+      return `Em ${Math.abs(diff)} dias`;
+    }
+
+    function formatCurrency(val) {
+      return (parseFloat(val) || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+    }
+
+    window.toggleChartType = () => {
+      AppState.chartType = AppState.chartType === 'count' ? 'value' : 'count';
+      document.getElementById('btn-toggle-chart').innerText = AppState.chartType === 'count' ? 'Ver Gastos (R$)' : 'Ver Quantidade';
+      renderDashboard();
+    };
+
+    const dataLabelsPlugin = {
+      id: 'dataLabelsPlugin',
+      afterDatasetsDraw(chart) {
+        const { ctx, data } = chart;
+        ctx.save();
+        ctx.font = 'bold 11px sans-serif';
+        ctx.fillStyle = '#64748b';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'bottom';
+        chart.getDatasetMeta(0).data.forEach((bar, index) => {
+          const val = data.datasets[0].data[index];
+          if (val === 0) return;
+          let text = val;
+          if (AppState.chartType !== 'count') text = val >= 1000 ? 'R$ ' + (val/1000).toFixed(1).replace('.', ',') + 'k' : 'R$ ' + val.toFixed(0);
+          ctx.fillText(text, bar.x, bar.y - 4);
+        });
+        ctx.restore();
+      }
+    };
+
+    function renderDashboard() {
+      const ctx = document.getElementById('mainChart');
+      if (!ctx) return;
+
+      const compras = AppState.data.compras.filter(c => c.status === 'confirmada');
+      const monthsMap = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"];
+      const labels = [];
+      const data = [];
+      let total = 0;
+      const currDate = new Date();
+
+      for (let i = 5; i >= 0; i--) {
+        const d = new Date(currDate.getFullYear(), currDate.getMonth() - i, 1);
+        const mk = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+        labels.push(`${monthsMap[d.getMonth()]} ${d.getFullYear().toString().slice(2)}`);
+        const mesCompras = compras.filter(c => c.data?.startsWith(mk));
+        if (AppState.chartType === 'count') {
+          data.push(mesCompras.length);
+          total += mesCompras.length;
+        } else {
+          const sum = mesCompras.reduce((a, b) => a + (parseFloat(b.valor) || 0), 0);
+          data.push(sum);
+          total += sum;
+        }
+      }
+
+      document.getElementById('chart-total-label').innerText = AppState.chartType === 'count' ? `${total} Compras` : formatCurrency(total);
+
+      if (myChart) myChart.destroy();
+      myChart = new Chart(ctx, {
+        type: 'bar',
+        data: { labels, datasets: [{ data, backgroundColor: '#3b82f6', borderRadius: 4 }] },
+        plugins: [dataLabelsPlugin],
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          layout: { padding: { top: 20 } },
+          plugins: { legend: { display: false } },
+          scales: {
+            y: { beginAtZero: true, grace: '15%', grid: { borderDash: [4, 4] } },
+            x: { grid: { display: false } }
+          }
+        }
+      });
+
+      const recent = [...compras].sort((a,b) => new Date(b.data) - new Date(a.data)).slice(0, 3);
+      document.getElementById('dashboard-recent-compras').innerHTML = recent.length ? recent.map(c => {
+        const farm = AppState.data.farmacias.find(f => f.id === c.farmaciaId)?.nome || '-';
+        const pac = AppState.data.pacientes.find(p => p.id === c.pacienteId)?.nome || '-';
+        const med = AppState.data.medicos.find(m => m.id === c.medicoId)?.nome || '-';
+        const clin = AppState.data.clinicas.find(cl => cl.id === c.clinicaId)?.nome || '-';
+        return `<div class="p-3 bg-white hover:bg-slate-50 rounded-xl border border-slate-100 mb-2 shadow-[0_1px_3px_rgba(0,0,0,0.02)] transition flex flex-col gap-1.5">
+          <div class="flex justify-between items-center">
+            <h4 class="font-black text-slate-800 text-[13px] truncate pr-2"><i class="fa-solid fa-shop text-purple-600 mr-1.5"></i>${farm}</h4>
+            <span class="text-[10px] font-black text-blue-700 bg-blue-100 px-2 py-0.5 rounded-md shrink-0 uppercase tracking-wide">${calcularDiasAtras(c.data)}</span>
+          </div>
+          <div class="flex flex-wrap gap-x-3 gap-y-1 text-[11px] font-medium text-slate-500">
+            <span class="flex items-center gap-1 min-w-0"><i class="fa-solid fa-user text-slate-300"></i><span class="wrap-two-lines">${pac}</span></span>
+            <span class="flex items-center gap-1 min-w-0"><i class="fa-solid fa-user-doctor text-slate-300"></i><span class="wrap-two-lines">${med}</span></span>
+            <span class="flex items-center gap-1 min-w-0"><i class="fa-solid fa-house-medical text-slate-300"></i><span class="wrap-two-lines">${clin}</span></span>
+          </div>
+        </div>`;
+      }).join('') : '<div class="text-center py-6 text-slate-400"><i class="fa-solid fa-box-open text-3xl mb-2"></i><p class="text-sm">Nenhuma compra registrada.</p></div>';
+    }
+
+    function fillFilterSelect(id, label, items) {
+      const el = document.getElementById(id);
+      if (!el) return;
+
+      const current = el.value;
+      const sorted = [...items].sort((a, b) => (a.nome || '').localeCompare(b.nome || '', 'pt-BR'));
+
+      el.innerHTML = `<option value="">Todas</option>` + sorted.map(item => {
+        const status = item.status === 'inativo' ? ' (Inativo)' : '';
+        const incomplete = item.incomplete ? ' (Incompleto)' : '';
+        return `<option value="${item.id}">${item.nome || 'Sem nome'}${status}${incomplete}</option>`;
+      }).join('');
+
+      if (current && sorted.some(item => item.id === current)) el.value = current;
     }
 
     function renderCompraFilterOptions() {
-      const collections = ['farmacia', 'paciente', 'clinica', 'medico', 'remedio'];
-      collections.forEach(col => {
-        const select = document.getElementById('filter-' + col);
-        if (!select) return;
-        const dataKey = col === 'farmacia' ? 'farmacias' : col + 's';
-        const items = AppState.data[dataKey] || [];
-        
-        let html = '<option value="">Todas</option>';
-        items.sort((a,b) => a.nome.localeCompare(b.nome)).forEach(item => {
-          html += `<option value="${item.id}" ${AppState.filters[col] === item.id ? 'selected' : ''}>${item.nome}</option>`;
-        });
-        select.innerHTML = html;
+      fillFilterSelect('filter-farmacia', 'Farmácia', AppState.data.farmacias);
+      fillFilterSelect('filter-paciente', 'Paciente', AppState.data.pacientes);
+      fillFilterSelect('filter-clinica', 'Clínica', AppState.data.clinicas);
+      fillFilterSelect('filter-medico', 'Médico', AppState.data.medicos);
+      fillFilterSelect('filter-remedio', 'Remédio', AppState.data.remedios);
+      updateCompraFilterBadge();
+    }
+
+    // Novo sistema de filtros com Chips, Drawer e Badges
+    let AppState_QuickFilter = 'todas';
+
+    window.setQuickFilter = (filter) => {
+      AppState_QuickFilter = filter;
+      updateQuickFilterChips();
+      renderCompras();
+    };
+
+    function updateQuickFilterChips() {
+      ['todas', 'confirmadas', 'agendadas'].forEach(f => {
+        const chip = document.getElementById(`chip-${f}`);
+        if (!chip) return;
+        if (f === AppState_QuickFilter) {
+          chip.className = 'quick-filter-chip shrink-0 px-4 py-2 rounded-full text-sm font-bold transition-all bg-blue-600 text-white shadow-md active:scale-95';
+        } else {
+          chip.className = 'quick-filter-chip shrink-0 px-4 py-2 rounded-full text-sm font-bold transition-all bg-slate-100 text-slate-600 active:scale-95 hover:bg-slate-200';
+        }
       });
     }
 
-    function handleCompraFilterChange() {
-      AppState.filters.farmacia = document.getElementById('filter-farmacia').value;
-      AppState.filters.paciente = document.getElementById('filter-paciente').value;
-      AppState.filters.clinica = document.getElementById('filter-clinica').value;
-      AppState.filters.medico = document.getElementById('filter-medico').value;
-      AppState.filters.remedio = document.getElementById('filter-remedio').value;
-      
-      updateFilterBadge();
-      renderCompras();
+    window.toggleFilterDrawer = () => {
+      const drawer = document.getElementById('filter-drawer');
+      const overlay = document.getElementById('filter-drawer-overlay');
+      if (!drawer || !overlay) return;
+
+      drawer.classList.toggle('translate-x-full');
+      overlay.classList.toggle('hidden');
+      if (!overlay.classList.contains('hidden')) {
+        setTimeout(() => overlay.classList.toggle('opacity-0'), 10);
+      } else {
+        overlay.classList.toggle('opacity-0');
+      }
+    };
+
+    window.closeFilterDrawer = () => {
+      const drawer = document.getElementById('filter-drawer');
+      const overlay = document.getElementById('filter-drawer-overlay');
+      if (!drawer || !overlay) return;
+
+      drawer.classList.add('translate-x-full');
+      overlay.classList.add('opacity-0');
+      setTimeout(() => {
+        overlay.classList.add('hidden');
+      }, 300);
+    };
+
+    function updateActiveFiltersBadges() {
+      const filterMap = {
+        'filter-farmacia': 'Farmácia',
+        'filter-paciente': 'Paciente',
+        'filter-clinica': 'Clínica',
+        'filter-medico': 'Médico',
+        'filter-remedio': 'Remédio'
+      };
+
+      const summary = document.getElementById('active-filters-summary');
+      if (!summary) return;
+
+      const activeBadges = [];
+      Object.entries(filterMap).forEach(([id, label]) => {
+        const el = document.getElementById(id);
+        if (el && el.value) {
+          const selectedOption = el.options[el.selectedIndex];
+          const selectedText = selectedOption ? selectedOption.text : el.value;
+          activeBadges.push({ id, label, value: el.value, text: selectedText });
+        }
+      });
+
+      if (activeBadges.length === 0) {
+        summary.classList.add('hidden');
+        summary.innerHTML = '';
+      } else {
+        summary.classList.remove('hidden');
+        summary.innerHTML = activeBadges.map(badge => `
+          <div class="inline-flex items-center gap-2 bg-blue-100 text-blue-700 px-3 py-1.5 rounded-full text-xs font-bold">
+            <span>${badge.label}: ${badge.text}</span>
+            <button onclick="removeFilterBadge('${badge.id}')" class="ml-1 hover:text-blue-900 transition">
+              <i class="fa-solid fa-times"></i>
+            </button>
+          </div>
+        `).join('');
+      }
     }
 
-    function updateFilterBadge() {
-      const count = Object.values(AppState.filters).filter(v => v !== '').length;
+    window.removeFilterBadge = (filterId) => {
+      const el = document.getElementById(filterId);
+      if (el) {
+        el.value = '';
+        handleCompraFilterChange();
+      }
+    };
+
+    window.toggleCompraFilters = () => {
+      toggleFilterDrawer();
+    };
+
+    window.handleCompraFilterChange = () => {
+      updateCompraFilterBadge();
+      updateActiveFiltersBadges();
+      renderCompras();
+    };
+
+    function updateCompraFilterBadge() {
+      const ids = ['filter-farmacia', 'filter-paciente', 'filter-clinica', 'filter-medico', 'filter-remedio'];
+      const activeCount = ids.filter(id => document.getElementById(id)?.value).length;
       const badge = document.getElementById('filter-count-badge');
-      if (count > 0) {
-        badge.innerText = count;
+
+      if (!badge) return;
+
+      if (activeCount > 0) {
+        badge.innerText = activeCount;
         badge.classList.remove('hidden');
       } else {
         badge.classList.add('hidden');
       }
     }
 
-    function clearCompraFilters() {
-      AppState.filters = { farmacia: '', paciente: '', clinica: '', medico: '', remedio: '' };
-      renderCompraFilterOptions();
-      updateFilterBadge();
+    window.clearCompraFilters = () => {
+      ['filter-farmacia', 'filter-paciente', 'filter-clinica', 'filter-medico', 'filter-remedio'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = '';
+      });
+
+      AppState_QuickFilter = 'todas';
+      updateQuickFilterChips();
+      updateCompraFilterBadge();
+      updateActiveFiltersBadges();
       renderCompras();
-    }
+    };
 
-    // RENDERIZAÇÃO DE LISTAS
-    function renderCompras() {
-      const list = document.getElementById('list-compras');
-      const recentList = document.getElementById('dashboard-recent-compras');
-      
-      let filtered = AppState.data.compras;
-      
-      if (AppState.filters.farmacia) filtered = filtered.filter(c => c.farmaciaId === AppState.filters.farmacia);
-      if (AppState.filters.paciente) filtered = filtered.filter(c => c.pacienteId === AppState.filters.paciente);
-      if (AppState.filters.clinica) filtered = filtered.filter(c => c.clinicaId === AppState.filters.clinica);
-      if (AppState.filters.medico) filtered = filtered.filter(c => c.medicoId === AppState.filters.medico);
-      if (AppState.filters.remedio) filtered = filtered.filter(c => c.remedioId === AppState.filters.remedio);
+    window.renderCompras = function renderCompras() {
+      let compras = [...AppState.data.compras];
 
-      const sorted = [...filtered].sort((a,b) => new Date(b.data) - new Date(a.data));
-      
-      const html = sorted.length ? sorted.map(c => generateCompraCard(c)).join('') : '<p class="text-center text-slate-400 py-10">Nenhuma compra encontrada com esses filtros.</p>';
-      list.innerHTML = html;
-      
-      // Dashboard Recent
-      const recent = [...AppState.data.compras].sort((a,b) => new Date(b.data) - new Date(a.data)).slice(0, 5);
-      recentList.innerHTML = recent.length ? recent.map(c => generateCompraCard(c, true)).join('') : '<p class="text-center text-slate-400 py-10 text-sm">Nenhuma compra registrada.</p>';
-      
-      updateChart();
-    }
+      // Apply quick filter by status
+      if (AppState_QuickFilter === 'confirmadas') {
+        compras = compras.filter(c => c.status === 'confirmada');
+      } else if (AppState_QuickFilter === 'agendadas') {
+        compras = compras.filter(c => c.status === 'agendada');
+      }
 
-    function generateCompraCard(c, compact = false) {
-      const farmacia = AppState.data.farmacias.find(f => f.id === c.farmaciaId)?.nome || 'Farmácia não definida';
-      const remedio = AppState.data.remedios.find(r => r.id === c.remedioId)?.nome || 'Remédio';
-      const paciente = AppState.data.pacientes.find(p => p.id === c.pacienteId)?.nome || '';
-      
-      const diff = Math.floor((new Date() - new Date(c.data)) / (1000 * 60 * 60 * 24));
-      const tempo = diff === 0 ? 'Hoje' : `Há ${diff} dias`;
+      const farmaciaId = document.getElementById('filter-farmacia')?.value || '';
+      const pacienteId = document.getElementById('filter-paciente')?.value || '';
+      const clinicaId = document.getElementById('filter-clinica')?.value || '';
+      const medicoId = document.getElementById('filter-medico')?.value || '';
+      const remedioId = document.getElementById('filter-remedio')?.value || '';
 
-      return `
-        <div onclick="editCompra('${c.id}')" class="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition cursor-pointer">
-          <div class="flex justify-between items-start mb-2">
-            <div>
-              <h4 class="font-black text-slate-800 text-sm">${farmacia}</h4>
-              <p class="text-[10px] font-bold text-blue-600 uppercase">${tempo}</p>
+      compras = compras.filter(c =>
+        (!farmaciaId || c.farmaciaId === farmaciaId) &&
+        (!pacienteId || c.pacienteId === pacienteId) &&
+        (!clinicaId || c.clinicaId === clinicaId) &&
+        (!medicoId || c.medicoId === medicoId) &&
+        (!remedioId || c.remedioId === remedioId)
+      );
+
+      compras.sort((a, b) => {
+        if (a.status === 'agendada' && b.status !== 'agendada') return -1;
+        if (a.status !== 'agendada' && b.status === 'agendada') return 1;
+        return new Date(b.data) - new Date(a.data);
+      });
+
+      const cont = document.getElementById('list-compras');
+      if (!cont) return;
+
+      if (!compras.length) {
+        cont.innerHTML = `<div class="text-center py-10 text-slate-400"><i class="fa-solid fa-box-open text-3xl mb-2"></i><p>Nenhuma compra encontrada.</p></div>`;
+        return;
+      }
+
+      cont.innerHTML = compras.map(c => {
+        const farmName = AppState.data.farmacias.find(f => f.id === c.farmaciaId)?.nome || 'Farmácia não informada';
+        const pacName = AppState.data.pacientes.find(p => p.id === c.pacienteId)?.nome || '-';
+        const remName = AppState.data.remedios.find(r => r.id === c.remedioId)?.nome || '-';
+        const clinName = AppState.data.clinicas.find(cl => cl.id === c.clinicaId)?.nome || '-';
+        const medName = AppState.data.medicos.find(m => m.id === c.medicoId)?.nome || '-';
+        const isAgendada = c.status === 'agendada';
+        const borderClass = isAgendada ? 'border-orange-300 border-l-4 border-l-orange-500 bg-orange-50/30' : 'border-slate-100 bg-white';
+        const timeColorClass = isAgendada ? 'text-orange-600' : 'text-blue-600';
+
+        return `<div class="p-4 rounded-xl shadow-sm border ${borderClass} mb-3 transition">
+          <div class="flex justify-between items-start mb-2 gap-3">
+            <div class="min-w-0 pr-2 flex-1">
+              <div class="flex items-start gap-2 flex-wrap">
+                <h4 class="font-black text-slate-800 text-[14px] sm:text-base wrap-two-lines">${farmName}</h4>
+                <span class="status-chip ${isAgendada ? 'status-chip-agendada' : 'status-chip-confirmada'}">${isAgendada ? 'Agendada' : 'Confirmada'}</span>
+                ${c.documentoBase64 ? '<span class="bg-blue-100 text-blue-700 text-[10px] px-1.5 py-0.5 rounded font-bold uppercase tracking-wide"><i class="fa-regular fa-image mr-1"></i>Doc</span>' : ''}
+              </div>
+              <p class="text-xs text-slate-500 wrap-two-lines mt-0.5"><i class="fa-regular fa-user mr-1 text-slate-400"></i>${pacName}</p>
             </div>
-            <span class="status-chip ${c.status === 'confirmada' ? 'status-chip-confirmada' : 'status-chip-agendada'}">${c.status}</span>
+            <div class="text-right shrink-0">
+              <span class="block font-black ${timeColorClass} text-base">${calcularDiasAtras(c.data)}</span>
+              <span class="text-[10px] text-slate-400 font-bold">${(c.data || '').split('-').reverse().join('/')}</span>
+            </div>
           </div>
-          <div class="flex items-center gap-3 mt-3">
-            <div class="w-10 h-10 bg-slate-50 rounded-xl flex items-center justify-center text-slate-400">
-              <i class="fa-solid fa-pills"></i>
-            </div>
-            <div class="flex-1">
-              <p class="text-sm font-bold text-slate-700">${remedio}</p>
-              ${paciente ? `<p class="text-xs text-slate-400 font-medium">${paciente}</p>` : ''}
-            </div>
-            <div class="text-right">
-              <p class="text-sm font-black text-slate-800">R$ ${c.valor.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</p>
-              <p class="text-[10px] font-bold text-slate-400">${c.qtd} un.</p>
-            </div>
+
+          <div class="flex flex-col gap-1.5 text-[11px] text-slate-600 bg-slate-50/80 p-2.5 rounded-lg mb-3 font-medium border border-slate-100/80">
+            <div class="flex items-center gap-2 min-w-0"><i class="fa-solid fa-pills w-3.5 text-center text-slate-400"></i> <span class="font-bold text-slate-700 wrap-two-lines">${remName}</span></div>
+            <div class="flex items-center gap-2 min-w-0"><i class="fa-solid fa-house-medical w-3.5 text-center text-slate-400"></i> <span class="wrap-two-lines">${clinName}</span></div>
+            <div class="flex items-center gap-2 min-w-0"><i class="fa-solid fa-user-doctor w-3.5 text-center text-slate-400"></i> <span class="wrap-two-lines">${medName}</span></div>
           </div>
-        </div>
-      `;
+
+          <div class="flex justify-end gap-2 flex-wrap">
+            ${c.documentoBase64 ? `<button onclick="viewCompraDocument('${c.id}')" class="px-4 py-2 text-xs font-bold text-blue-700 bg-blue-100 rounded-lg hover:bg-blue-200 transition active:scale-95"><i class="fa-regular fa-image mr-1"></i> Doc</button>` : ''}
+            <button onclick="editCompra('${c.id}')" class="px-4 py-2 text-xs font-bold text-slate-600 bg-slate-100 rounded-lg hover:bg-slate-200 transition active:scale-95">Editar</button>
+            ${isAgendada ? `<button onclick="confirmarCompra('${c.id}')" class="px-4 py-2 text-xs font-bold text-white bg-green-500 rounded-lg hover:bg-green-600 shadow-sm transition active:scale-95"><i class="fa-solid fa-check mr-1"></i> Confirmar</button>` : ''}
+          </div>
+        </div>`;
+      }).join('');
+    };
+
+    window.confirmarCompra = async (id) => {
+      const c = AppState.data.compras.find(x => x.id === id);
+      if (c) {
+        c.status = 'confirmada';
+        c.data = new Date().toISOString().split('T')[0];
+        await dbSave('compras', c, id);
+      }
+    };
+
+    window.viewCompraDocument = (id) => {
+      const compra = AppState.data.compras.find(x => x.id === id);
+      if (compra && compra.documentoBase64) {
+        document.getElementById('image-viewer-img').src = compra.documentoBase64;
+        document.getElementById('image-viewer').classList.remove('hidden');
+        document.getElementById('image-viewer').classList.add('flex');
+      }
+    };
+
+    window.filterErpList = () => renderErpList();
+
+    window.setErpSortMode = (mode) => {
+      AppState.erpSort = mode === 'lastPurchase' ? 'lastPurchase' : 'alpha';
+      updateErpSortButtons();
+      renderErpList();
+    };
+
+    function updateErpSortButtons() {
+      const active = 'bg-blue-600 text-white shadow-md';
+      const inactive = 'bg-slate-100 text-slate-600';
+      const btnAlpha = document.getElementById('erp-sort-alpha');
+      const btnLast = document.getElementById('erp-sort-lastPurchase');
+      if (!btnAlpha || !btnLast) return;
+
+      btnAlpha.className = `erp-sort-btn shrink-0 px-4 py-3 rounded-xl text-sm font-black active:scale-95 transition ${AppState.erpSort === 'alpha' ? active : inactive}`;
+      btnLast.className = `erp-sort-btn shrink-0 px-4 py-3 rounded-xl text-sm font-black active:scale-95 transition ${AppState.erpSort === 'lastPurchase' ? active : inactive}`;
     }
 
     function renderErpList() {
-      const list = document.getElementById('list-erp');
-      const items = AppState.data[AppState.erpTab] || [];
-      list.innerHTML = items.length ? items.map(i => `
-        <div onclick="openErpForm('${i.id}')" class="bg-white p-4 rounded-xl border border-slate-100 flex justify-between items-center cursor-pointer hover:bg-slate-50">
-          <span class="font-bold text-slate-700">${i.nome}</span>
-          <i class="fa-solid fa-chevron-right text-slate-300 text-xs"></i>
-        </div>
-      `).join('') : '<p class="text-center text-slate-400 py-10">Nenhum registro encontrado.</p>';
+      const tab = AppState.erpTab;
+      const term = document.getElementById('erp-search').value.toLowerCase();
+      let items = AppState.data[tab].filter(i => Object.values(i).some(v => String(v).toLowerCase().includes(term)));
+      const sortMode = AppState.erpSort || 'alpha';
+      updateErpSortButtons();
+      const idFieldMap = { pacientes: 'pacienteId', medicos: 'medicoId', clinicas: 'clinicaId', farmacias: 'farmaciaId', remedios: 'remedioId' };
+      const currentIdField = idFieldMap[tab];
+
+      const lastPurchaseMap = AppState.data.compras.reduce((acc, c) => {
+        if (c.status !== 'confirmada' || !c[currentIdField] || !c.data) return acc;
+        const time = new Date(c.data + 'T00:00:00').getTime();
+        if (Number.isNaN(time)) return acc;
+        acc[c[currentIdField]] = Math.max(acc[c[currentIdField]] || 0, time);
+        return acc;
+      }, {});
+
+      function getLastPurchaseTime(itemId) {
+        return lastPurchaseMap[itemId] || 0;
+      }
+
+      items.sort((a,b) => {
+        const aInactive = a.status === 'inativo';
+        const bInactive = b.status === 'inativo';
+
+        // Inativos sempre ficam no final da lista do ERP.
+        // Dentro de cada grupo, respeita o modo escolhido.
+        if (aInactive && !bInactive) return 1;
+        if (!aInactive && bInactive) return -1;
+
+        if (sortMode === 'lastPurchase') {
+          const lastA = getLastPurchaseTime(a.id);
+          const lastB = getLastPurchaseTime(b.id);
+
+          if (lastA !== lastB) return lastB - lastA;
+        }
+
+        return (a.nome || '').localeCompare(b.nome || '', 'pt-BR');
+      });
+
+      const cont = document.getElementById('list-erp');
+      if (!items.length) return cont.innerHTML = `<p class="text-center text-slate-500 py-10">Vazio.</p>`;
+
+      const cfg = { pacientes:{i:'fa-user',s:'cpf'}, medicos:{i:'fa-user-doctor',s:'especialidade'}, clinicas:{i:'fa-house-medical',s:'especialidade'}, farmacias:{i:'fa-store',s:'rede'}, remedios:{i:'fa-pills',s:'tipo'} }[tab];
+
+      cont.innerHTML = items.map(item => {
+        const isOff = item.status === 'inativo';
+        const inc = item.incomplete;
+        let bg = isOff ? "bg-red-50 border-red-200 opacity-70" : (inc ? "bg-orange-50 border-orange-300 border-l-4 border-l-orange-500" : "bg-white border-slate-100");
+        return `<div class="${bg} p-4 rounded-2xl shadow-sm border mb-3 flex items-center gap-4 cursor-pointer hover:shadow-md transition active:scale-[0.98]" onclick="viewErpDetails('${tab}', '${item.id}')">
+          <div class="w-12 h-12 rounded-full ${isOff ? 'bg-red-200 text-red-700' : (inc ? 'bg-orange-200 text-orange-700' : 'bg-blue-100 text-blue-600')} flex items-center justify-center shrink-0 text-xl"><i class="fa-solid ${cfg.i}"></i></div>
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center gap-2 flex-wrap"><h4 class="font-bold text-[14px] sm:text-base leading-tight text-slate-800 wrap-two-lines">${item.nome || '-'}</h4>${inc ? '<span class="bg-orange-500 text-white text-[10px] px-1.5 py-0.5 rounded font-bold uppercase tracking-wide">Incompleto</span>' : ''}${isOff ? '<span class="bg-red-100 text-red-700 text-[10px] px-1.5 py-0.5 rounded font-bold uppercase tracking-wide">Inativo</span>' : ''}${item.documentoBase64 ? '<span class="bg-blue-100 text-blue-700 text-[10px] px-1.5 py-0.5 rounded font-bold uppercase tracking-wide"><i class="fa-regular fa-image mr-1"></i>Doc</span>' : ''}</div>
+            <p class="text-xs sm:text-sm ${isOff ? 'text-red-600' : 'text-slate-500'} font-medium wrap-two-lines">${item[cfg.s] || '---'}</p>
+            <p class="text-[10px] mt-1 font-bold text-slate-400 uppercase tracking-wide"><i class="fa-solid fa-clock-rotate-left mr-1"></i>Última Compra: <span class="${isOff ? 'text-red-500' : 'text-blue-500'}">${calcularDiasAtrasLastPurchase(item.id, idFieldMap[tab])}</span></p>
+          </div>
+          <button class="px-3 py-1.5 bg-slate-100 text-slate-600 rounded-lg text-xs font-bold hover:bg-slate-200 shadow-[0_1px_2px_rgba(0,0,0,0.05)]">Ver Mais</button>
+        </div>`;
+      }).join('');
     }
 
-    // MODAIS E FORMULÁRIOS
-    function openModal(title, body, footer) {
+    function calcularDiasAtrasLastPurchase(id, fieldId) {
+      const compras = AppState.data.compras.filter(c => c.status === 'confirmada' && c[fieldId] === id).sort((a,b) => new Date(b.data) - new Date(a.data));
+      if (!compras.length) return 'Nunca';
+      return calcularDiasAtras(compras[0].data);
+    }
+
+    window.viewErpDetails = (tab, id) => {
+      const data = AppState.data[tab].find(i => i.id === id);
+      if (!data) return;
+
+      const fieldsDef = getErpFieldsConfig(tab);
+      let html = `<div class="space-y-4">`;
+      if (data.incomplete) html += `<div class="bg-orange-100 text-orange-800 p-3 rounded-xl text-sm font-bold border border-orange-200 flex items-center gap-2"><i class="fa-solid fa-triangle-exclamation"></i> Cadastro pendente de finalização.</div>`;
+      if (data.status === 'inativo') html += `<div class="bg-red-100 text-red-800 p-3 rounded-xl text-sm font-bold border border-red-200 flex items-center gap-2"><i class="fa-solid fa-ban"></i> Cadastro Inativo.</div>`;
+
+      html += `<div class="bg-slate-50 p-5 rounded-2xl border border-slate-100 grid grid-cols-1 md:grid-cols-2 gap-4">`;
+      fieldsDef.forEach(f => {
+        if (f.hidden || f.type === 'textarea') return;
+        let val = data[f.name] || '-';
+        if (f.type === 'db-select' && data[f.name]) val = AppState.data[f.collection].find(x => x.id === data[f.name])?.nome || '-';
+        if (f.name === 'dataNascimento' && val !== '-') val = val.split('-').reverse().join('/');
+        if (f.name === 'status' && val !== '-') val = val.charAt(0).toUpperCase() + val.slice(1);
+        html += `<div><span class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">${f.label}</span><span class="block font-medium text-slate-800 break-words">${val}</span></div>`;
+      });
+      html += `</div>`;
+
+      if (data.obs) html += `<div class="bg-amber-50 p-4 rounded-2xl border border-amber-100"><span class="block text-[10px] font-bold text-amber-600 uppercase tracking-wider mb-1">Observações</span><p class="text-sm font-medium text-slate-700">${data.obs}</p></div>`;
+      if (tab === 'medicos' && data.crm) html += `<button onclick="consultarCRM('${data.crm}')" class="w-full bg-blue-100 text-blue-700 font-bold py-3.5 rounded-xl shadow-sm hover:bg-blue-200 transition mt-2"><i class="fa-solid fa-magnifying-glass mr-2"></i> Consultar CRM no CREMESP</button>`;
+      if (['pacientes','medicos','clinicas','farmacias','remedios'].includes(tab) && data.documentoBase64) html += `<div class="mt-4"><button onclick="viewDocumentFromDetails('${tab}', '${id}')" class="w-full bg-slate-800 text-white font-bold py-3.5 rounded-xl shadow-md hover:bg-slate-700 transition"><i class="fa-regular fa-image mr-2"></i> Ver Documento Anexo</button></div>`;
+      html += `</div>`;
+
+      const footerHtml = `<button onclick="deleteErpConfirm('${tab}', '${id}')" class="px-4 py-2.5 bg-red-100 text-red-600 rounded-xl font-bold hover:bg-red-200 mr-auto transition flex items-center gap-2"><i class="fa-solid fa-trash"></i> <span class="hidden md:inline">Excluir</span></button><button onclick="closeModal()" class="px-5 py-2.5 bg-slate-200 text-slate-700 rounded-xl font-bold hover:bg-slate-300 transition">Voltar</button><button onclick="openErpForm('${id}')" class="px-6 py-2.5 bg-blue-600 text-white rounded-xl font-bold shadow-md hover:bg-blue-700 transition"><i class="fa-solid fa-pen-to-square mr-2"></i>Editar</button>`;
+      openModal(data.nome || 'Detalhes', html, footerHtml);
+    };
+
+    window.viewDocumentFromDetails = (tab, id) => {
+      const p = AppState.data[tab].find(x => x.id === id);
+      if (p && p.documentoBase64) {
+        document.getElementById('image-viewer-img').src = p.documentoBase64;
+        document.getElementById('image-viewer').classList.remove('hidden');
+        document.getElementById('image-viewer').classList.add('flex');
+      }
+    };
+
+    window.deleteErpConfirm = (tab, id) => {
+      if (confirm("⚠️ ATENÇÃO EXTREMA!\n\nVocê está prestes a excluir este registro PERMANENTEMENTE.\n\nDeseja continuar?")) dbDelete(tab, id).then(() => closeModal());
+    };
+
+    function getErpFieldsConfig(tab) {
+      const b = [
+        { name: 'status', label: 'Status do Cadastro', type: 'select', options: [{val:'ativo', label:'Ativo'}, {val:'inativo', label:'Inativo (Vermelho)'}] },
+        { name: 'obs', label: 'Observações', type: 'textarea' }
+      ];
+      if (tab === 'pacientes') return [
+        { name: 'nome', label: 'Nome Completo' }, { name: 'cpf', label: 'CPF' }, { name: 'rg', label: 'RG' }, { name: 'dataNascimento', label: 'Data Nasc.', type: 'date-calc' },
+        { name: 'signo', label: 'Signo', readonly: true }, { name: 'cep', label: 'CEP', type: 'cep' }, { name: 'logradouro', label: 'Endereço' }, { name: 'numero', label: 'Número' },
+        { name: 'complemento', label: 'Complemento' }, { name: 'bairro', label: 'Bairro' }, { name: 'cidade', label: 'Cidade' }, { name: 'uf', label: 'UF' },
+        { name: 'telefone', label: 'Telefone' }, { name: 'email', label: 'E-mail' }, ...b
+      ];
+      if (tab === 'medicos') return [{ name: 'nome', label: 'Nome' }, { name: 'especialidade', label: 'Especialidade' }, { name: 'crm', label: 'CRM' }, { name: 'uf', label: 'UF do CRM' }, { name: 'rqe', label: 'RQE' }, ...b];
+      if (tab === 'clinicas') return [{ name: 'nome', label: 'Nome' }, { name: 'especialidade', label: 'Especialidade' }, { name: 'medicoResponsavelId', label: 'Méd. Responsável', type: 'db-select', collection: 'medicos' }, ...b];
+      if (tab === 'farmacias') return [{ name: 'nome', label: 'Nome' }, { name: 'rede', label: 'Rede', type: 'select', options: [{val:'Droga Raia', label:'Droga Raia'}, {val:'Drogaria São Paulo', label:'Drogaria São Paulo'}, {val:'Nissei', label:'Nissei'}, {val:'Farma Conde', label:'Farma Conde'}, {val:'Outros', label:'Outros'}] }, { name: 'cep', label: 'CEP', type: 'cep' }, { name: 'logradouro', label: 'Endereço' }, { name: 'telefone', label: 'Telefone' }, ...b];
+      if (tab === 'remedios') return [{ name: 'nome', label: 'Nome' }, { name: 'tipo', label: 'Tipo' }, { name: 'dosagem', label: 'Dosagem' }, { name: 'preco', label: 'Preço (R$)' }, ...b];
+      return [];
+    }
+
+    window.openErpForm = (id = null) => {
+      const tab = AppState.erpTab;
+      const data = id ? AppState.data[tab].find(i => i.id === id) : { status: 'ativo' };
+      let html = generateFormFields(getErpFieldsConfig(tab), data);
+
+      if (['pacientes','medicos','clinicas','farmacias','remedios'].includes(tab)) {
+        const docBase64 = data.documentoBase64 || '';
+        html += `<div class="mt-6 border-t border-slate-200 pt-5">
+          <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-3">Documento Anexo</label>
+          <input type="hidden" id="field-documentoBase64" value="${docBase64}">
+          <div id="doc-upload-area" class="${docBase64 ? 'hidden' : 'block'}">
+            <label class="document-upload-card flex flex-col items-center justify-center w-full border-slate-300 cursor-pointer transition">
+              <i class="fa-solid fa-cloud-arrow-up text-5xl text-slate-400 mb-3"></i>
+              <span class="text-lg font-black text-slate-700">Enviar Documento</span>
+              <input type="file" class="hidden" accept="image/*" onchange="handleImageUpload(event)" />
+            </label>
+          </div>
+          <div id="doc-view-area" class="${docBase64 ? 'block' : 'hidden'}">
+            <button type="button" onclick="viewDocument()" class="w-full bg-slate-800 text-white font-bold py-3.5 rounded-xl shadow-md"><i class="fa-regular fa-image mr-2"></i> Ver / Excluir Imagem</button>
+          </div>
+        </div>`;
+      }
+
+      const footerHtml = `<button onclick="${id ? `viewErpDetails('${tab}','${id}')` : 'closeModal()'}" class="px-5 py-2.5 bg-slate-200 text-slate-700 rounded-xl font-bold hover:bg-slate-300 mr-auto">Cancelar</button><button onclick="saveErp('${tab}', '${id || ''}')" class="px-8 py-2.5 bg-blue-600 text-white rounded-xl font-bold shadow-md hover:bg-blue-700">Salvar Dados</button>`;
+      openModal(`${id ? 'Editar' : 'Novo'} Registro`, html, footerHtml);
+      if (tab === 'pacientes') setTimeout(calcPacienteData, 100);
+    };
+
+    window.openCompraForm = (id = null) => {
+      const data = id ? AppState.data.compras.find(i => i.id === id) : { status: 'confirmada', data: new Date().toISOString().split('T')[0] };
+      const fields = [
+        { name: 'data', label: 'Data da Compra', type: 'date' },
+        { name: 'farmaciaId', label: 'Farmácia', type: 'db-select', collection: 'farmacias' },
+        { name: 'remedioId', label: 'Remédio', type: 'db-select', collection: 'remedios' },
+        { name: 'qtd', label: 'Qtd de Caixas', type: 'number' },
+        { name: 'pacienteId', label: 'Paciente', type: 'db-select', collection: 'pacientes' },
+        { name: 'clinicaId', label: 'Clínica', type: 'db-select', collection: 'clinicas' },
+        { name: 'medicoId', label: 'Médico', type: 'db-select', collection: 'medicos' },
+        { name: 'valor', label: 'Valor Total (R$)' },
+        { name: 'pagamento', label: 'Forma de Pagto' },
+        { name: 'obs', label: 'Observações', type: 'textarea' },
+      ];
+
+      let footerHtml = '';
+      if (id) {
+        footerHtml += `<button onclick="deleteErpConfirm('compras', '${id}')" class="px-4 py-2.5 bg-red-100 text-red-600 rounded-xl font-bold hover:bg-red-200 mr-auto"><i class="fa-solid fa-trash"></i></button><button onclick="closeModal()" class="px-5 py-2.5 bg-slate-200 text-slate-700 rounded-xl font-bold">Cancelar</button><button onclick="saveCompra('${id}', '${data.status}')" class="px-6 py-2.5 bg-blue-600 text-white rounded-xl font-bold shadow-md">Atualizar</button>`;
+      } else {
+        footerHtml += `<button onclick="closeModal()" class="px-5 py-2.5 bg-slate-200 text-slate-700 rounded-xl font-bold mr-auto">Cancelar</button><button onclick="saveCompra('', 'agendada')" class="px-5 py-2.5 bg-orange-100 text-orange-700 border border-orange-300 rounded-xl font-bold shadow-sm">Agendar</button><button onclick="saveCompra('', 'confirmada')" class="px-6 py-2.5 bg-blue-600 text-white rounded-xl font-bold shadow-md">Confirmar</button>`;
+      }
+
+      const docBase64 = data.documentoBase64 || '';
+      let compraFormHtml = generateFormFields(fields, data);
+      compraFormHtml += `<div class="mt-6 border-t border-slate-200 pt-5">
+        <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-3">Documento Anexo</label>
+        <input type="hidden" id="field-documentoBase64" value="${docBase64}">
+        <div id="doc-upload-area" class="${docBase64 ? 'hidden' : 'block'}">
+          <label class="document-upload-card flex flex-col items-center justify-center w-full border-slate-300 cursor-pointer transition">
+            <i class="fa-solid fa-cloud-arrow-up text-5xl text-slate-400 mb-3"></i>
+            <span class="text-lg font-black text-slate-700">Enviar Documento</span>
+            <input type="file" class="hidden" accept="image/*" onchange="handleImageUpload(event)" />
+          </label>
+        </div>
+        <div id="doc-view-area" class="${docBase64 ? 'block' : 'hidden'}">
+          <button type="button" onclick="viewDocument()" class="w-full bg-slate-800 text-white font-bold py-3.5 rounded-xl shadow-md"><i class="fa-regular fa-image mr-2"></i> Ver / Excluir Imagem</button>
+        </div>
+      </div>`;
+
+      openModal(id ? 'Editar Compra' : 'Nova Compra', compraFormHtml, footerHtml);
+
+      const valInp = document.getElementById('field-valor');
+      if (valInp) valInp.addEventListener('input', e => {
+        let v = e.target.value.replace(/\D/g, "");
+        if (v) {
+          v = (parseInt(v) / 100).toFixed(2).replace(".", ",").replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.");
+          e.target.value = v;
+        }
+      });
+    };
+
+    window.editCompra = (id) => openCompraForm(id);
+
+    function generateFormFields(fields, data = {}) {
+      return fields.map(f => {
+        const val = data[f.name] || '';
+        const lClass = "block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1.5";
+        const iClass = "w-full bg-slate-50 border border-slate-200 rounded-xl p-3.5 text-sm font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition shadow-[inset_0_1px_2px_rgba(0,0,0,0.02)]";
+
+        if (f.type === 'select') return `<div class="mb-4"><label class="${lClass}">${f.label}</label><select id="field-${f.name}" class="${iClass}">${f.options.map(o => `<option value="${o.val}" ${val === o.val ? 'selected' : ''}>${o.label}</option>`).join('')}</select></div>`;
+
+        if (f.type === 'textarea') return `<div class="mb-4"><label class="${lClass}">${f.label}</label><textarea id="field-${f.name}" rows="3" class="${iClass}">${val}</textarea></div>`;
+
+        if (f.type === 'db-select') {
+          const items = [...AppState.data[f.collection]].sort((a,b) => (a.nome || '').localeCompare(b.nome || '', 'pt-BR'));
+          return `<div class="mb-4"><label class="${lClass}">${f.label}</label><div class="flex gap-2"><select id="field-${f.name}" class="${iClass} flex-1"><option value="">Selecione...</option>${items.map(i => `<option value="${i.id}" ${val === i.id ? 'selected' : ''}>${i.nome}</option>`).join('')}</select><button type="button" onclick="openQuickAdd('${f.collection}', 'field-${f.name}')" class="w-12 bg-blue-100 text-blue-600 rounded-xl hover:bg-blue-200 transition font-bold shrink-0 shadow-sm border border-blue-200 text-lg"><i class="fa-solid fa-plus"></i></button></div></div>`;
+        }
+
+        if (f.type === 'cep') return `<div class="mb-4"><label class="${lClass}">${f.label}</label><input type="text" id="field-${f.name}" value="${val}" placeholder="00000-000" class="${iClass}" onblur="buscarCEP(this.value)"></div>`;
+
+        if (f.type === 'date-calc') return `<div class="mb-4"><label class="${lClass}">${f.label}</label><input type="date" id="field-${f.name}" value="${val}" class="${iClass}" onchange="calcPacienteData()"><div id="calc-result-dataNascimento" class="text-xs text-blue-600 font-bold mt-1.5 ml-1 h-4"></div></div>`;
+
+        return `<div class="mb-4"><label class="${lClass}">${f.label}</label><input type="${f.type || 'text'}" id="field-${f.name}" value="${val}" ${f.readonly ? 'readonly' : ''} class="${iClass} ${f.readonly ? 'bg-slate-100 text-slate-500' : ''}"></div>`;
+      }).join('');
+    }
+
+    window.openQuickAdd = (collection, selectId) => {
+      document.getElementById('quick-add-collection').value = collection;
+      document.getElementById('quick-add-select-id').value = selectId;
+      document.getElementById('quick-add-input').value = '';
+      const overlay = document.getElementById('quick-add-overlay');
+      const content = document.getElementById('quick-add-content');
+      overlay.classList.remove('hidden');
+      setTimeout(() => {
+        overlay.classList.remove('opacity-0');
+        content.classList.remove('scale-95');
+        document.getElementById('quick-add-input').focus();
+      }, 10);
+    };
+
+    window.closeQuickAdd = () => {
+      const overlay = document.getElementById('quick-add-overlay');
+      const content = document.getElementById('quick-add-content');
+      overlay.classList.add('opacity-0');
+      content.classList.add('scale-95');
+      setTimeout(() => overlay.classList.add('hidden'), 300);
+    };
+
+    window.confirmQuickAdd = async () => {
+      const name = document.getElementById('quick-add-input').value.trim();
+      if (!name) return showToast("Digite um nome!", "error");
+      const collection = document.getElementById('quick-add-collection').value;
+      const selectId = document.getElementById('quick-add-select-id').value;
+      const newId = await dbSave(collection, { nome: name, status: 'ativo', incomplete: true });
+      if (newId) {
+        const select = document.getElementById(selectId);
+        if (select) {
+          const opt = document.createElement('option');
+          opt.value = newId;
+          opt.text = name;
+          opt.selected = true;
+          select.appendChild(opt);
+        }
+        closeQuickAdd();
+      }
+    };
+
+    window.saveErp = async (colName, id) => {
+      const dataObj = {};
+      document.querySelectorAll('#modal-body input, #modal-body select, #modal-body textarea').forEach(i => {
+        if (i.id?.startsWith('field-')) dataObj[i.id.replace('field-', '')] = i.value;
+      });
+      dataObj.incomplete = false;
+      if (await dbSave(colName, dataObj, id)) {
+        closeModal();
+        if (id) viewErpDetails(colName, id);
+        renderCompraFilterOptions();
+      }
+    };
+
+    window.saveCompra = async (id, status) => {
+      const dataObj = { status };
+      document.querySelectorAll('#modal-body input, #modal-body select, #modal-body textarea').forEach(i => {
+        if (i.id?.startsWith('field-')) {
+          let k = i.id.replace('field-', '');
+          let v = i.value;
+          if (k === 'valor') v = parseFloat(v.replace(/\./g, '').replace(',', '.')) || 0;
+          dataObj[k] = v;
+        }
+      });
+
+      if (!dataObj.remedioId || !dataObj.data) return showToast("Data e Remédio obrigatórios.", "error");
+
+      if (await dbSave('compras', dataObj, id)) {
+        closeModal();
+        renderCompras();
+      }
+    };
+
+    window.openModal = (title, bodyHtml, footerHtml) => {
       document.getElementById('modal-title').innerText = title;
-      document.getElementById('modal-body').innerHTML = body;
-      document.getElementById('modal-footer').innerHTML = footer;
+      document.getElementById('modal-body').innerHTML = bodyHtml;
+      document.getElementById('modal-footer').innerHTML = footerHtml;
       const overlay = document.getElementById('modal-overlay');
       const content = document.getElementById('modal-content');
       overlay.classList.remove('hidden');
       setTimeout(() => {
         overlay.classList.remove('opacity-0');
-        content.classList.remove('translate-y-full', 'scale-95');
+        if (window.innerWidth < 768) content.classList.remove('translate-y-full');
+        else content.classList.remove('scale-95');
       }, 10);
-    }
+    };
 
-    function closeModal() {
+    window.closeModal = () => {
       const overlay = document.getElementById('modal-overlay');
       const content = document.getElementById('modal-content');
       overlay.classList.add('opacity-0');
-      content.classList.add('translate-y-full');
-      setTimeout(() => overlay.classList.add('hidden'), 300);
-    }
+      if (window.innerWidth < 768) content.classList.add('translate-y-full');
+      else content.classList.add('scale-95');
+      setTimeout(() => {
+        overlay.classList.add('hidden');
+        document.getElementById('modal-body').innerHTML = '';
+      }, 300);
+    };
 
-    function openCompraForm(id = null) {
-      const c = id ? AppState.data.compras.find(x => x.id === id) : {id: '', data: new Date().toISOString().split('T')[0], farmaciaId: '', remedioId: '', pacienteId: '', clinicaId: '', medicoId: '', valor: 0, qtd: 1, status: 'confirmada'};
-      
-      const html = `
-        <div class="space-y-4">
-          <div>
-            <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Data</label>
-            <input type="date" id="f-data" value="${c.data}" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm">
-          </div>
-          <div class="grid grid-cols-2 gap-3">
-            <div>
-              <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Farmácia</label>
-              <select id="f-farmacia" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm">
-                <option value="">Selecione...</option>
-                ${AppState.data.farmacias.map(f => `<option value="${f.id}" ${f.id === c.farmaciaId ? 'selected' : ''}>${f.nome}</option>`).join('')}
-              </select>
-            </div>
-            <div>
-              <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Remédio</label>
-              <select id="f-remedio" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm">
-                <option value="">Selecione...</option>
-                ${AppState.data.remedios.map(r => `<option value="${r.id}" ${r.id === c.remedioId ? 'selected' : ''}>${r.nome}</option>`).join('')}
-              </select>
-            </div>
-          </div>
-          <div class="grid grid-cols-2 gap-3">
-            <div>
-              <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Paciente</label>
-              <select id="f-paciente" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm">
-                <option value="">Selecione...</option>
-                ${AppState.data.pacientes.map(p => `<option value="${p.id}" ${p.id === c.pacienteId ? 'selected' : ''}>${p.nome}</option>`).join('')}
-              </select>
-            </div>
-            <div>
-              <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Clínica</label>
-              <select id="f-clinica" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm">
-                <option value="">Selecione...</option>
-                ${AppState.data.clinicas.map(cl => `<option value="${cl.id}" ${cl.id === c.clinicaId ? 'selected' : ''}>${cl.nome}</option>`).join('')}
-              </select>
-            </div>
-          </div>
-          <div>
-            <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Médico</label>
-            <select id="f-medico" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm">
-              <option value="">Selecione...</option>
-              ${AppState.data.medicos.map(m => `<option value="${m.id}" ${m.id === c.medicoId ? 'selected' : ''}>${m.nome}</option>`).join('')}
-            </select>
-          </div>
-          <div class="grid grid-cols-2 gap-3">
-            <div>
-              <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Valor (R$)</label>
-              <input type="number" step="0.01" id="f-valor" value="${c.valor}" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm">
-            </div>
-            <div>
-              <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Qtd</label>
-              <input type="number" id="f-qtd" value="${c.qtd}" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm">
-            </div>
-          </div>
-        </div>
-      `;
+    window.showToast = (msg, type = "info") => {
+      const toast = document.getElementById('toast');
+      const icon = document.getElementById('toast-icon');
+      document.getElementById('toast-msg').innerText = msg;
+      toast.className = `fixed top-20 left-1/2 transform -translate-x-1/2 px-5 py-3 rounded-xl shadow-xl z-[110] transition-opacity duration-300 flex items-center gap-3 font-bold text-white ${type === 'error' ? 'bg-red-600' : (type === 'success' ? 'bg-green-600' : 'bg-slate-800')}`;
+      icon.className = `text-lg fa-solid ${type === 'error' ? 'fa-triangle-exclamation' : (type === 'success' ? 'fa-check-circle' : 'fa-info-circle')}`;
+      toast.classList.remove('opacity-0');
+      setTimeout(() => toast.classList.add('opacity-0'), 3000);
+    };
 
-      const footer = `
-        <button onclick="closeModal()" class="flex-1 py-3 bg-slate-100 text-slate-600 rounded-xl font-bold">Cancelar</button>
-        <button onclick="saveCompra('${id}')" class="flex-1 py-3 bg-blue-600 text-white rounded-xl font-bold shadow-md">Salvar</button>
-      `;
-
-      openModal(id ? 'Editar Compra' : 'Nova Compra', html, footer);
-    }
-
-    function saveCompra(id) {
-      const data = {
-        id: id || 'c' + Date.now(),
-        data: document.getElementById('f-data').value,
-        farmaciaId: document.getElementById('f-farmacia').value,
-        remedioId: document.getElementById('f-remedio').value,
-        pacienteId: document.getElementById('f-paciente').value,
-        clinicaId: document.getElementById('f-clinica').value,
-        medicoId: document.getElementById('f-medico').value,
-        valor: parseFloat(document.getElementById('f-valor').value) || 0,
-        qtd: parseInt(document.getElementById('f-qtd').value) || 1,
-        status: 'confirmada'
-      };
-
-      if (id) {
-        const idx = AppState.data.compras.findIndex(x => x.id === id);
-        AppState.data.compras[idx] = data;
-      } else {
-        AppState.data.compras.push(data);
+    window.buscarCEP = async (cep) => {
+      if ((cep = cep.replace(/\D/g, '')).length === 8) {
+        try {
+          const d = await (await fetch(`https://viacep.com.br/ws/${cep}/json/`)).json();
+          if (!d.erro) {
+            ['logradouro', 'bairro', 'localidade', 'uf'].forEach(k => {
+              const el = document.getElementById(`field-${k === 'localidade' ? 'cidade' : k}`);
+              if (el) el.value = d[k];
+            });
+            showToast("Endereço preenchido!", "success");
+          }
+        } catch(e) {}
       }
+    };
 
-      saveData();
-      closeModal();
-      renderCompras();
-    }
+    window.calcPacienteData = () => {
+      const val = document.getElementById('field-dataNascimento')?.value;
+      if (!val) return;
+      const date = new Date(val + 'T12:00:00');
+      const today = new Date();
+      let age = today.getFullYear() - date.getFullYear();
+      let m = today.getMonth() - date.getMonth();
+      if (m < 0 || (m === 0 && today.getDate() < date.getDate())) age--;
 
-    function openErpForm(id = null) {
-      const item = id ? AppState.data[AppState.erpTab].find(x => x.id === id) : {id: '', nome: ''};
-      const html = `
-        <div>
-          <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Nome</label>
-          <input type="text" id="f-erp-nome" value="${item.nome}" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm" placeholder="Digite o nome...">
-        </div>
-      `;
-      const footer = `
-        <button onclick="closeModal()" class="flex-1 py-3 bg-slate-100 text-slate-600 rounded-xl font-bold">Cancelar</button>
-        <button onclick="saveErp('${id}')" class="flex-1 py-3 bg-blue-600 text-white rounded-xl font-bold shadow-md">Salvar</button>
-      `;
-      openModal(id ? 'Editar Registro' : 'Novo Registro', html, footer);
-    }
+      const d = date.getDate();
+      const mo = date.getMonth() + 1;
+      let sign = "";
+      if ((mo == 1 && d <= 20) || (mo == 12 && d >= 22)) sign = "Capricórnio";
+      else if ((mo == 1 && d >= 21) || (mo == 2 && d <= 18)) sign = "Aquário";
+      else if ((mo == 2 && d >= 19) || (mo == 3 && d <= 20)) sign = "Peixes";
+      else if ((mo == 3 && d >= 21) || (mo == 4 && d <= 20)) sign = "Áries";
+      else if ((mo == 4 && d >= 21) || (mo == 5 && d <= 20)) sign = "Touro";
+      else if ((mo == 5 && d >= 21) || (mo == 6 && d <= 20)) sign = "Gêmeos";
+      else if ((mo == 6 && d >= 21) || (mo == 7 && d <= 22)) sign = "Câncer";
+      else if ((mo == 7 && d >= 23) || (mo == 8 && d <= 23)) sign = "Leão";
+      else if ((mo == 8 && d >= 24) || (mo == 9 && d <= 23)) sign = "Virgem";
+      else if ((mo == 9 && d >= 24) || (mo == 10 && d <= 23)) sign = "Libra";
+      else if ((mo == 10 && d >= 24) || (mo == 11 && d <= 22)) sign = "Escorpião";
+      else if ((mo == 11 && d >= 23) || (mo == 12 && d <= 21)) sign = "Sagitário";
 
-    function saveErp(id) {
-      const nome = document.getElementById('f-erp-nome').value;
-      if (!nome) return;
+      const result = document.getElementById('calc-result-dataNascimento');
+      if (result) result.innerText = `${age} anos`;
+      const fSigno = document.getElementById('field-signo');
+      if (fSigno) fSigno.value = sign;
+    };
 
-      if (id) {
-        const idx = AppState.data[AppState.erpTab].findIndex(x => x.id === id);
-        AppState.data[AppState.erpTab][idx].nome = nome;
-      } else {
-        AppState.data[AppState.erpTab].push({id: AppState.erpTab[0] + Date.now(), nome, status: 'ativo'});
-      }
-
-      saveData();
-      closeModal();
-      renderErpList();
-      renderCompraFilterOptions();
-    }
-
-    function editCompra(id) {
-      openCompraForm(id);
-    }
-
-    // GRÁFICO
-    let mainChart;
-    function initChart() {
-      const ctx = document.getElementById('mainChart').getContext('2d');
-      mainChart = new Chart(ctx, {
-        type: 'line',
-        data: {
-          labels: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun'],
-          datasets: [{
-            label: 'Gastos',
-            data: [0, 0, 0, 0, 0, 0],
-            borderColor: '#2563eb',
-            backgroundColor: 'rgba(37, 99, 235, 0.1)',
-            fill: true,
-            tension: 0.4
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: { legend: { display: false } },
-          scales: { y: { beginAtZero: true, display: false }, x: { grid: { display: false } } }
+    window.consultarCRM = (crm) => {
+      navigator.clipboard.writeText(crm).then(() => {
+        showToast("Copiado! Redirecionando...");
+        setTimeout(() => window.open('https://guiamedico.cremesp.org.br/', '_blank'), 800);
+      }).catch(() => {
+        const t = document.createElement("textarea");
+        t.value = crm;
+        document.body.appendChild(t);
+        t.select();
+        try {
+          document.execCommand('copy');
+          showToast("Copiado! Redirecionando...");
+          setTimeout(() => window.open('https://guiamedico.cremesp.org.br/', '_blank'), 800);
+        } catch(e) {
+          showToast("Erro ao copiar.", "error");
         }
+        document.body.removeChild(t);
       });
-      updateChart();
-    }
+    };
 
-    function updateChart() {
-      if (!mainChart) return;
-      const total = AppState.data.compras.reduce((acc, c) => acc + c.valor, 0);
-      document.getElementById('chart-total-label').innerText = total.toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'});
-      
-      // Simulação de dados por mês
-      const data = [total * 0.1, total * 0.3, total * 0.2, total * 0.5, total * 0.4, total];
-      mainChart.data.datasets[0].data = data;
-      mainChart.update();
-    }
+    window.handleImageUpload = (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const r = new FileReader();
+      r.onload = function(ev) {
+        const img = new Image();
+        img.onload = function() {
+          const canvas = document.createElement('canvas');
+          const ctx = canvas.getContext('2d');
+          let w = img.width;
+          let h = img.height;
+          if (w > h) {
+            if (w > 800) { h *= 800 / w; w = 800; }
+          } else {
+            if (h > 800) { w *= 800 / h; h = 800; }
+          }
+          canvas.width = w;
+          canvas.height = h;
+          ctx.drawImage(img, 0, 0, w, h);
+          document.getElementById('field-documentoBase64').value = canvas.toDataURL('image/jpeg', 0.6);
+          document.getElementById('doc-upload-area').classList.add('hidden');
+          document.getElementById('doc-view-area').classList.remove('hidden');
+          showToast("Documento processado!", "success");
+        };
+        img.src = ev.target.result;
+      };
+      r.readAsDataURL(file);
+    };
+
+    window.viewDocument = () => {
+      const b64 = document.getElementById('field-documentoBase64').value;
+      if (b64) {
+        document.getElementById('image-viewer-img').src = b64;
+        document.getElementById('image-viewer').classList.remove('hidden');
+        document.getElementById('image-viewer').classList.add('flex');
+      }
+    };
+
+    window.closeImageViewer = () => {
+      document.getElementById('image-viewer').classList.add('hidden');
+      document.getElementById('image-viewer').classList.remove('flex');
+    };
+
+    window.deleteCurrentDocument = () => {
+      if (confirm('Apagar documento atual?')) {
+        document.getElementById('field-documentoBase64').value = '';
+        document.getElementById('doc-upload-area').classList.remove('hidden');
+        document.getElementById('doc-view-area').classList.add('hidden');
+        closeImageViewer();
+      }
+    };
+
+    document.addEventListener('DOMContentLoaded', () => initApp());
   </script>
 </body>
 </html>
