@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <meta name="theme-color" content="#2563eb">
-  <title>Controle de Farmácias - INDEX1</title>
+  <title>Controle de Farmácias</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -56,6 +56,22 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
 #erp-search, #auth-email, #auth-pass, select, input, textarea { border-radius: 18px !important; }
 #mobile-nav { left: 16px; right: 16px; bottom: 14px; width: calc(100% - 32px) !important; border-radius: 28px; border: 1px solid rgba(148,163,184,.25) !important; box-shadow: 0 18px 45px rgba(15,23,42,.18); overflow: hidden; }
 #modal-content { border-radius: 32px !important; }
+
+
+/* ==== Upgrades oficiais: animações, indicadores e documento anexo em todo ERP ==== */
+@keyframes fadeSlideUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes softPulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(37,99,235,.28); } 50% { box-shadow: 0 0 0 8px rgba(37,99,235,0); } }
+.view-section:not(.hidden) { animation: fadeSlideUp .28s ease both; }
+#list-erp > div, #list-compras > div, #dashboard-recent-compras > div { animation: fadeSlideUp .22s ease both; }
+#list-erp > div:hover, #list-compras > div:hover, #dashboard-recent-compras > div:hover { transform: translateY(-2px); }
+.quick-action-card { background: rgba(255,255,255,.78); border: 1px solid rgba(148,163,184,.22); border-radius: 22px; box-shadow: 0 12px 30px rgba(15,23,42,.06); }
+.status-chip { display:inline-flex; align-items:center; gap:.35rem; padding:.25rem .55rem; border-radius:999px; font-size:10px; font-weight:900; letter-spacing:.03em; text-transform:uppercase; white-space:nowrap; }
+.status-chip-confirmada { background:#dcfce7; color:#15803d; }
+.status-chip-agendada { background:#ffedd5; color:#c2410c; animation: softPulse 1.8s ease infinite; }
+.document-upload-card { min-height: 176px; border-style: dashed !important; border-width: 2px !important; border-radius: 26px !important; background: linear-gradient(180deg, rgba(248,250,252,.96), rgba(241,245,249,.86)); }
+.document-upload-card:hover { background: #f8fafc; border-color: #93c5fd !important; }
+.floating-quick-buy { position: fixed; right: 18px; bottom: 94px; z-index: 45; box-shadow: 0 18px 35px rgba(37,99,235,.28); }
+@media (min-width: 768px) { .floating-quick-buy { display: none; } }
 
   </style>
 </head>
@@ -289,6 +305,11 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
 
     </div>
   </main>
+
+
+  <button onclick="openCompraForm()" class="floating-quick-buy bg-blue-600 text-white w-14 h-14 rounded-full flex items-center justify-center text-xl active:scale-95 transition" title="Nova Compra">
+    <i class="fa-solid fa-cart-plus"></i>
+  </button>
 
   <!-- Mobile Bottom Navigation -->
   <nav id="mobile-nav" class="md:hidden fixed bottom-0 w-full bg-white border-t border-slate-200 z-40 pb-safe hidden">
@@ -779,9 +800,13 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
         const timeColorClass = isAgendada ? 'text-orange-600' : 'text-blue-600';
 
         return `<div class="p-4 rounded-xl shadow-sm border ${borderClass} mb-3 transition">
-          <div class="flex justify-between items-start mb-2">
+          <div class="flex justify-between items-start mb-2 gap-3">
             <div class="min-w-0 pr-2 flex-1">
-              <h4 class="font-black text-slate-800 text-[14px] sm:text-base wrap-two-lines">${farmName}</h4>
+              <div class="flex items-start gap-2 flex-wrap">
+                <h4 class="font-black text-slate-800 text-[14px] sm:text-base wrap-two-lines">${farmName}</h4>
+                <span class="status-chip ${isAgendada ? 'status-chip-agendada' : 'status-chip-confirmada'}">${isAgendada ? 'Agendada' : 'Confirmada'}</span>
+                ${c.documentoBase64 ? '<span class="bg-blue-100 text-blue-700 text-[10px] px-1.5 py-0.5 rounded font-bold uppercase tracking-wide"><i class="fa-regular fa-image mr-1"></i>Doc</span>' : ''}
+              </div>
               <p class="text-xs text-slate-500 wrap-two-lines mt-0.5"><i class="fa-regular fa-user mr-1 text-slate-400"></i>${pacName}</p>
             </div>
             <div class="text-right shrink-0">
@@ -796,7 +821,8 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
             <div class="flex items-center gap-2 min-w-0"><i class="fa-solid fa-user-doctor w-3.5 text-center text-slate-400"></i> <span class="wrap-two-lines">${medName}</span></div>
           </div>
 
-          <div class="flex justify-end gap-2">
+          <div class="flex justify-end gap-2 flex-wrap">
+            ${c.documentoBase64 ? `<button onclick="viewCompraDocument('${c.id}')" class="px-4 py-2 text-xs font-bold text-blue-700 bg-blue-100 rounded-lg hover:bg-blue-200 transition active:scale-95"><i class="fa-regular fa-image mr-1"></i> Doc</button>` : ''}
             <button onclick="editCompra('${c.id}')" class="px-4 py-2 text-xs font-bold text-slate-600 bg-slate-100 rounded-lg hover:bg-slate-200 transition active:scale-95">Editar</button>
             ${isAgendada ? `<button onclick="confirmarCompra('${c.id}')" class="px-4 py-2 text-xs font-bold text-white bg-green-500 rounded-lg hover:bg-green-600 shadow-sm transition active:scale-95"><i class="fa-solid fa-check mr-1"></i> Confirmar</button>` : ''}
           </div>
@@ -810,6 +836,15 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
         c.status = 'confirmada';
         c.data = new Date().toISOString().split('T')[0];
         await dbSave('compras', c, id);
+      }
+    };
+
+    window.viewCompraDocument = (id) => {
+      const compra = AppState.data.compras.find(x => x.id === id);
+      if (compra && compra.documentoBase64) {
+        document.getElementById('image-viewer-img').src = compra.documentoBase64;
+        document.getElementById('image-viewer').classList.remove('hidden');
+        document.getElementById('image-viewer').classList.add('flex');
       }
     };
 
@@ -841,13 +876,16 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
       const idFieldMap = { pacientes: 'pacienteId', medicos: 'medicoId', clinicas: 'clinicaId', farmacias: 'farmaciaId', remedios: 'remedioId' };
       const currentIdField = idFieldMap[tab];
 
-      function getLastPurchaseTime(itemId) {
-        const timestamps = AppState.data.compras
-          .filter(c => c.status === 'confirmada' && c[currentIdField] === itemId && c.data)
-          .map(c => new Date(c.data + 'T00:00:00').getTime())
-          .filter(time => !Number.isNaN(time));
+      const lastPurchaseMap = AppState.data.compras.reduce((acc, c) => {
+        if (c.status !== 'confirmada' || !c[currentIdField] || !c.data) return acc;
+        const time = new Date(c.data + 'T00:00:00').getTime();
+        if (Number.isNaN(time)) return acc;
+        acc[c[currentIdField]] = Math.max(acc[c[currentIdField]] || 0, time);
+        return acc;
+      }, {});
 
-        return timestamps.length ? Math.max(...timestamps) : 0;
+      function getLastPurchaseTime(itemId) {
+        return lastPurchaseMap[itemId] || 0;
       }
 
       items.sort((a,b) => {
@@ -873,7 +911,7 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
         return `<div class="${bg} p-4 rounded-2xl shadow-sm border mb-3 flex items-center gap-4 cursor-pointer hover:shadow-md transition active:scale-[0.98]" onclick="viewErpDetails('${tab}', '${item.id}')">
           <div class="w-12 h-12 rounded-full ${isOff ? 'bg-red-200 text-red-700' : (inc ? 'bg-orange-200 text-orange-700' : 'bg-blue-100 text-blue-600')} flex items-center justify-center shrink-0 text-xl"><i class="fa-solid ${cfg.i}"></i></div>
           <div class="flex-1 min-w-0">
-            <div class="flex items-center gap-2"><h4 class="font-bold text-[14px] sm:text-base leading-tight text-slate-800 wrap-two-lines">${item.nome || '-'}</h4>${inc ? '<span class="bg-orange-500 text-white text-[10px] px-1.5 py-0.5 rounded font-bold uppercase tracking-wide">Incompleto</span>' : ''}</div>
+            <div class="flex items-center gap-2 flex-wrap"><h4 class="font-bold text-[14px] sm:text-base leading-tight text-slate-800 wrap-two-lines">${item.nome || '-'}</h4>${inc ? '<span class="bg-orange-500 text-white text-[10px] px-1.5 py-0.5 rounded font-bold uppercase tracking-wide">Incompleto</span>' : ''}${isOff ? '<span class="bg-red-100 text-red-700 text-[10px] px-1.5 py-0.5 rounded font-bold uppercase tracking-wide">Inativo</span>' : ''}${item.documentoBase64 ? '<span class="bg-blue-100 text-blue-700 text-[10px] px-1.5 py-0.5 rounded font-bold uppercase tracking-wide"><i class="fa-regular fa-image mr-1"></i>Doc</span>' : ''}</div>
             <p class="text-xs sm:text-sm ${isOff ? 'text-red-600' : 'text-slate-500'} font-medium wrap-two-lines">${item[cfg.s] || '---'}</p>
             <p class="text-[10px] mt-1 font-bold text-slate-400 uppercase tracking-wide"><i class="fa-solid fa-clock-rotate-left mr-1"></i>Última Compra: <span class="${isOff ? 'text-red-500' : 'text-blue-500'}">${calcularDiasAtrasLastPurchase(item.id, idFieldMap[tab])}</span></p>
           </div>
@@ -910,7 +948,7 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
 
       if (data.obs) html += `<div class="bg-amber-50 p-4 rounded-2xl border border-amber-100"><span class="block text-[10px] font-bold text-amber-600 uppercase tracking-wider mb-1">Observações</span><p class="text-sm font-medium text-slate-700">${data.obs}</p></div>`;
       if (tab === 'medicos' && data.crm) html += `<button onclick="consultarCRM('${data.crm}')" class="w-full bg-blue-100 text-blue-700 font-bold py-3.5 rounded-xl shadow-sm hover:bg-blue-200 transition mt-2"><i class="fa-solid fa-magnifying-glass mr-2"></i> Consultar CRM no CREMESP</button>`;
-      if ((tab === 'pacientes' || tab === 'medicos') && data.documentoBase64) html += `<div class="mt-4"><button onclick="viewDocumentFromDetails('${tab}', '${id}')" class="w-full bg-slate-800 text-white font-bold py-3.5 rounded-xl shadow-md hover:bg-slate-700 transition"><i class="fa-regular fa-image mr-2"></i> Ver Documento Anexo</button></div>`;
+      if (['pacientes','medicos','clinicas','farmacias','remedios'].includes(tab) && data.documentoBase64) html += `<div class="mt-4"><button onclick="viewDocumentFromDetails('${tab}', '${id}')" class="w-full bg-slate-800 text-white font-bold py-3.5 rounded-xl shadow-md hover:bg-slate-700 transition"><i class="fa-regular fa-image mr-2"></i> Ver Documento Anexo</button></div>`;
       html += `</div>`;
 
       const footerHtml = `<button onclick="deleteErpConfirm('${tab}', '${id}')" class="px-4 py-2.5 bg-red-100 text-red-600 rounded-xl font-bold hover:bg-red-200 mr-auto transition flex items-center gap-2"><i class="fa-solid fa-trash"></i> <span class="hidden md:inline">Excluir</span></button><button onclick="closeModal()" class="px-5 py-2.5 bg-slate-200 text-slate-700 rounded-xl font-bold hover:bg-slate-300 transition">Voltar</button><button onclick="openErpForm('${id}')" class="px-6 py-2.5 bg-blue-600 text-white rounded-xl font-bold shadow-md hover:bg-blue-700 transition"><i class="fa-solid fa-pen-to-square mr-2"></i>Editar</button>`;
@@ -953,15 +991,15 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
       const data = id ? AppState.data[tab].find(i => i.id === id) : { status: 'ativo' };
       let html = generateFormFields(getErpFieldsConfig(tab), data);
 
-      if (tab === 'pacientes' || tab === 'medicos') {
+      if (['pacientes','medicos','clinicas','farmacias','remedios'].includes(tab)) {
         const docBase64 = data.documentoBase64 || '';
         html += `<div class="mt-6 border-t border-slate-200 pt-5">
           <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-3">Documento Anexo</label>
           <input type="hidden" id="field-documentoBase64" value="${docBase64}">
           <div id="doc-upload-area" class="${docBase64 ? 'hidden' : 'block'}">
-            <label class="flex flex-col items-center justify-center w-full h-32 border-2 border-slate-300 border-dashed rounded-xl cursor-pointer bg-slate-50 hover:bg-slate-100 transition">
-              <i class="fa-solid fa-cloud-arrow-up text-3xl text-slate-400 mb-2"></i>
-              <span class="text-sm font-bold text-slate-600">Enviar Documento</span>
+            <label class="document-upload-card flex flex-col items-center justify-center w-full border-slate-300 cursor-pointer transition">
+              <i class="fa-solid fa-cloud-arrow-up text-5xl text-slate-400 mb-3"></i>
+              <span class="text-lg font-black text-slate-700">Enviar Documento</span>
               <input type="file" class="hidden" accept="image/*" onchange="handleImageUpload(event)" />
             </label>
           </div>
@@ -998,7 +1036,24 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
         footerHtml += `<button onclick="closeModal()" class="px-5 py-2.5 bg-slate-200 text-slate-700 rounded-xl font-bold mr-auto">Cancelar</button><button onclick="saveCompra('', 'agendada')" class="px-5 py-2.5 bg-orange-100 text-orange-700 border border-orange-300 rounded-xl font-bold shadow-sm">Agendar</button><button onclick="saveCompra('', 'confirmada')" class="px-6 py-2.5 bg-blue-600 text-white rounded-xl font-bold shadow-md">Confirmar</button>`;
       }
 
-      openModal(id ? 'Editar Compra' : 'Nova Compra', generateFormFields(fields, data), footerHtml);
+      const docBase64 = data.documentoBase64 || '';
+      let compraFormHtml = generateFormFields(fields, data);
+      compraFormHtml += `<div class="mt-6 border-t border-slate-200 pt-5">
+        <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-3">Documento Anexo</label>
+        <input type="hidden" id="field-documentoBase64" value="${docBase64}">
+        <div id="doc-upload-area" class="${docBase64 ? 'hidden' : 'block'}">
+          <label class="document-upload-card flex flex-col items-center justify-center w-full border-slate-300 cursor-pointer transition">
+            <i class="fa-solid fa-cloud-arrow-up text-5xl text-slate-400 mb-3"></i>
+            <span class="text-lg font-black text-slate-700">Enviar Documento</span>
+            <input type="file" class="hidden" accept="image/*" onchange="handleImageUpload(event)" />
+          </label>
+        </div>
+        <div id="doc-view-area" class="${docBase64 ? 'block' : 'hidden'}">
+          <button type="button" onclick="viewDocument()" class="w-full bg-slate-800 text-white font-bold py-3.5 rounded-xl shadow-md"><i class="fa-regular fa-image mr-2"></i> Ver / Excluir Imagem</button>
+        </div>
+      </div>`;
+
+      openModal(id ? 'Editar Compra' : 'Nova Compra', compraFormHtml, footerHtml);
 
       const valInp = document.getElementById('field-valor');
       if (valInp) valInp.addEventListener('input', e => {
