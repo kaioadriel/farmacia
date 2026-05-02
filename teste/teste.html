@@ -224,10 +224,10 @@
             <span class="text-5xl">🏥</span><span class="font-bold text-slate-700 text-sm md:text-base">Clínicas</span>
           </button>
           <button onclick="openErpList('farmacias')" class="bg-white p-6 rounded-2xl shadow-[0_2px_10px_-3px_rgba(0,0,0,0.1)] border border-slate-50 flex flex-col items-center justify-center gap-3 hover:bg-slate-50 transition active:scale-95">
-            <span class="text-5xl">💊</span><span class="font-bold text-slate-700 text-sm md:text-base">Farmácias</span>
+            <span class="text-5xl">🏪</span><span class="font-bold text-slate-700 text-sm md:text-base">Farmácias</span>
           </button>
           <button onclick="openErpList('remedios')" class="bg-white p-6 rounded-2xl shadow-[0_2px_10px_-3px_rgba(0,0,0,0.1)] border border-slate-50 flex flex-col items-center justify-center gap-3 hover:bg-slate-50 transition active:scale-95">
-            <span class="text-5xl">💉</span><span class="font-bold text-slate-700 text-sm md:text-base">Remédios</span>
+            <span class="text-5xl">💊</span><span class="font-bold text-slate-700 text-sm md:text-base">Remédios</span>
           </button>
         </div>
       </section>
@@ -528,7 +528,7 @@
 
     window.openErpList = (tab) => {
       AppState.erpTab = tab;
-      const titles = { pacientes: '👤 Pacientes', medicos: '👨‍⚕️ Médicos', clinicas: '🏥 Clínicas', farmacias: '💊 Farmácias', remedios: '💉 Remédios' };
+      const titles = { pacientes: '👤 Pacientes', medicos: '👨‍⚕️ Médicos', clinicas: '🏥 Clínicas', farmacias: '🏪 Farmácias', remedios: '💊 Remédios' };
       document.getElementById('erp-list-title').innerHTML = titles[tab];
       document.getElementById('erp-search').value = '';
       AppState.erpSort = 'alpha';
@@ -626,7 +626,7 @@
         }
       });
 
-      const recent = [...compras].sort((a,b) => new Date(b.data) - new Date(a.data)).slice(0, 5);
+      const recent = [...compras].sort((a,b) => new Date(b.data) - new Date(a.data)).slice(0, 3);
       document.getElementById('dashboard-recent-compras').innerHTML = recent.length ? recent.map(c => {
         const farm = AppState.data.farmacias.find(f => f.id === c.farmaciaId)?.nome || '-';
         const pac = AppState.data.pacientes.find(p => p.id === c.pacienteId)?.nome || '-';
@@ -841,7 +841,7 @@
       const cont = document.getElementById('list-erp');
       if (!items.length) return cont.innerHTML = `<p class="text-center text-slate-500 py-10">Vazio.</p>`;
 
-      const cfg = { pacientes:{i:'fa-user',s:'cpf'}, medicos:{i:'fa-user-doctor',s:'especialidade'}, clinicas:{i:'fa-house-medical',s:'especialidade'}, farmacias:{i:'fa-shop',s:'rede'}, remedios:{i:'fa-pills',s:'tipo'} }[tab];
+      const cfg = { pacientes:{i:'fa-user',s:'cpf'}, medicos:{i:'fa-user-doctor',s:'especialidade'}, clinicas:{i:'fa-house-medical',s:'especialidade'}, farmacias:{i:'fa-store',s:'rede'}, remedios:{i:'fa-pills',s:'tipo'} }[tab];
 
       cont.innerHTML = items.map(item => {
         const isOff = item.status === 'inativo';
