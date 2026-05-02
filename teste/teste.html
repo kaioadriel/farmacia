@@ -793,7 +793,7 @@
       const cont = document.getElementById('list-erp');
       if (!items.length) return cont.innerHTML = `<p class="text-center text-slate-500 py-10">Vazio.</p>`;
 
-      const cfg = { pacientes:{i:'fa-user',s:'cpf'}, medicos:{i:'fa-user-doctor',s:'especialidade'}, clinicas:{i:'fa-house-medical',s:'especialidade'}, farmacias:{i:'fa-shop',s:'telefone'}, remedios:{i:'fa-pills',s:'tipo'} }[tab];
+      const cfg = { pacientes:{i:'fa-user',s:'cpf'}, medicos:{i:'fa-user-doctor',s:'especialidade'}, clinicas:{i:'fa-house-medical',s:'especialidade'}, farmacias:{i:'fa-shop',s:'rede'}, remedios:{i:'fa-pills',s:'tipo'} }[tab];
       const idFieldMap = { pacientes: 'pacienteId', medicos: 'medicoId', clinicas: 'clinicaId', farmacias: 'farmaciaId', remedios: 'remedioId' };
 
       cont.innerHTML = items.map(item => {
@@ -873,7 +873,7 @@
       ];
       if (tab === 'medicos') return [{ name: 'nome', label: 'Nome' }, { name: 'especialidade', label: 'Especialidade' }, { name: 'crm', label: 'CRM' }, { name: 'uf', label: 'UF do CRM' }, { name: 'rqe', label: 'RQE' }, ...b];
       if (tab === 'clinicas') return [{ name: 'nome', label: 'Nome' }, { name: 'especialidade', label: 'Especialidade' }, { name: 'medicoResponsavelId', label: 'Méd. Responsável', type: 'db-select', collection: 'medicos' }, ...b];
-      if (tab === 'farmacias') return [{ name: 'nome', label: 'Nome' }, { name: 'cep', label: 'CEP', type: 'cep' }, { name: 'logradouro', label: 'Endereço' }, { name: 'telefone', label: 'Telefone' }, ...b];
+      if (tab === 'farmacias') return [{ name: 'nome', label: 'Nome' }, { name: 'rede', label: 'Rede', type: 'select', options: [{val:'', label:'Selecione...'}, {val:'Droga Raia', label:'Droga Raia'}, {val:'Drogaria São Paulo', label:'Drogaria São Paulo'}, {val:'Nissei', label:'Nissei'}, {val:'Farma Conde', label:'Farma Conde'}, {val:'Outros', label:'Outros'}] }, { name: 'cep', label: 'CEP', type: 'cep' }, { name: 'logradouro', label: 'Endereço' }, { name: 'telefone', label: 'Telefone' }, ...b];
       if (tab === 'remedios') return [{ name: 'nome', label: 'Nome' }, { name: 'tipo', label: 'Tipo' }, { name: 'dosagem', label: 'Dosagem' }, { name: 'preco', label: 'Preço (R$)' }, ...b];
       return [];
     }
