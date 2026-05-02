@@ -198,6 +198,12 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
           </button>
         </div>
 
+        <!-- Campo de Busca com Texto Livre -->
+        <div class="relative mb-4">
+          <i class="fa-solid fa-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
+          <input type="text" id="compra-search-input" onkeyup="handleCompraSearch()" placeholder="Buscar..." class="w-full bg-white border border-slate-200 rounded-2xl py-3 pl-12 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm">
+        </div>
+
         <!-- FILTROS COM CHIPS RÁPIDOS E DRAWER LATERAL -->
         <div class="mb-4">
           <!-- Chips de Filtro Rápido -->
@@ -748,6 +754,12 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
 
     // Novo sistema de filtros com Chips, Drawer e Badges
     let AppState_QuickFilter = 'todas';
+    let AppState_SearchTerm = '';
+
+    window.handleCompraSearch = () => {
+      AppState_SearchTerm = document.getElementById('compra-search-input')?.value || '';
+      renderCompras();
+    };
 
     window.setQuickFilter = (filter) => {
       AppState_QuickFilter = filter;
@@ -870,7 +882,11 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
         if (el) el.value = '';
       });
 
+      const searchInput = document.getElementById('compra-search-input');
+      if (searchInput) searchInput.value = '';
+
       AppState_QuickFilter = 'todas';
+      AppState_SearchTerm = '';
       updateQuickFilterChips();
       updateCompraFilterBadge();
       updateActiveFiltersBadges();
@@ -900,6 +916,23 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
         (!medicoId || c.medicoId === medicoId) &&
         (!remedioId || c.remedioId === remedioId)
       );
+
+      // Apply free text search
+      if (AppState_SearchTerm) {
+        const searchLower = AppState_SearchTerm.toLowerCase();
+        compras = compras.filter(c => {
+          const farmName = AppState.data.farmacias.find(f => f.id === c.farmaciaId)?.nome || '';
+          const pacName = AppState.data.pacientes.find(p => p.id === c.pacienteId)?.nome || '';
+          const remName = AppState.data.remedios.find(r => r.id === c.remedioId)?.nome || '';
+          const clinName = AppState.data.clinicas.find(cl => cl.id === c.clinicaId)?.nome || '';
+          const medName = AppState.data.medicos.find(m => m.id === c.medicoId)?.nome || '';
+          return farmName.toLowerCase().includes(searchLower) ||
+                 pacName.toLowerCase().includes(searchLower) ||
+                 remName.toLowerCase().includes(searchLower) ||
+                 clinName.toLowerCase().includes(searchLower) ||
+                 medName.toLowerCase().includes(searchLower);
+        });
+      }
 
       compras.sort((a, b) => {
         if (a.status === 'agendada' && b.status !== 'agendada') return -1;
