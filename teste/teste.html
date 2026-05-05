@@ -717,6 +717,9 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
     let imageGestureStartMidY = 0;
     let imageDragLastX = 0;
     let imageDragLastY = 0;
+    let imageSwipeStartX = 0;
+    let imageSwipeStartY = 0;
+    let imageSwipeTriggered = false;
 
     function canDeleteDocumentFromCurrentContext() {
       return Boolean(document.getElementById('field-documentosBase64') || document.getElementById('field-documentoBase64'));
@@ -791,7 +794,11 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
         if (imageViewerPointers.size === 1) {
           imageDragLastX = ev.clientX;
           imageDragLastY = ev.clientY;
+          imageSwipeStartX = ev.clientX;
+          imageSwipeStartY = ev.clientY;
+          imageSwipeTriggered = false;
         } else if (imageViewerPointers.size === 2) {
+          imageSwipeTriggered = true;
           const pts = Array.from(imageViewerPointers.values());
           imageGestureStartDistance = getPointerDistance(pts[0], pts[1]) || 1;
           imageGestureStartZoom = currentDocumentZoom;
@@ -823,8 +830,22 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
         if (imageViewerPointers.size === 1) {
           const dx = ev.clientX - imageDragLastX;
           const dy = ev.clientY - imageDragLastY;
+          const totalDx = ev.clientX - imageSwipeStartX;
+          const totalDy = ev.clientY - imageSwipeStartY;
           imageDragLastX = ev.clientX;
           imageDragLastY = ev.clientY;
+
+          // Com a imagem sem zoom, arrastar para os lados troca entre anexos.
+          // Com zoom aplicado, o mesmo gesto continua movendo a imagem.
+          if (currentDocumentZoom <= 1 && !imageSwipeTriggered && currentDocumentList.length > 1) {
+            const horizontalSwipe = Math.abs(totalDx) > 70 && Math.abs(totalDx) > Math.abs(totalDy) * 1.5;
+            if (horizontalSwipe) {
+              imageSwipeTriggered = true;
+              navigateDocument(totalDx < 0 ? 1 : -1);
+              return;
+            }
+          }
+
           if (currentDocumentZoom > 1) {
             currentDocumentPanX += dx;
             currentDocumentPanY += dy;
