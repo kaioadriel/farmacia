@@ -419,8 +419,8 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
     </div>
     <button onclick="navigateDocument(-1)" class="absolute left-3 top-1/2 -translate-y-1/2 z-10 w-12 h-12 flex items-center justify-center rounded-full bg-white/20 text-white text-xl backdrop-blur-md hover:bg-white/30 transition" id="image-viewer-prev"><i class="fa-solid fa-chevron-left"></i></button>
     <button onclick="navigateDocument(1)" class="absolute right-3 top-1/2 -translate-y-1/2 z-10 w-12 h-12 flex items-center justify-center rounded-full bg-white/20 text-white text-xl backdrop-blur-md hover:bg-white/30 transition" id="image-viewer-next"><i class="fa-solid fa-chevron-right"></i></button>
-    <div id="image-viewer-stage" class="w-full h-full flex items-center justify-center overflow-auto p-4 pt-20 pb-8">
-      <img id="image-viewer-img" src="" class="max-w-full max-h-full object-contain transition-transform duration-150 origin-center select-none" style="transform: scale(1);">
+    <div id="image-viewer-stage" class="w-full h-full flex items-center justify-center overflow-hidden p-4 pt-20 pb-8" style="touch-action: none; cursor: grab;">
+      <img id="image-viewer-img" src="" draggable="false" class="max-w-full max-h-full object-contain origin-center select-none" style="transform: translate3d(0px, 0px, 0) scale(1); touch-action: none; user-select: none; -webkit-user-drag: none;">
     </div>
   </div>
 
@@ -708,6 +708,17 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
     let currentDocumentList = [];
     let currentDocumentIndex = 0;
     let currentDocumentZoom = 1;
+    let currentDocumentPanX = 0;
+    let currentDocumentPanY = 0;
+    const imageViewerPointers = new Map();
+    let imageGestureStartDistance = 0;
+    let imageGestureStartZoom = 1;
+    let imageGestureStartPanX = 0;
+    let imageGestureStartPanY = 0;
+    let imageGestureStartMidX = 0;
+    let imageGestureStartMidY = 0;
+    let imageDragLastX = 0;
+    let imageDragLastY = 0;
 
     function canDeleteDocumentFromCurrentContext() {
       return Boolean(document.getElementById('field-documentosBase64') || document.getElementById('field-documentoBase64'));
@@ -717,7 +728,7 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
       currentDocumentList = (docs || []).filter(Boolean);
       if (!currentDocumentList.length) return showToast('Nenhum documento anexado.', 'error');
       currentDocumentIndex = Math.min(Math.max(index, 0), currentDocumentList.length - 1);
-      currentDocumentZoom = 1;
+      resetDocumentTransformState();
       updateImageViewer();
       document.getElementById('image-viewer').classList.remove('hidden');
       document.getElementById('image-viewer').classList.add('flex');
@@ -731,11 +742,126 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
       const del = document.getElementById('image-viewer-delete-btn');
       if (!img) return;
       img.src = currentDocumentList[currentDocumentIndex] || '';
-      img.style.transform = `scale(${currentDocumentZoom})`;
+      img.style.transform = `translate3d(${currentDocumentPanX}px, ${currentDocumentPanY}px, 0) scale(${currentDocumentZoom})`;
       if (counter) counter.innerText = `${currentDocumentIndex + 1}/${currentDocumentList.length}`;
       if (prev) prev.classList.toggle('hidden', currentDocumentList.length <= 1);
       if (next) next.classList.toggle('hidden', currentDocumentList.length <= 1);
       if (del) del.classList.toggle('hidden', !canDeleteDocumentFromCurrentContext());
+    }
+
+    function resetDocumentTransformState() {
+      currentDocumentZoom = 1;
+      currentDocumentPanX = 0;
+      currentDocumentPanY = 0;
+      imageViewerPointers.clear();
+    }
+
+    function getPointerDistance(a, b) {
+      return Math.hypot(a.x - b.x, a.y - b.y);
+    }
+
+    function getPointerMidpoint(a, b) {
+      return { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 };
+    }
+
+    function clampDocumentZoom(value) {
+      return Math.min(5, Math.max(1, value));
+    }
+
+    function applyDocumentTransform() {
+      const img = document.getElementById('image-viewer-img');
+      if (!img) return;
+      img.style.transform = `translate3d(${currentDocumentPanX}px, ${currentDocumentPanY}px, 0) scale(${currentDocumentZoom})`;
+    }
+
+    function setupImageViewerGestures() {
+      const stage = document.getElementById('image-viewer-stage');
+      if (!stage || stage.dataset.gesturesReady === '1') return;
+      stage.dataset.gesturesReady = '1';
+
+      const updatePointer = (ev) => {
+        imageViewerPointers.set(ev.pointerId, { x: ev.clientX, y: ev.clientY });
+      };
+
+      stage.addEventListener('pointerdown', (ev) => {
+        if (ev.target.closest('button')) return;
+        ev.preventDefault();
+        stage.setPointerCapture?.(ev.pointerId);
+        updatePointer(ev);
+        stage.style.cursor = 'grabbing';
+
+        if (imageViewerPointers.size === 1) {
+          imageDragLastX = ev.clientX;
+          imageDragLastY = ev.clientY;
+        } else if (imageViewerPointers.size === 2) {
+          const pts = Array.from(imageViewerPointers.values());
+          imageGestureStartDistance = getPointerDistance(pts[0], pts[1]) || 1;
+          imageGestureStartZoom = currentDocumentZoom;
+          imageGestureStartPanX = currentDocumentPanX;
+          imageGestureStartPanY = currentDocumentPanY;
+          const mid = getPointerMidpoint(pts[0], pts[1]);
+          imageGestureStartMidX = mid.x;
+          imageGestureStartMidY = mid.y;
+        }
+      }, { passive: false });
+
+      stage.addEventListener('pointermove', (ev) => {
+        if (!imageViewerPointers.has(ev.pointerId)) return;
+        ev.preventDefault();
+        updatePointer(ev);
+
+        if (imageViewerPointers.size >= 2) {
+          const pts = Array.from(imageViewerPointers.values()).slice(0, 2);
+          const distance = getPointerDistance(pts[0], pts[1]) || 1;
+          const mid = getPointerMidpoint(pts[0], pts[1]);
+          const ratio = distance / (imageGestureStartDistance || distance);
+          currentDocumentZoom = clampDocumentZoom(imageGestureStartZoom * ratio);
+          currentDocumentPanX = imageGestureStartPanX + (mid.x - imageGestureStartMidX);
+          currentDocumentPanY = imageGestureStartPanY + (mid.y - imageGestureStartMidY);
+          applyDocumentTransform();
+          return;
+        }
+
+        if (imageViewerPointers.size === 1) {
+          const dx = ev.clientX - imageDragLastX;
+          const dy = ev.clientY - imageDragLastY;
+          imageDragLastX = ev.clientX;
+          imageDragLastY = ev.clientY;
+          if (currentDocumentZoom > 1) {
+            currentDocumentPanX += dx;
+            currentDocumentPanY += dy;
+            applyDocumentTransform();
+          }
+        }
+      }, { passive: false });
+
+      const finishPointer = (ev) => {
+        if (imageViewerPointers.has(ev.pointerId)) imageViewerPointers.delete(ev.pointerId);
+        try { stage.releasePointerCapture?.(ev.pointerId); } catch(e) {}
+        stage.style.cursor = imageViewerPointers.size ? 'grabbing' : 'grab';
+        if (imageViewerPointers.size === 1) {
+          const p = Array.from(imageViewerPointers.values())[0];
+          imageDragLastX = p.x;
+          imageDragLastY = p.y;
+        }
+      };
+
+      stage.addEventListener('pointerup', finishPointer);
+      stage.addEventListener('pointercancel', finishPointer);
+      stage.addEventListener('pointerleave', (ev) => {
+        if (ev.pointerType === 'mouse') finishPointer(ev);
+      });
+
+      stage.addEventListener('wheel', (ev) => {
+        ev.preventDefault();
+        const delta = ev.deltaY < 0 ? 0.18 : -0.18;
+        currentDocumentZoom = clampDocumentZoom(currentDocumentZoom + delta);
+        if (currentDocumentZoom === 1) {
+          currentDocumentPanX = 0;
+          currentDocumentPanY = 0;
+        }
+        applyDocumentTransform();
+      }, { passive: false });
     }
 
     let compraCodeSyncRunning = false;
@@ -1838,18 +1964,22 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
     window.navigateDocument = (direction) => {
       if (!currentDocumentList.length) return;
       currentDocumentIndex = (currentDocumentIndex + direction + currentDocumentList.length) % currentDocumentList.length;
-      currentDocumentZoom = 1;
+      resetDocumentTransformState();
       updateImageViewer();
     };
 
     window.zoomDocument = (delta) => {
-      currentDocumentZoom = Math.min(4, Math.max(0.5, currentDocumentZoom + delta));
-      updateImageViewer();
+      currentDocumentZoom = clampDocumentZoom(currentDocumentZoom + delta);
+      if (currentDocumentZoom === 1) {
+        currentDocumentPanX = 0;
+        currentDocumentPanY = 0;
+      }
+      applyDocumentTransform();
     };
 
     window.resetDocumentZoom = () => {
-      currentDocumentZoom = 1;
-      updateImageViewer();
+      resetDocumentTransformState();
+      applyDocumentTransform();
     };
 
     window.downloadCurrentDocument = () => {
@@ -1866,7 +1996,7 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
     window.closeImageViewer = () => {
       document.getElementById('image-viewer').classList.add('hidden');
       document.getElementById('image-viewer').classList.remove('flex');
-      currentDocumentZoom = 1;
+      resetDocumentTransformState();
     };
 
     window.deleteCurrentDocument = () => {
@@ -1876,12 +2006,12 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
         setCurrentFormDocumentList(currentDocumentList);
         if (!currentDocumentList.length) return closeImageViewer();
         currentDocumentIndex = Math.min(currentDocumentIndex, currentDocumentList.length - 1);
-        currentDocumentZoom = 1;
+        resetDocumentTransformState();
         updateImageViewer();
       }
     };
 
-    document.addEventListener('DOMContentLoaded', () => initApp());
+    document.addEventListener('DOMContentLoaded', () => { setupImageViewerGestures(); initApp(); });
   </script>
 </body>
 </html>
