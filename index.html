@@ -14,6 +14,7 @@
     ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
     ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
     body { -webkit-tap-highlight-color: transparent; }
+    html, body { overflow-x: hidden; max-width: 100%; }
     .hide-scroll::-webkit-scrollbar { display: none; }
     .hide-scroll { -ms-overflow-style: none; scrollbar-width: none; }
     .auth-bg { background: linear-gradient(135deg, #eff6ff 0%, #bfdbfe 100%); }
@@ -34,7 +35,7 @@
       overflow-wrap: anywhere;
       line-height: 1.25;
     }
-  
+
 /* ==== Layout experimental: ajustes visuais sem alterar funções ==== */
 :root { --app-radius: 22px; }
 .wrap-two-lines, .wrap-soft { line-height: 1.22; }
@@ -68,6 +69,7 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
 .status-chip { display:inline-flex; align-items:center; gap:.35rem; padding:.25rem .55rem; border-radius:999px; font-size:10px; font-weight:900; letter-spacing:.03em; text-transform:uppercase; white-space:nowrap; }
 .status-chip-confirmada { background:#dcfce7; color:#15803d; }
 .status-chip-agendada { background:#ffedd5; color:#c2410c; animation: softPulse 1.8s ease infinite; }
+.status-chip-cancelada { background:#fee2e2; color:#b91c1c; }
 .document-upload-card { min-height: 176px; border-style: dashed !important; border-width: 2px !important; border-radius: 26px !important; background: linear-gradient(180deg, rgba(248,250,252,.96), rgba(241,245,249,.86)); }
 .document-upload-card:hover { background: #f8fafc; border-color: #93c5fd !important; }
 .floating-quick-buy { position: fixed; right: 18px; bottom: 94px; z-index: 45; box-shadow: 0 18px 35px rgba(37,99,235,.28); }
@@ -206,22 +208,8 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
 
         <!-- FILTROS COM CHIPS RÁPIDOS E DRAWER LATERAL -->
         <div class="mb-4">
-          <!-- Chips de Filtro Rápido -->
-          <div class="flex items-center gap-2 overflow-x-auto hide-scroll pb-3 mb-3">
-            <span class="text-[11px] font-black text-slate-500 uppercase tracking-wider shrink-0">Status:</span>
-            <button onclick="setQuickFilter('todas')" id="chip-todas" class="quick-filter-chip shrink-0 px-4 py-2 rounded-full text-sm font-bold transition-all bg-blue-600 text-white shadow-md active:scale-95">
-              <i class="fa-solid fa-list mr-1"></i> Todas
-            </button>
-            <button onclick="setQuickFilter('confirmadas')" id="chip-confirmadas" class="quick-filter-chip shrink-0 px-4 py-2 rounded-full text-sm font-bold transition-all bg-slate-100 text-slate-600 active:scale-95 hover:bg-slate-200">
-              <i class="fa-solid fa-check-circle mr-1"></i> Confirmadas
-            </button>
-            <button onclick="setQuickFilter('agendadas')" id="chip-agendadas" class="quick-filter-chip shrink-0 px-4 py-2 rounded-full text-sm font-bold transition-all bg-slate-100 text-slate-600 active:scale-95 hover:bg-slate-200">
-              <i class="fa-solid fa-calendar mr-1"></i> Agendadas
-            </button>
-          </div>
-
           <!-- Botão de Drawer e Resumo de Filtros -->
-          <div class="flex items-center gap-2">
+          <div class="flex items-center gap-2 mb-3">
             <button onclick="toggleFilterDrawer()" class="flex-1 bg-white border border-slate-200 rounded-2xl px-4 py-3 shadow-sm flex items-center justify-between active:scale-[0.98] transition hover:bg-slate-50">
               <span class="flex items-center gap-2 font-black text-slate-700 text-sm">
                 <i class="fa-solid fa-sliders text-blue-600"></i>
@@ -236,6 +224,23 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
             </button>
           </div>
 
+          <!-- Chips de Filtro Rápido -->
+          <div class="flex items-center gap-2 overflow-x-auto hide-scroll pb-3 mb-3">
+            <span class="text-[11px] font-black text-slate-500 uppercase tracking-wider shrink-0">Status:</span>
+            <button onclick="setQuickFilter('todas')" id="chip-todas" class="quick-filter-chip shrink-0 px-4 py-2 rounded-full text-sm font-bold transition-all bg-blue-600 text-white shadow-md active:scale-95">
+              <i class="fa-solid fa-list mr-1"></i> Todas
+            </button>
+            <button onclick="setQuickFilter('confirmadas')" id="chip-confirmadas" class="quick-filter-chip shrink-0 px-4 py-2 rounded-full text-sm font-bold transition-all bg-slate-100 text-slate-600 active:scale-95 hover:bg-slate-200">
+              <i class="fa-solid fa-check-circle mr-1"></i> Confirmadas
+            </button>
+            <button onclick="setQuickFilter('agendadas')" id="chip-agendadas" class="quick-filter-chip shrink-0 px-4 py-2 rounded-full text-sm font-bold transition-all bg-slate-100 text-slate-600 active:scale-95 hover:bg-slate-200">
+              <i class="fa-solid fa-calendar mr-1"></i> Agendadas
+            </button>
+            <button onclick="setQuickFilter('canceladas')" id="chip-canceladas" class="quick-filter-chip shrink-0 px-4 py-2 rounded-full text-sm font-bold transition-all bg-slate-100 text-slate-600 active:scale-95 hover:bg-slate-200">
+              <i class="fa-solid fa-ban mr-1"></i> Canceladas
+            </button>
+          </div>
+
           <!-- Resumo de Filtros Ativos -->
           <div id="active-filters-summary" class="hidden mt-3 flex flex-wrap gap-2">
             <!-- Badges de filtros ativos serão inseridos aqui dinamicamente -->
@@ -244,7 +249,7 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
 
         <!-- Drawer Lateral de Refinamento -->
         <div id="filter-drawer-overlay" class="fixed inset-0 bg-slate-900/40 z-50 hidden transition-opacity opacity-0 backdrop-blur-sm" onclick="closeFilterDrawer()"></div>
-        <div id="filter-drawer" class="fixed top-0 right-0 h-full w-full max-w-sm bg-white shadow-2xl z-50 transform translate-x-full transition-transform duration-300 flex flex-col">
+        <div id="filter-drawer" class="fixed top-0 right-0 h-full w-full max-w-sm bg-white hidden shadow-2xl z-50 transform translate-x-full transition-transform duration-300 flex flex-col">
           <div class="flex justify-between items-center p-5 border-b border-slate-100 shrink-0">
             <h3 class="text-lg font-bold text-slate-800">Refinar Busca</h3>
             <button onclick="closeFilterDrawer()" class="w-8 h-8 flex items-center justify-center rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200 transition">
@@ -478,6 +483,190 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
     let app, db, auth, provider, listeners = [];
     let myChart = null;
 
+    function normalizeSearchText(value) {
+      return String(value ?? '')
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .toLowerCase();
+    }
+
+    function onlyDigits(value) {
+      return String(value ?? '').replace(/\D/g, '');
+    }
+
+    function getSearchTerms(term) {
+      return normalizeSearchText(term)
+        .split(/[^a-z0-9]+/i)
+        .map(t => t.trim())
+        .filter(Boolean);
+    }
+
+    function getTextTokens(value) {
+      return normalizeSearchText(value)
+        .split(/[^a-z0-9]+/i)
+        .filter(Boolean);
+    }
+
+    function isNumericToken(value) {
+      return /^[0-9]+$/.test(String(value ?? ''));
+    }
+
+    function smartTokenMatch(value, token) {
+      if (!token) return true;
+      const textTokens = getTextTokens(value);
+      const digitsToken = onlyDigits(token);
+
+      // Busca numérica inteligente:
+      // - CPF/RG compactado só bate quando o número completo começa com o termo buscado.
+      // - Números soltos em textos, datas e pagamentos também batem por token exato/prefixo.
+      // Ex.: 381211 encontra 381.211.128-42, mas não encontra 238.681.978-77.
+      // Ex.: 9699 encontra "Cartão Adc C6 9699" sem confundir com 9996.
+      // Ex.: 13/05 encontra datas gravadas como 1991-05-13.
+      if (digitsToken && digitsToken === token) {
+        const numericTokens = textTokens.filter(isNumericToken);
+        if (numericTokens.some(t => t === digitsToken || t.startsWith(digitsToken))) return true;
+
+        const digitsValue = onlyDigits(value);
+        return Boolean(digitsValue) && digitsValue.startsWith(digitsToken);
+      }
+
+      // Busca textual por palavra exata, sem acentos e sem diferenciar maiúsculas/minúsculas.
+      return textTokens.includes(token);
+    }
+
+    function flattenSearchValues(value, visited = new WeakSet()) {
+      if (value === null || value === undefined) return [];
+      if (typeof value !== 'object') return [String(value)];
+      if (visited.has(value)) return [];
+      visited.add(value);
+      if (Array.isArray(value)) return value.flatMap(v => flattenSearchValues(v, visited));
+      const ignoredKeys = new Set(['id', 'documentoBase64']);
+      return Object.entries(value)
+        .filter(([key]) => !ignoredKeys.has(key))
+        .flatMap(([, v]) => flattenSearchValues(v, visited));
+    }
+
+    function recordMatchesDeep(record, term, extraRecords = []) {
+      const terms = getSearchTerms(term);
+      if (!terms.length) return true;
+      const values = [...flattenSearchValues(record), ...extraRecords.flatMap(r => flattenSearchValues(r))];
+      return terms.every(token => values.some(v => smartTokenMatch(v, token)));
+    }
+
+    function getCompraSearchRecord(c) {
+      const farm = AppState.data.farmacias.find(f => f.id === c.farmaciaId) || {};
+      const pac = AppState.data.pacientes.find(p => p.id === c.pacienteId) || {};
+      const rem = AppState.data.remedios.find(r => r.id === c.remedioId) || {};
+      const clin = AppState.data.clinicas.find(cl => cl.id === c.clinicaId) || {};
+      const med = AppState.data.medicos.find(m => m.id === c.medicoId) || {};
+
+      return {
+        codigoCompra: getCompraDisplayCode(c),
+        data: c.data,
+        dataFormatada: c.data ? c.data.split('-').reverse().join('/') : '',
+        status: c.status,
+        qtd: c.qtd,
+        valor: c.valor,
+        pagamento: c.pagamento,
+        obs: c.obs,
+        farmacia: farm.nome,
+        farmaciaRede: farm.rede,
+        paciente: pac.nome,
+        pacienteCpf: pac.cpf,
+        pacienteRg: pac.rg,
+        remedio: rem.nome,
+        remedioTipo: rem.tipo,
+        remedioDosagem: rem.dosagem,
+        clinica: clin.nome,
+        medico: med.nome,
+        medicoCrm: med.crm,
+        medicoEspecialidade: med.especialidade
+      };
+    }
+
+    function formatCompraCode(seq) {
+      return `FARM${String(seq).padStart(4, '0')}`;
+    }
+
+    function parseCompraCode(code) {
+      const match = String(code || '').match(/^FARM(\d+)$/i);
+      return match ? parseInt(match[1], 10) : 0;
+    }
+
+    function compraSequenceTime(c) {
+      const time = c?.data ? new Date(c.data + 'T00:00:00').getTime() : 0;
+      return Number.isNaN(time) ? 0 : time;
+    }
+
+    function getComprasOldestFirst() {
+      return [...AppState.data.compras].sort((a, b) => {
+        const diff = compraSequenceTime(a) - compraSequenceTime(b);
+        if (diff !== 0) return diff;
+        return String(a.id || '').localeCompare(String(b.id || ''), 'pt-BR');
+      });
+    }
+
+    function getCompraDisplayCode(c) {
+      if (c?.codigoCompra) return c.codigoCompra;
+      const idx = getComprasOldestFirst().findIndex(item => item.id === c?.id);
+      return idx >= 0 ? formatCompraCode(idx + 1) : '';
+    }
+
+    function getNextCompraCode() {
+      const maxExisting = AppState.data.compras.reduce((max, c) => Math.max(max, parseCompraCode(c.codigoCompra)), 0);
+      if (maxExisting > 0) return formatCompraCode(maxExisting + 1);
+      return formatCompraCode(AppState.data.compras.length + 1);
+    }
+
+    let compraCodeSyncRunning = false;
+    async function ensureCompraCodes() {
+      if (!AppState.userId || compraCodeSyncRunning) return;
+      const ordered = getComprasOldestFirst();
+      const missing = ordered.filter(c => !c.codigoCompra);
+      if (!missing.length) return;
+
+      const codedCount = ordered.length - missing.length;
+      let updates = [];
+
+      // Primeira migração: todos os registros antigos sem código recebem a numeração pela data mais antiga.
+      if (codedCount === 0) {
+        updates = ordered.map((compra, index) => ({ compra, expected: formatCompraCode(index + 1) }));
+      } else {
+        // Depois da migração inicial, não renumera registros já numerados; apenas completa os que faltarem.
+        let nextSeq = ordered.reduce((max, c) => Math.max(max, parseCompraCode(c.codigoCompra)), 0) + 1;
+        updates = missing.map(compra => ({ compra, expected: formatCompraCode(nextSeq++) }));
+      }
+
+      compraCodeSyncRunning = true;
+      try {
+        for (const { compra, expected } of updates) {
+          const cleanData = JSON.parse(JSON.stringify({ ...compra, codigoCompra: expected }));
+          delete cleanData.id;
+          await setDoc(doc(db, 'users', AppState.userId, 'compras', compra.id), cleanData);
+        }
+      } catch (error) {
+        console.error('Erro ao numerar compras:', error);
+      } finally {
+        compraCodeSyncRunning = false;
+      }
+    }
+
+    function isTodayOrFuture(dateStr) {
+      if (!dateStr) return false;
+      const today = new Date().toISOString().split('T')[0];
+      return dateStr >= today;
+    }
+
+    function getRelatedCompraRecords(c) {
+      return [
+        AppState.data.farmacias.find(f => f.id === c.farmaciaId),
+        AppState.data.pacientes.find(p => p.id === c.pacienteId),
+        AppState.data.remedios.find(r => r.id === c.remedioId),
+        AppState.data.clinicas.find(cl => cl.id === c.clinicaId),
+        AppState.data.medicos.find(m => m.id === c.medicoId)
+      ].filter(Boolean);
+    }
+
     function initApp() {
       document.getElementById('app-body').classList.remove('hidden');
       try {
@@ -551,6 +740,7 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
           const items = [];
           snapshot.forEach(doc => items.push({ id: doc.id, ...doc.data() }));
           AppState.data[colName] = items;
+          if (colName === 'compras') ensureCompraCodes();
           renderCompraFilterOptions();
           updateUI();
         }, (error) => console.error("Sync error:", error)));
@@ -714,8 +904,8 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
         const med = AppState.data.medicos.find(m => m.id === c.medicoId)?.nome || '-';
         const clin = AppState.data.clinicas.find(cl => cl.id === c.clinicaId)?.nome || '-';
         return `<div class="p-3 bg-white hover:bg-slate-50 rounded-xl border border-slate-100 mb-2 shadow-[0_1px_3px_rgba(0,0,0,0.02)] transition flex flex-col gap-1.5">
-          <div class="flex justify-between items-center">
-            <h4 class="font-black text-slate-800 text-[13px] truncate pr-2"><i class="fa-solid fa-shop text-purple-600 mr-1.5"></i>${farm}</h4>
+          <div class="flex justify-between items-start gap-2">
+            <h4 class="font-black text-slate-800 text-[13px] wrap-two-lines flex-1 min-w-0"><i class="fa-solid fa-shop text-purple-600 mr-1.5"></i>${farm}</h4>
             <span class="text-[10px] font-black text-blue-700 bg-blue-100 px-2 py-0.5 rounded-md shrink-0 uppercase tracking-wide">${calcularDiasAtras(c.data)}</span>
           </div>
           <div class="flex flex-wrap gap-x-3 gap-y-1 text-[11px] font-medium text-slate-500">
@@ -768,7 +958,7 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
     };
 
     function updateQuickFilterChips() {
-      ['todas', 'confirmadas', 'agendadas'].forEach(f => {
+      ['todas', 'confirmadas', 'agendadas', 'canceladas'].forEach(f => {
         const chip = document.getElementById(`chip-${f}`);
         if (!chip) return;
         if (f === AppState_QuickFilter) {
@@ -781,16 +971,22 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
 
     window.toggleFilterDrawer = () => {
       const drawer = document.getElementById('filter-drawer');
+      if (!drawer) return;
+      if (drawer.classList.contains('hidden') || drawer.classList.contains('translate-x-full')) openFilterDrawer();
+      else closeFilterDrawer();
+    };
+
+    window.openFilterDrawer = () => {
+      const drawer = document.getElementById('filter-drawer');
       const overlay = document.getElementById('filter-drawer-overlay');
       if (!drawer || !overlay) return;
 
-      drawer.classList.toggle('translate-x-full');
-      overlay.classList.toggle('hidden');
-      if (!overlay.classList.contains('hidden')) {
-        setTimeout(() => overlay.classList.toggle('opacity-0'), 10);
-      } else {
-        overlay.classList.toggle('opacity-0');
-      }
+      drawer.classList.remove('hidden');
+      overlay.classList.remove('hidden');
+      requestAnimationFrame(() => {
+        drawer.classList.remove('translate-x-full');
+        overlay.classList.remove('opacity-0');
+      });
     };
 
     window.closeFilterDrawer = () => {
@@ -802,6 +998,7 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
       overlay.classList.add('opacity-0');
       setTimeout(() => {
         overlay.classList.add('hidden');
+        drawer.classList.add('hidden');
       }, 300);
     };
 
@@ -901,6 +1098,8 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
         compras = compras.filter(c => c.status === 'confirmada');
       } else if (AppState_QuickFilter === 'agendadas') {
         compras = compras.filter(c => c.status === 'agendada');
+      } else if (AppState_QuickFilter === 'canceladas') {
+        compras = compras.filter(c => c.status === 'cancelada');
       }
 
       const farmaciaId = document.getElementById('filter-farmacia')?.value || '';
@@ -917,21 +1116,9 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
         (!remedioId || c.remedioId === remedioId)
       );
 
-      // Apply free text search
+      // Apply deep free text search across purchase and related ERP records, including observations and punctuation-free CPF/RG.
       if (AppState_SearchTerm) {
-        const searchLower = AppState_SearchTerm.toLowerCase();
-        compras = compras.filter(c => {
-          const farmName = AppState.data.farmacias.find(f => f.id === c.farmaciaId)?.nome || '';
-          const pacName = AppState.data.pacientes.find(p => p.id === c.pacienteId)?.nome || '';
-          const remName = AppState.data.remedios.find(r => r.id === c.remedioId)?.nome || '';
-          const clinName = AppState.data.clinicas.find(cl => cl.id === c.clinicaId)?.nome || '';
-          const medName = AppState.data.medicos.find(m => m.id === c.medicoId)?.nome || '';
-          return farmName.toLowerCase().includes(searchLower) ||
-                 pacName.toLowerCase().includes(searchLower) ||
-                 remName.toLowerCase().includes(searchLower) ||
-                 clinName.toLowerCase().includes(searchLower) ||
-                 medName.toLowerCase().includes(searchLower);
-        });
+        compras = compras.filter(c => recordMatchesDeep(getCompraSearchRecord(c), AppState_SearchTerm));
       }
 
       compras.sort((a, b) => {
@@ -955,15 +1142,20 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
         const clinName = AppState.data.clinicas.find(cl => cl.id === c.clinicaId)?.nome || '-';
         const medName = AppState.data.medicos.find(m => m.id === c.medicoId)?.nome || '-';
         const isAgendada = c.status === 'agendada';
-        const borderClass = isAgendada ? 'border-orange-300 border-l-4 border-l-orange-500 bg-orange-50/30' : 'border-slate-100 bg-white';
-        const timeColorClass = isAgendada ? 'text-orange-600' : 'text-blue-600';
+        const isCancelada = c.status === 'cancelada';
+        const statusLabel = isCancelada ? 'Cancelada' : (isAgendada ? 'Agendada' : 'Confirmada');
+        const statusChipClass = isCancelada ? 'status-chip-cancelada' : (isAgendada ? 'status-chip-agendada' : 'status-chip-confirmada');
+        const borderClass = isCancelada ? 'border-red-300 border-l-4 border-l-red-500 bg-red-50/40' : (isAgendada ? 'border-orange-300 border-l-4 border-l-orange-500 bg-orange-50/30' : 'border-slate-100 bg-white');
+        const timeColorClass = isCancelada ? 'text-red-600' : (isAgendada ? 'text-orange-600' : 'text-blue-600');
+        const compraCode = getCompraDisplayCode(c);
 
         return `<div class="p-4 rounded-xl shadow-sm border ${borderClass} mb-3 transition">
           <div class="flex justify-between items-start mb-2 gap-3">
             <div class="min-w-0 pr-2 flex-1">
               <div class="flex items-start gap-2 flex-wrap">
                 <h4 class="font-black text-slate-800 text-[14px] sm:text-base wrap-two-lines">${farmName}</h4>
-                <span class="status-chip ${isAgendada ? 'status-chip-agendada' : 'status-chip-confirmada'}">${isAgendada ? 'Agendada' : 'Confirmada'}</span>
+                <span class="status-chip ${statusChipClass}">${statusLabel}</span>
+                ${compraCode ? `<span class="bg-slate-100 text-slate-600 text-[10px] px-1.5 py-0.5 rounded font-black uppercase tracking-wide"><i class="fa-solid fa-hashtag mr-1"></i>${compraCode}</span>` : ''}
                 ${c.documentoBase64 ? '<span class="bg-blue-100 text-blue-700 text-[10px] px-1.5 py-0.5 rounded font-bold uppercase tracking-wide"><i class="fa-regular fa-image mr-1"></i>Doc</span>' : ''}
               </div>
               <p class="text-xs text-slate-500 wrap-two-lines mt-0.5"><i class="fa-regular fa-user mr-1 text-slate-400"></i>${pacName}</p>
@@ -982,7 +1174,7 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
 
           <div class="flex justify-end gap-2 flex-wrap">
             ${c.documentoBase64 ? `<button onclick="viewCompraDocument('${c.id}')" class="px-4 py-2 text-xs font-bold text-blue-700 bg-blue-100 rounded-lg hover:bg-blue-200 transition active:scale-95"><i class="fa-regular fa-image mr-1"></i> Doc</button>` : ''}
-            <button onclick="editCompra('${c.id}')" class="px-4 py-2 text-xs font-bold text-slate-600 bg-slate-100 rounded-lg hover:bg-slate-200 transition active:scale-95">Editar</button>
+            <button onclick="viewCompraDetails('${c.id}')" class="px-4 py-2 text-xs font-bold text-slate-600 bg-slate-100 rounded-lg hover:bg-slate-200 transition active:scale-95">Ver Mais</button>
             ${isAgendada ? `<button onclick="confirmarCompra('${c.id}')" class="px-4 py-2 text-xs font-bold text-white bg-green-500 rounded-lg hover:bg-green-600 shadow-sm transition active:scale-95"><i class="fa-solid fa-check mr-1"></i> Confirmar</button>` : ''}
           </div>
         </div>`;
@@ -994,6 +1186,7 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
       if (c) {
         c.status = 'confirmada';
         c.data = new Date().toISOString().split('T')[0];
+        if (!c.codigoCompra) c.codigoCompra = getCompraDisplayCode(c) || getNextCompraCode();
         await dbSave('compras', c, id);
       }
     };
@@ -1005,6 +1198,48 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
         document.getElementById('image-viewer').classList.remove('hidden');
         document.getElementById('image-viewer').classList.add('flex');
       }
+    };
+
+    window.viewCompraDetails = (id) => {
+      const c = AppState.data.compras.find(x => x.id === id);
+      if (!c) return;
+
+      const farmName = AppState.data.farmacias.find(f => f.id === c.farmaciaId)?.nome || '-';
+      const pacName = AppState.data.pacientes.find(p => p.id === c.pacienteId)?.nome || '-';
+      const remName = AppState.data.remedios.find(r => r.id === c.remedioId)?.nome || '-';
+      const clinName = AppState.data.clinicas.find(cl => cl.id === c.clinicaId)?.nome || '-';
+      const medName = AppState.data.medicos.find(m => m.id === c.medicoId)?.nome || '-';
+      const isAgendada = c.status === 'agendada';
+      const isCancelada = c.status === 'cancelada';
+      const statusLabel = isCancelada ? 'Cancelada' : (isAgendada ? 'Agendada' : 'Confirmada');
+      const statusClass = isCancelada ? 'bg-red-100 text-red-700 border-red-200' : (isAgendada ? 'bg-orange-100 text-orange-700 border-orange-200' : 'bg-green-100 text-green-700 border-green-200');
+      const statusIcon = isCancelada ? 'fa-ban' : (isAgendada ? 'fa-calendar' : 'fa-check-circle');
+      const formattedDate = c.data ? c.data.split('-').reverse().join('/') : '-';
+      const compraCode = getCompraDisplayCode(c) || '-';
+
+      let html = `<div class="space-y-4">
+        <div class="${statusClass} p-3 rounded-xl text-sm font-bold border flex items-center gap-2">
+          <i class="fa-solid ${statusIcon}"></i> Compra ${statusLabel}
+        </div>
+        <div class="bg-slate-50 p-5 rounded-2xl border border-slate-100 grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div><span class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">Código da Compra</span><span class="block font-black text-blue-600 break-words">${compraCode}</span></div>
+          <div><span class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">Data da Compra</span><span class="block font-medium text-slate-800 break-words">${formattedDate} — ${calcularDiasAtras(c.data)}</span></div>
+          <div><span class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">Farmácia</span><span class="block font-medium text-slate-800 break-words">${farmName}</span></div>
+          <div><span class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">Remédio</span><span class="block font-medium text-slate-800 break-words">${remName}</span></div>
+          <div><span class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">Qtd de Caixas</span><span class="block font-medium text-slate-800 break-words">${c.qtd || '-'}</span></div>
+          <div><span class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">Paciente</span><span class="block font-medium text-slate-800 break-words">${pacName}</span></div>
+          <div><span class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">Clínica</span><span class="block font-medium text-slate-800 break-words">${clinName}</span></div>
+          <div><span class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">Médico</span><span class="block font-medium text-slate-800 break-words">${medName}</span></div>
+          <div><span class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">Valor Total</span><span class="block font-medium text-slate-800 break-words">${formatCurrency(c.valor)}</span></div>
+          <div><span class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">Forma de Pagto</span><span class="block font-medium text-slate-800 break-words">${c.pagamento || '-'}</span></div>
+        </div>`;
+
+      if (c.obs) html += `<div class="bg-amber-50 p-4 rounded-2xl border border-amber-100"><span class="block text-[10px] font-bold text-amber-600 uppercase tracking-wider mb-1">Observações</span><p class="text-sm font-medium text-slate-700 whitespace-pre-wrap break-words">${c.obs}</p></div>`;
+      if (c.documentoBase64) html += `<div class="mt-4"><button onclick="viewCompraDocument('${id}')" class="w-full bg-slate-800 text-white font-bold py-3.5 rounded-xl shadow-md hover:bg-slate-700 transition"><i class="fa-regular fa-image mr-2"></i> Ver Documento Anexo</button></div>`;
+      html += `</div>`;
+
+      const footerHtml = `<button onclick="deleteErpConfirm('compras', '${id}')" class="px-4 py-2.5 bg-red-100 text-red-600 rounded-xl font-bold hover:bg-red-200 mr-auto transition flex items-center gap-2"><i class="fa-solid fa-trash"></i> <span class="hidden md:inline">Excluir</span></button><button onclick="closeModal()" class="px-5 py-2.5 bg-slate-200 text-slate-700 rounded-xl font-bold hover:bg-slate-300 transition">Voltar</button><button onclick="openCompraForm('${id}')" class="px-6 py-2.5 bg-blue-600 text-white rounded-xl font-bold shadow-md hover:bg-blue-700 transition"><i class="fa-solid fa-pen-to-square mr-2"></i>Editar</button>`;
+      openModal('Detalhes da Compra', html, footerHtml);
     };
 
     window.filterErpList = () => renderErpList();
@@ -1028,8 +1263,8 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
 
     function renderErpList() {
       const tab = AppState.erpTab;
-      const term = document.getElementById('erp-search').value.toLowerCase();
-      let items = AppState.data[tab].filter(i => Object.values(i).some(v => String(v).toLowerCase().includes(term)));
+      const term = document.getElementById('erp-search').value;
+      let items = AppState.data[tab].filter(i => recordMatchesDeep(i, term));
       const sortMode = AppState.erpSort || 'alpha';
       updateErpSortButtons();
       const idFieldMap = { pacientes: 'pacienteId', medicos: 'medicoId', clinicas: 'clinicaId', farmacias: 'farmaciaId', remedios: 'remedioId' };
@@ -1196,15 +1431,20 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
         { name: 'obs', label: 'Observações', type: 'textarea' },
       ];
 
+      if (id) {
+        fields.push({ name: 'status', label: 'Status da Compra', type: 'select', options: [{val:'confirmada', label:'Confirmada'}, {val:'agendada', label:'Agendada'}, {val:'cancelada', label:'Cancelada'}] });
+      }
+
       let footerHtml = '';
       if (id) {
-        footerHtml += `<button onclick="deleteErpConfirm('compras', '${id}')" class="px-4 py-2.5 bg-red-100 text-red-600 rounded-xl font-bold hover:bg-red-200 mr-auto"><i class="fa-solid fa-trash"></i></button><button onclick="closeModal()" class="px-5 py-2.5 bg-slate-200 text-slate-700 rounded-xl font-bold">Cancelar</button><button onclick="saveCompra('${id}', '${data.status}')" class="px-6 py-2.5 bg-blue-600 text-white rounded-xl font-bold shadow-md">Atualizar</button>`;
+        footerHtml += `<button onclick="deleteErpConfirm('compras', '${id}')" class="px-4 py-2.5 bg-red-100 text-red-600 rounded-xl font-bold hover:bg-red-200 mr-auto"><i class="fa-solid fa-trash"></i></button><button onclick="viewCompraDetails('${id}')" class="px-5 py-2.5 bg-slate-200 text-slate-700 rounded-xl font-bold">Cancelar</button><button onclick="saveCompra('${id}', '${data.status}')" class="px-6 py-2.5 bg-blue-600 text-white rounded-xl font-bold shadow-md">Atualizar</button>`;
       } else {
         footerHtml += `<button onclick="closeModal()" class="px-5 py-2.5 bg-slate-200 text-slate-700 rounded-xl font-bold mr-auto">Cancelar</button><button onclick="saveCompra('', 'agendada')" class="px-5 py-2.5 bg-orange-100 text-orange-700 border border-orange-300 rounded-xl font-bold shadow-sm">Agendar</button><button onclick="saveCompra('', 'confirmada')" class="px-6 py-2.5 bg-blue-600 text-white rounded-xl font-bold shadow-md">Confirmar</button>`;
       }
 
       const docBase64 = data.documentoBase64 || '';
-      let compraFormHtml = generateFormFields(fields, data);
+      const compraCode = id ? (getCompraDisplayCode(data) || '-') : 'Será gerado ao salvar';
+      let compraFormHtml = `<div class="mb-5 bg-blue-50 border border-blue-100 rounded-2xl p-4"><span class="block text-[10px] font-bold text-blue-500 uppercase tracking-wider mb-1">Código da Compra</span><span class="block font-black text-blue-700 text-lg">${compraCode}</span><p class="text-[11px] text-blue-500 font-bold mt-1">Número automático, não editável.</p></div>` + generateFormFields(fields, data);
       compraFormHtml += `<div class="mt-6 border-t border-slate-200 pt-5">
         <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-3">Documento Anexo</label>
         <input type="hidden" id="field-documentoBase64" value="${docBase64}">
@@ -1222,6 +1462,8 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
 
       openModal(id ? 'Editar Compra' : 'Nova Compra', compraFormHtml, footerHtml);
 
+      setupCompraClinicaAutoFill();
+
       const valInp = document.getElementById('field-valor');
       if (valInp) valInp.addEventListener('input', e => {
         let v = e.target.value.replace(/\D/g, "");
@@ -1233,6 +1475,21 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
     };
 
     window.editCompra = (id) => openCompraForm(id);
+
+    function setupCompraClinicaAutoFill() {
+      const clinicaSelect = document.getElementById('field-clinicaId');
+      const medicoSelect = document.getElementById('field-medicoId');
+      if (!clinicaSelect || !medicoSelect) return;
+
+      clinicaSelect.addEventListener('change', () => {
+        const clinica = AppState.data.clinicas.find(c => c.id === clinicaSelect.value);
+        if (clinica?.medicoResponsavelId) {
+          medicoSelect.value = clinica.medicoResponsavelId;
+          const medicoNome = AppState.data.medicos.find(m => m.id === clinica.medicoResponsavelId)?.nome;
+          if (medicoNome) showToast(`Médico preenchido: ${medicoNome}`, "success");
+        }
+      });
+    }
 
     function generateFormFields(fields, data = {}) {
       return fields.map(f => {
@@ -1321,6 +1578,15 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
           dataObj[k] = v;
         }
       });
+
+      if (document.getElementById('field-status')) dataObj.status = document.getElementById('field-status').value;
+
+      if (id) {
+        const existingCompra = AppState.data.compras.find(c => c.id === id);
+        if (existingCompra?.codigoCompra) dataObj.codigoCompra = existingCompra.codigoCompra;
+      } else {
+        dataObj.codigoCompra = getNextCompraCode();
+      }
 
       if (!dataObj.remedioId || !dataObj.data) return showToast("Data e Remédio obrigatórios.", "error");
 
