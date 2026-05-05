@@ -208,22 +208,6 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
 
         <!-- FILTROS COM CHIPS RÁPIDOS E DRAWER LATERAL -->
         <div class="mb-4">
-          <!-- Botão de Drawer e Resumo de Filtros -->
-          <div class="flex items-center gap-2 mb-3">
-            <button onclick="toggleFilterDrawer()" class="flex-1 bg-white border border-slate-200 rounded-2xl px-4 py-3 shadow-sm flex items-center justify-between active:scale-[0.98] transition hover:bg-slate-50">
-              <span class="flex items-center gap-2 font-black text-slate-700 text-sm">
-                <i class="fa-solid fa-sliders text-blue-600"></i>
-                Refinar Busca
-                <span id="filter-count-badge" class="hidden bg-blue-600 text-white text-[10px] px-2 py-0.5 rounded-full font-black">0</span>
-              </span>
-              <i id="filter-drawer-chevron" class="fa-solid fa-chevron-right text-slate-400 text-xs transition-transform"></i>
-            </button>
-
-            <button onclick="clearCompraFilters()" class="bg-slate-100 text-slate-600 border border-slate-200 rounded-2xl px-3 py-3 shadow-sm active:scale-95 transition hover:bg-slate-200" title="Limpar filtros">
-              <i class="fa-solid fa-eraser"></i>
-            </button>
-          </div>
-
           <!-- Chips de Filtro Rápido -->
           <div class="flex items-center gap-2 overflow-x-auto hide-scroll pb-3 mb-3">
             <span class="text-[11px] font-black text-slate-500 uppercase tracking-wider shrink-0">Status:</span>
@@ -238,6 +222,22 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
             </button>
             <button onclick="setQuickFilter('canceladas')" id="chip-canceladas" class="quick-filter-chip shrink-0 px-4 py-2 rounded-full text-sm font-bold transition-all bg-slate-100 text-slate-600 active:scale-95 hover:bg-slate-200">
               <i class="fa-solid fa-ban mr-1"></i> Canceladas
+            </button>
+          </div>
+
+          <!-- Botão de Drawer e Resumo de Filtros -->
+          <div class="flex items-center gap-2">
+            <button onclick="toggleFilterDrawer()" class="flex-1 bg-white border border-slate-200 rounded-2xl px-4 py-3 shadow-sm flex items-center justify-between active:scale-[0.98] transition hover:bg-slate-50">
+              <span class="flex items-center gap-2 font-black text-slate-700 text-sm">
+                <i class="fa-solid fa-sliders text-blue-600"></i>
+                Refinar Busca
+                <span id="filter-count-badge" class="hidden bg-blue-600 text-white text-[10px] px-2 py-0.5 rounded-full font-black">0</span>
+              </span>
+              <i id="filter-drawer-chevron" class="fa-solid fa-chevron-right text-slate-400 text-xs transition-transform"></i>
+            </button>
+
+            <button onclick="clearCompraFilters()" class="bg-slate-100 text-slate-600 border border-slate-200 rounded-2xl px-3 py-3 shadow-sm active:scale-95 transition hover:bg-slate-200" title="Limpar filtros">
+              <i class="fa-solid fa-eraser"></i>
             </button>
           </div>
 
@@ -405,12 +405,23 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
   </div>
 
   <!-- Fullscreen Image Viewer -->
-  <div id="image-viewer" class="fixed inset-0 bg-black z-[90] hidden flex-col items-center justify-center">
-    <div class="absolute top-6 right-6 flex gap-4">
-      <button onclick="deleteCurrentDocument()" class="w-12 h-12 flex items-center justify-center rounded-full bg-red-600/90 text-white text-xl backdrop-blur-md shadow-lg"><i class="fa-solid fa-trash"></i></button>
-      <button onclick="closeImageViewer()" class="w-12 h-12 flex items-center justify-center rounded-full bg-white/20 text-white text-xl backdrop-blur-md hover:bg-white/30 transition"><i class="fa-solid fa-times"></i></button>
+  <div id="image-viewer" class="fixed inset-0 bg-black z-[90] hidden flex-col items-center justify-center overflow-hidden">
+    <div class="absolute top-4 left-4 right-4 flex items-center justify-between gap-3 z-10 pointer-events-none">
+      <div class="bg-white/15 text-white px-3 py-2 rounded-full text-xs font-black backdrop-blur-md pointer-events-auto" id="image-viewer-counter">1/1</div>
+      <div class="flex gap-2 pointer-events-auto">
+        <button onclick="zoomDocument(-0.25)" class="w-11 h-11 flex items-center justify-center rounded-full bg-white/20 text-white text-lg backdrop-blur-md hover:bg-white/30 transition" title="Diminuir zoom"><i class="fa-solid fa-magnifying-glass-minus"></i></button>
+        <button onclick="resetDocumentZoom()" class="w-11 h-11 flex items-center justify-center rounded-full bg-white/20 text-white text-lg backdrop-blur-md hover:bg-white/30 transition" title="Resetar zoom"><i class="fa-solid fa-rotate-left"></i></button>
+        <button onclick="zoomDocument(0.25)" class="w-11 h-11 flex items-center justify-center rounded-full bg-white/20 text-white text-lg backdrop-blur-md hover:bg-white/30 transition" title="Aumentar zoom"><i class="fa-solid fa-magnifying-glass-plus"></i></button>
+        <button onclick="downloadCurrentDocument()" class="w-11 h-11 flex items-center justify-center rounded-full bg-blue-600/90 text-white text-lg backdrop-blur-md shadow-lg" title="Baixar documento"><i class="fa-solid fa-download"></i></button>
+        <button id="image-viewer-delete-btn" onclick="deleteCurrentDocument()" class="w-11 h-11 flex items-center justify-center rounded-full bg-red-600/90 text-white text-lg backdrop-blur-md shadow-lg" title="Excluir documento"><i class="fa-solid fa-trash"></i></button>
+        <button onclick="closeImageViewer()" class="w-11 h-11 flex items-center justify-center rounded-full bg-white/20 text-white text-lg backdrop-blur-md hover:bg-white/30 transition" title="Fechar"><i class="fa-solid fa-times"></i></button>
+      </div>
     </div>
-    <img id="image-viewer-img" src="" class="max-w-full max-h-full object-contain p-2">
+    <button onclick="navigateDocument(-1)" class="absolute left-3 top-1/2 -translate-y-1/2 z-10 w-12 h-12 flex items-center justify-center rounded-full bg-white/20 text-white text-xl backdrop-blur-md hover:bg-white/30 transition" id="image-viewer-prev"><i class="fa-solid fa-chevron-left"></i></button>
+    <button onclick="navigateDocument(1)" class="absolute right-3 top-1/2 -translate-y-1/2 z-10 w-12 h-12 flex items-center justify-center rounded-full bg-white/20 text-white text-xl backdrop-blur-md hover:bg-white/30 transition" id="image-viewer-next"><i class="fa-solid fa-chevron-right"></i></button>
+    <div id="image-viewer-stage" class="w-full h-full flex items-center justify-center overflow-auto p-4 pt-20 pb-8">
+      <img id="image-viewer-img" src="" class="max-w-full max-h-full object-contain transition-transform duration-150 origin-center select-none" style="transform: scale(1);">
+    </div>
   </div>
 
   <!-- Toast Notification -->
@@ -540,7 +551,7 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
       if (visited.has(value)) return [];
       visited.add(value);
       if (Array.isArray(value)) return value.flatMap(v => flattenSearchValues(v, visited));
-      const ignoredKeys = new Set(['id', 'documentoBase64']);
+      const ignoredKeys = new Set(['id', 'documentoBase64', 'documentosBase64']);
       return Object.entries(value)
         .filter(([key]) => !ignoredKeys.has(key))
         .flatMap(([, v]) => flattenSearchValues(v, visited));
@@ -616,6 +627,115 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
       const maxExisting = AppState.data.compras.reduce((max, c) => Math.max(max, parseCompraCode(c.codigoCompra)), 0);
       if (maxExisting > 0) return formatCompraCode(maxExisting + 1);
       return formatCompraCode(AppState.data.compras.length + 1);
+    }
+
+    function safeParseDocumentList(value) {
+      if (!value) return [];
+      if (Array.isArray(value)) return value.filter(Boolean);
+      try {
+        const parsed = JSON.parse(String(value));
+        return Array.isArray(parsed) ? parsed.filter(Boolean) : [];
+      } catch (e) {
+        return [];
+      }
+    }
+
+    function getDocumentList(record = {}) {
+      const docs = safeParseDocumentList(record.documentosBase64);
+      if (record.documentoBase64 && !docs.includes(record.documentoBase64)) docs.unshift(record.documentoBase64);
+      return docs.filter(Boolean);
+    }
+
+    function getCurrentFormDocumentList() {
+      const multi = document.getElementById('field-documentosBase64');
+      const legacy = document.getElementById('field-documentoBase64');
+      const docs = safeParseDocumentList(multi?.value);
+      if (legacy?.value && !docs.includes(legacy.value)) docs.unshift(legacy.value);
+      return docs.filter(Boolean);
+    }
+
+    function setCurrentFormDocumentList(docs) {
+      const cleanDocs = (docs || []).filter(Boolean);
+      const legacy = document.getElementById('field-documentoBase64');
+      const multi = document.getElementById('field-documentosBase64');
+      if (legacy) legacy.value = cleanDocs[0] || '';
+      if (multi) multi.value = JSON.stringify(cleanDocs);
+      updateDocumentUploadPreview(cleanDocs);
+    }
+
+    function escapeTextareaContent(value) {
+      return String(value ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+
+    function renderDocumentUploadSection(data = {}) {
+      const docs = getDocumentList(data);
+      const legacyDoc = docs[0] || '';
+      const docsJson = escapeTextareaContent(JSON.stringify(docs));
+      const countText = docs.length ? `${docs.length} documento${docs.length > 1 ? 's' : ''} anexado${docs.length > 1 ? 's' : ''}` : 'Nenhum documento anexado';
+      return `<div class="mt-6 border-t border-slate-200 pt-5">
+        <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-3">Documentos Anexos</label>
+        <input type="hidden" id="field-documentoBase64" value="${legacyDoc}">
+        <textarea id="field-documentosBase64" class="hidden">${docsJson}</textarea>
+        <div id="doc-list-summary" class="mb-3 text-sm font-bold ${docs.length ? 'text-blue-700 bg-blue-50 border-blue-100' : 'text-slate-500 bg-slate-50 border-slate-100'} border rounded-2xl p-3 flex items-center justify-between gap-3">
+          <span><i class="fa-regular fa-images mr-2"></i>${countText}</span>
+          ${docs.length ? `<button type="button" onclick="viewDocument(0)" class="text-xs bg-slate-800 text-white px-3 py-2 rounded-xl font-black active:scale-95 transition"><i class="fa-regular fa-eye mr-1"></i>Ver</button>` : ''}
+        </div>
+        <label class="document-upload-card flex flex-col items-center justify-center w-full border-slate-300 cursor-pointer transition">
+          <i class="fa-solid fa-cloud-arrow-up text-5xl text-slate-400 mb-3"></i>
+          <span class="text-lg font-black text-slate-700">Adicionar Documento(s)</span>
+          <span class="text-xs text-slate-400 font-bold mt-1">Você pode selecionar mais de uma imagem.</span>
+          <input type="file" class="hidden" accept="image/*" multiple onchange="handleImageUpload(event)" />
+        </label>
+      </div>`;
+    }
+
+    function updateDocumentUploadPreview(docs) {
+      const summary = document.getElementById('doc-list-summary');
+      if (!summary) return;
+      const countText = docs.length ? `${docs.length} documento${docs.length > 1 ? 's' : ''} anexado${docs.length > 1 ? 's' : ''}` : 'Nenhum documento anexado';
+      summary.className = `mb-3 text-sm font-bold ${docs.length ? 'text-blue-700 bg-blue-50 border-blue-100' : 'text-slate-500 bg-slate-50 border-slate-100'} border rounded-2xl p-3 flex items-center justify-between gap-3`;
+      summary.innerHTML = `<span><i class="fa-regular fa-images mr-2"></i>${countText}</span>${docs.length ? `<button type="button" onclick="viewDocument(0)" class="text-xs bg-slate-800 text-white px-3 py-2 rounded-xl font-black active:scale-95 transition"><i class="fa-regular fa-eye mr-1"></i>Ver</button>` : ''}`;
+    }
+
+    function normalizeDocumentFields(dataObj) {
+      const docs = safeParseDocumentList(dataObj.documentosBase64);
+      if (dataObj.documentoBase64 && !docs.includes(dataObj.documentoBase64)) docs.unshift(dataObj.documentoBase64);
+      dataObj.documentosBase64 = JSON.stringify(docs.filter(Boolean));
+      dataObj.documentoBase64 = docs[0] || '';
+      return dataObj;
+    }
+
+    let currentDocumentList = [];
+    let currentDocumentIndex = 0;
+    let currentDocumentZoom = 1;
+
+    function canDeleteDocumentFromCurrentContext() {
+      return Boolean(document.getElementById('field-documentosBase64') || document.getElementById('field-documentoBase64'));
+    }
+
+    function openImageViewerWithList(docs, index = 0) {
+      currentDocumentList = (docs || []).filter(Boolean);
+      if (!currentDocumentList.length) return showToast('Nenhum documento anexado.', 'error');
+      currentDocumentIndex = Math.min(Math.max(index, 0), currentDocumentList.length - 1);
+      currentDocumentZoom = 1;
+      updateImageViewer();
+      document.getElementById('image-viewer').classList.remove('hidden');
+      document.getElementById('image-viewer').classList.add('flex');
+    }
+
+    function updateImageViewer() {
+      const img = document.getElementById('image-viewer-img');
+      const counter = document.getElementById('image-viewer-counter');
+      const prev = document.getElementById('image-viewer-prev');
+      const next = document.getElementById('image-viewer-next');
+      const del = document.getElementById('image-viewer-delete-btn');
+      if (!img) return;
+      img.src = currentDocumentList[currentDocumentIndex] || '';
+      img.style.transform = `scale(${currentDocumentZoom})`;
+      if (counter) counter.innerText = `${currentDocumentIndex + 1}/${currentDocumentList.length}`;
+      if (prev) prev.classList.toggle('hidden', currentDocumentList.length <= 1);
+      if (next) next.classList.toggle('hidden', currentDocumentList.length <= 1);
+      if (del) del.classList.toggle('hidden', !canDeleteDocumentFromCurrentContext());
     }
 
     let compraCodeSyncRunning = false;
@@ -1156,7 +1276,7 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
                 <h4 class="font-black text-slate-800 text-[14px] sm:text-base wrap-two-lines">${farmName}</h4>
                 <span class="status-chip ${statusChipClass}">${statusLabel}</span>
                 ${compraCode ? `<span class="bg-slate-100 text-slate-600 text-[10px] px-1.5 py-0.5 rounded font-black uppercase tracking-wide"><i class="fa-solid fa-hashtag mr-1"></i>${compraCode}</span>` : ''}
-                ${c.documentoBase64 ? '<span class="bg-blue-100 text-blue-700 text-[10px] px-1.5 py-0.5 rounded font-bold uppercase tracking-wide"><i class="fa-regular fa-image mr-1"></i>Doc</span>' : ''}
+                ${getDocumentList(c).length ? `<span class="bg-blue-100 text-blue-700 text-[10px] px-1.5 py-0.5 rounded font-bold uppercase tracking-wide"><i class="fa-regular fa-image mr-1"></i>${getDocumentList(c).length} Doc</span>` : ''}
               </div>
               <p class="text-xs text-slate-500 wrap-two-lines mt-0.5"><i class="fa-regular fa-user mr-1 text-slate-400"></i>${pacName}</p>
             </div>
@@ -1173,7 +1293,7 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
           </div>
 
           <div class="flex justify-end gap-2 flex-wrap">
-            ${c.documentoBase64 ? `<button onclick="viewCompraDocument('${c.id}')" class="px-4 py-2 text-xs font-bold text-blue-700 bg-blue-100 rounded-lg hover:bg-blue-200 transition active:scale-95"><i class="fa-regular fa-image mr-1"></i> Doc</button>` : ''}
+            ${getDocumentList(c).length ? `<button onclick="viewCompraDocument('${c.id}')" class="px-4 py-2 text-xs font-bold text-blue-700 bg-blue-100 rounded-lg hover:bg-blue-200 transition active:scale-95"><i class="fa-regular fa-image mr-1"></i> Docs</button>` : ''}
             <button onclick="viewCompraDetails('${c.id}')" class="px-4 py-2 text-xs font-bold text-slate-600 bg-slate-100 rounded-lg hover:bg-slate-200 transition active:scale-95">Ver Mais</button>
             ${isAgendada ? `<button onclick="confirmarCompra('${c.id}')" class="px-4 py-2 text-xs font-bold text-white bg-green-500 rounded-lg hover:bg-green-600 shadow-sm transition active:scale-95"><i class="fa-solid fa-check mr-1"></i> Confirmar</button>` : ''}
           </div>
@@ -1193,11 +1313,7 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
 
     window.viewCompraDocument = (id) => {
       const compra = AppState.data.compras.find(x => x.id === id);
-      if (compra && compra.documentoBase64) {
-        document.getElementById('image-viewer-img').src = compra.documentoBase64;
-        document.getElementById('image-viewer').classList.remove('hidden');
-        document.getElementById('image-viewer').classList.add('flex');
-      }
+      if (compra) openImageViewerWithList(getDocumentList(compra), 0);
     };
 
     window.viewCompraDetails = (id) => {
@@ -1235,7 +1351,7 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
         </div>`;
 
       if (c.obs) html += `<div class="bg-amber-50 p-4 rounded-2xl border border-amber-100"><span class="block text-[10px] font-bold text-amber-600 uppercase tracking-wider mb-1">Observações</span><p class="text-sm font-medium text-slate-700 whitespace-pre-wrap break-words">${c.obs}</p></div>`;
-      if (c.documentoBase64) html += `<div class="mt-4"><button onclick="viewCompraDocument('${id}')" class="w-full bg-slate-800 text-white font-bold py-3.5 rounded-xl shadow-md hover:bg-slate-700 transition"><i class="fa-regular fa-image mr-2"></i> Ver Documento Anexo</button></div>`;
+      if (getDocumentList(c).length) html += `<div class="mt-4"><button onclick="viewCompraDocument('${id}')" class="w-full bg-slate-800 text-white font-bold py-3.5 rounded-xl shadow-md hover:bg-slate-700 transition"><i class="fa-regular fa-images mr-2"></i> Ver Documentos Anexos (${getDocumentList(c).length})</button></div>`;
       html += `</div>`;
 
       const footerHtml = `<button onclick="deleteErpConfirm('compras', '${id}')" class="px-4 py-2.5 bg-red-100 text-red-600 rounded-xl font-bold hover:bg-red-200 mr-auto transition flex items-center gap-2"><i class="fa-solid fa-trash"></i> <span class="hidden md:inline">Excluir</span></button><button onclick="closeModal()" class="px-5 py-2.5 bg-slate-200 text-slate-700 rounded-xl font-bold hover:bg-slate-300 transition">Voltar</button><button onclick="openCompraForm('${id}')" class="px-6 py-2.5 bg-blue-600 text-white rounded-xl font-bold shadow-md hover:bg-blue-700 transition"><i class="fa-solid fa-pen-to-square mr-2"></i>Editar</button>`;
@@ -1313,7 +1429,7 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
         return `<div class="${bg} p-4 rounded-2xl shadow-sm border mb-3 flex items-center gap-4 cursor-pointer hover:shadow-md transition active:scale-[0.98]" onclick="viewErpDetails('${tab}', '${item.id}')">
           <div class="w-12 h-12 rounded-full ${isOff ? 'bg-red-200 text-red-700' : (inc ? 'bg-orange-200 text-orange-700' : 'bg-blue-100 text-blue-600')} flex items-center justify-center shrink-0 text-xl"><i class="fa-solid ${cfg.i}"></i></div>
           <div class="flex-1 min-w-0">
-            <div class="flex items-center gap-2 flex-wrap"><h4 class="font-bold text-[14px] sm:text-base leading-tight text-slate-800 wrap-two-lines">${item.nome || '-'}</h4>${inc ? '<span class="bg-orange-500 text-white text-[10px] px-1.5 py-0.5 rounded font-bold uppercase tracking-wide">Incompleto</span>' : ''}${isOff ? '<span class="bg-red-100 text-red-700 text-[10px] px-1.5 py-0.5 rounded font-bold uppercase tracking-wide">Inativo</span>' : ''}${item.documentoBase64 ? '<span class="bg-blue-100 text-blue-700 text-[10px] px-1.5 py-0.5 rounded font-bold uppercase tracking-wide"><i class="fa-regular fa-image mr-1"></i>Doc</span>' : ''}</div>
+            <div class="flex items-center gap-2 flex-wrap"><h4 class="font-bold text-[14px] sm:text-base leading-tight text-slate-800 wrap-two-lines">${item.nome || '-'}</h4>${inc ? '<span class="bg-orange-500 text-white text-[10px] px-1.5 py-0.5 rounded font-bold uppercase tracking-wide">Incompleto</span>' : ''}${isOff ? '<span class="bg-red-100 text-red-700 text-[10px] px-1.5 py-0.5 rounded font-bold uppercase tracking-wide">Inativo</span>' : ''}${getDocumentList(item).length ? `<span class="bg-blue-100 text-blue-700 text-[10px] px-1.5 py-0.5 rounded font-bold uppercase tracking-wide"><i class="fa-regular fa-image mr-1"></i>${getDocumentList(item).length} Doc</span>` : ''}</div>
             <p class="text-xs sm:text-sm ${isOff ? 'text-red-600' : 'text-slate-500'} font-medium wrap-two-lines">${item[cfg.s] || '---'}</p>
             <p class="text-[10px] mt-1 font-bold text-slate-400 uppercase tracking-wide"><i class="fa-solid fa-clock-rotate-left mr-1"></i>Última Compra: <span class="${isOff ? 'text-red-500' : 'text-blue-500'}">${calcularDiasAtrasLastPurchase(item.id, idFieldMap[tab])}</span></p>
           </div>
@@ -1350,7 +1466,7 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
 
       if (data.obs) html += `<div class="bg-amber-50 p-4 rounded-2xl border border-amber-100"><span class="block text-[10px] font-bold text-amber-600 uppercase tracking-wider mb-1">Observações</span><p class="text-sm font-medium text-slate-700">${data.obs}</p></div>`;
       if (tab === 'medicos' && data.crm) html += `<button onclick="consultarCRM('${data.crm}')" class="w-full bg-blue-100 text-blue-700 font-bold py-3.5 rounded-xl shadow-sm hover:bg-blue-200 transition mt-2"><i class="fa-solid fa-magnifying-glass mr-2"></i> Consultar CRM no CREMESP</button>`;
-      if (['pacientes','medicos','clinicas','farmacias','remedios'].includes(tab) && data.documentoBase64) html += `<div class="mt-4"><button onclick="viewDocumentFromDetails('${tab}', '${id}')" class="w-full bg-slate-800 text-white font-bold py-3.5 rounded-xl shadow-md hover:bg-slate-700 transition"><i class="fa-regular fa-image mr-2"></i> Ver Documento Anexo</button></div>`;
+      if (['pacientes','medicos','clinicas','farmacias','remedios'].includes(tab) && getDocumentList(data).length) html += `<div class="mt-4"><button onclick="viewDocumentFromDetails('${tab}', '${id}')" class="w-full bg-slate-800 text-white font-bold py-3.5 rounded-xl shadow-md hover:bg-slate-700 transition"><i class="fa-regular fa-images mr-2"></i> Ver Documentos Anexos (${getDocumentList(data).length})</button></div>`;
       html += `</div>`;
 
       const footerHtml = `<button onclick="deleteErpConfirm('${tab}', '${id}')" class="px-4 py-2.5 bg-red-100 text-red-600 rounded-xl font-bold hover:bg-red-200 mr-auto transition flex items-center gap-2"><i class="fa-solid fa-trash"></i> <span class="hidden md:inline">Excluir</span></button><button onclick="closeModal()" class="px-5 py-2.5 bg-slate-200 text-slate-700 rounded-xl font-bold hover:bg-slate-300 transition">Voltar</button><button onclick="openErpForm('${id}')" class="px-6 py-2.5 bg-blue-600 text-white rounded-xl font-bold shadow-md hover:bg-blue-700 transition"><i class="fa-solid fa-pen-to-square mr-2"></i>Editar</button>`;
@@ -1359,11 +1475,7 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
 
     window.viewDocumentFromDetails = (tab, id) => {
       const p = AppState.data[tab].find(x => x.id === id);
-      if (p && p.documentoBase64) {
-        document.getElementById('image-viewer-img').src = p.documentoBase64;
-        document.getElementById('image-viewer').classList.remove('hidden');
-        document.getElementById('image-viewer').classList.add('flex');
-      }
+      if (p) openImageViewerWithList(getDocumentList(p), 0);
     };
 
     window.deleteErpConfirm = (tab, id) => {
@@ -1394,21 +1506,7 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
       let html = generateFormFields(getErpFieldsConfig(tab), data);
 
       if (['pacientes','medicos','clinicas','farmacias','remedios'].includes(tab)) {
-        const docBase64 = data.documentoBase64 || '';
-        html += `<div class="mt-6 border-t border-slate-200 pt-5">
-          <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-3">Documento Anexo</label>
-          <input type="hidden" id="field-documentoBase64" value="${docBase64}">
-          <div id="doc-upload-area" class="${docBase64 ? 'hidden' : 'block'}">
-            <label class="document-upload-card flex flex-col items-center justify-center w-full border-slate-300 cursor-pointer transition">
-              <i class="fa-solid fa-cloud-arrow-up text-5xl text-slate-400 mb-3"></i>
-              <span class="text-lg font-black text-slate-700">Enviar Documento</span>
-              <input type="file" class="hidden" accept="image/*" onchange="handleImageUpload(event)" />
-            </label>
-          </div>
-          <div id="doc-view-area" class="${docBase64 ? 'block' : 'hidden'}">
-            <button type="button" onclick="viewDocument()" class="w-full bg-slate-800 text-white font-bold py-3.5 rounded-xl shadow-md"><i class="fa-regular fa-image mr-2"></i> Ver / Excluir Imagem</button>
-          </div>
-        </div>`;
+        html += renderDocumentUploadSection(data);
       }
 
       const footerHtml = `<button onclick="${id ? `viewErpDetails('${tab}','${id}')` : 'closeModal()'}" class="px-5 py-2.5 bg-slate-200 text-slate-700 rounded-xl font-bold hover:bg-slate-300 mr-auto">Cancelar</button><button onclick="saveErp('${tab}', '${id || ''}')" class="px-8 py-2.5 bg-blue-600 text-white rounded-xl font-bold shadow-md hover:bg-blue-700">Salvar Dados</button>`;
@@ -1442,23 +1540,9 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
         footerHtml += `<button onclick="closeModal()" class="px-5 py-2.5 bg-slate-200 text-slate-700 rounded-xl font-bold mr-auto">Cancelar</button><button onclick="saveCompra('', 'agendada')" class="px-5 py-2.5 bg-orange-100 text-orange-700 border border-orange-300 rounded-xl font-bold shadow-sm">Agendar</button><button onclick="saveCompra('', 'confirmada')" class="px-6 py-2.5 bg-blue-600 text-white rounded-xl font-bold shadow-md">Confirmar</button>`;
       }
 
-      const docBase64 = data.documentoBase64 || '';
       const compraCode = id ? (getCompraDisplayCode(data) || '-') : 'Será gerado ao salvar';
       let compraFormHtml = `<div class="mb-5 bg-blue-50 border border-blue-100 rounded-2xl p-4"><span class="block text-[10px] font-bold text-blue-500 uppercase tracking-wider mb-1">Código da Compra</span><span class="block font-black text-blue-700 text-lg">${compraCode}</span><p class="text-[11px] text-blue-500 font-bold mt-1">Número automático, não editável.</p></div>` + generateFormFields(fields, data);
-      compraFormHtml += `<div class="mt-6 border-t border-slate-200 pt-5">
-        <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-3">Documento Anexo</label>
-        <input type="hidden" id="field-documentoBase64" value="${docBase64}">
-        <div id="doc-upload-area" class="${docBase64 ? 'hidden' : 'block'}">
-          <label class="document-upload-card flex flex-col items-center justify-center w-full border-slate-300 cursor-pointer transition">
-            <i class="fa-solid fa-cloud-arrow-up text-5xl text-slate-400 mb-3"></i>
-            <span class="text-lg font-black text-slate-700">Enviar Documento</span>
-            <input type="file" class="hidden" accept="image/*" onchange="handleImageUpload(event)" />
-          </label>
-        </div>
-        <div id="doc-view-area" class="${docBase64 ? 'block' : 'hidden'}">
-          <button type="button" onclick="viewDocument()" class="w-full bg-slate-800 text-white font-bold py-3.5 rounded-xl shadow-md"><i class="fa-regular fa-image mr-2"></i> Ver / Excluir Imagem</button>
-        </div>
-      </div>`;
+      compraFormHtml += renderDocumentUploadSection(data);
 
       openModal(id ? 'Editar Compra' : 'Nova Compra', compraFormHtml, footerHtml);
 
@@ -1561,6 +1645,7 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
         if (i.id?.startsWith('field-')) dataObj[i.id.replace('field-', '')] = i.value;
       });
       dataObj.incomplete = false;
+      normalizeDocumentFields(dataObj);
       if (await dbSave(colName, dataObj, id)) {
         closeModal();
         if (id) viewErpDetails(colName, id);
@@ -1580,6 +1665,7 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
       });
 
       if (document.getElementById('field-status')) dataObj.status = document.getElementById('field-status').value;
+      normalizeDocumentFields(dataObj);
 
       if (id) {
         const existingCompra = AppState.data.compras.find(c => c.id === id);
@@ -1698,55 +1784,100 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
       });
     };
 
-    window.handleImageUpload = (e) => {
-      const file = e.target.files[0];
-      if (!file) return;
-      const r = new FileReader();
-      r.onload = function(ev) {
-        const img = new Image();
-        img.onload = function() {
-          const canvas = document.createElement('canvas');
-          const ctx = canvas.getContext('2d');
-          let w = img.width;
-          let h = img.height;
-          if (w > h) {
-            if (w > 800) { h *= 800 / w; w = 800; }
-          } else {
-            if (h > 800) { w *= 800 / h; h = 800; }
-          }
-          canvas.width = w;
-          canvas.height = h;
-          ctx.drawImage(img, 0, 0, w, h);
-          document.getElementById('field-documentoBase64').value = canvas.toDataURL('image/jpeg', 0.6);
-          document.getElementById('doc-upload-area').classList.add('hidden');
-          document.getElementById('doc-view-area').classList.remove('hidden');
-          showToast("Documento processado!", "success");
+    function processImageFile(file) {
+      return new Promise((resolve, reject) => {
+        const r = new FileReader();
+        r.onload = function(ev) {
+          const img = new Image();
+          img.onload = function() {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            let w = img.width;
+            let h = img.height;
+            if (w > h) {
+              if (w > 1000) { h *= 1000 / w; w = 1000; }
+            } else {
+              if (h > 1000) { w *= 1000 / h; h = 1000; }
+            }
+            canvas.width = w;
+            canvas.height = h;
+            ctx.drawImage(img, 0, 0, w, h);
+            resolve(canvas.toDataURL('image/jpeg', 0.72));
+          };
+          img.onerror = reject;
+          img.src = ev.target.result;
         };
-        img.src = ev.target.result;
-      };
-      r.readAsDataURL(file);
+        r.onerror = reject;
+        r.readAsDataURL(file);
+      });
+    }
+
+    window.handleImageUpload = async (e) => {
+      const files = Array.from(e.target.files || []);
+      if (!files.length) return;
+      try {
+        const existingDocs = getCurrentFormDocumentList();
+        const newDocs = [];
+        for (const file of files) {
+          if (!file.type.startsWith('image/')) continue;
+          newDocs.push(await processImageFile(file));
+        }
+        if (!newDocs.length) return showToast('Selecione imagens válidas.', 'error');
+        setCurrentFormDocumentList([...existingDocs, ...newDocs]);
+        e.target.value = '';
+        showToast(newDocs.length > 1 ? `${newDocs.length} documentos processados!` : 'Documento processado!', 'success');
+      } catch (error) {
+        showToast('Erro ao processar documento.', 'error');
+      }
     };
 
-    window.viewDocument = () => {
-      const b64 = document.getElementById('field-documentoBase64').value;
-      if (b64) {
-        document.getElementById('image-viewer-img').src = b64;
-        document.getElementById('image-viewer').classList.remove('hidden');
-        document.getElementById('image-viewer').classList.add('flex');
-      }
+    window.viewDocument = (index = 0) => {
+      openImageViewerWithList(getCurrentFormDocumentList(), index);
+    };
+
+    window.navigateDocument = (direction) => {
+      if (!currentDocumentList.length) return;
+      currentDocumentIndex = (currentDocumentIndex + direction + currentDocumentList.length) % currentDocumentList.length;
+      currentDocumentZoom = 1;
+      updateImageViewer();
+    };
+
+    window.zoomDocument = (delta) => {
+      currentDocumentZoom = Math.min(4, Math.max(0.5, currentDocumentZoom + delta));
+      updateImageViewer();
+    };
+
+    window.resetDocumentZoom = () => {
+      currentDocumentZoom = 1;
+      updateImageViewer();
+    };
+
+    window.downloadCurrentDocument = () => {
+      const src = currentDocumentList[currentDocumentIndex];
+      if (!src) return;
+      const a = document.createElement('a');
+      a.href = src;
+      a.download = `documento-${String(currentDocumentIndex + 1).padStart(2, '0')}.jpg`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
     };
 
     window.closeImageViewer = () => {
       document.getElementById('image-viewer').classList.add('hidden');
       document.getElementById('image-viewer').classList.remove('flex');
+      currentDocumentZoom = 1;
     };
 
     window.deleteCurrentDocument = () => {
+      if (!canDeleteDocumentFromCurrentContext()) return showToast('Abra a edição para excluir anexos.', 'error');
       if (confirm('Apagar documento atual?')) {
-        document.getElementById('field-documentoBase64').value = '';
-        document.getElementById('doc-upload-area').classList.remove('hidden');
-        document.getElementById('doc-view-area').classList.add('hidden');
-        closeImageViewer();
+        currentDocumentList.splice(currentDocumentIndex, 1);
+        setCurrentFormDocumentList(currentDocumentList);
+        if (!currentDocumentList.length) return closeImageViewer();
+        currentDocumentIndex = Math.min(currentDocumentIndex, currentDocumentList.length - 1);
+        currentDocumentZoom = 1;
+        updateImageViewer();
       }
     };
 
