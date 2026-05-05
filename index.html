@@ -208,25 +208,8 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
 
         <!-- FILTROS COM CHIPS RÁPIDOS E DRAWER LATERAL -->
         <div class="mb-4">
-          <!-- Chips de Filtro Rápido -->
-          <div class="flex items-center gap-2 overflow-x-auto hide-scroll pb-3 mb-3">
-            <span class="text-[11px] font-black text-slate-500 uppercase tracking-wider shrink-0">Status:</span>
-            <button onclick="setQuickFilter('todas')" id="chip-todas" class="quick-filter-chip shrink-0 px-4 py-2 rounded-full text-sm font-bold transition-all bg-blue-600 text-white shadow-md active:scale-95">
-              <i class="fa-solid fa-list mr-1"></i> Todas
-            </button>
-            <button onclick="setQuickFilter('confirmadas')" id="chip-confirmadas" class="quick-filter-chip shrink-0 px-4 py-2 rounded-full text-sm font-bold transition-all bg-slate-100 text-slate-600 active:scale-95 hover:bg-slate-200">
-              <i class="fa-solid fa-check-circle mr-1"></i> Confirmadas
-            </button>
-            <button onclick="setQuickFilter('agendadas')" id="chip-agendadas" class="quick-filter-chip shrink-0 px-4 py-2 rounded-full text-sm font-bold transition-all bg-slate-100 text-slate-600 active:scale-95 hover:bg-slate-200">
-              <i class="fa-solid fa-calendar mr-1"></i> Agendadas
-            </button>
-            <button onclick="setQuickFilter('canceladas')" id="chip-canceladas" class="quick-filter-chip shrink-0 px-4 py-2 rounded-full text-sm font-bold transition-all bg-slate-100 text-slate-600 active:scale-95 hover:bg-slate-200">
-              <i class="fa-solid fa-ban mr-1"></i> Canceladas
-            </button>
-          </div>
-
           <!-- Botão de Drawer e Resumo de Filtros -->
-          <div class="flex items-center gap-2">
+          <div class="flex items-center gap-2 mb-3">
             <button onclick="toggleFilterDrawer()" class="flex-1 bg-white border border-slate-200 rounded-2xl px-4 py-3 shadow-sm flex items-center justify-between active:scale-[0.98] transition hover:bg-slate-50">
               <span class="flex items-center gap-2 font-black text-slate-700 text-sm">
                 <i class="fa-solid fa-sliders text-blue-600"></i>
@@ -242,8 +225,25 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
           </div>
 
           <!-- Resumo de Filtros Ativos -->
-          <div id="active-filters-summary" class="hidden mt-3 flex flex-wrap gap-2">
+          <div id="active-filters-summary" class="hidden mb-3 flex flex-wrap gap-2">
             <!-- Badges de filtros ativos serão inseridos aqui dinamicamente -->
+          </div>
+
+          <!-- Chips de Filtro Rápido -->
+          <div class="flex items-center gap-2 overflow-x-auto hide-scroll pb-3 mb-3">
+            <span class="text-[11px] font-black text-slate-500 uppercase tracking-wider shrink-0">Status:</span>
+            <button onclick="setQuickFilter('todas')" id="chip-todas" class="quick-filter-chip shrink-0 px-4 py-2 rounded-full text-sm font-bold transition-all bg-blue-600 text-white shadow-md active:scale-95">
+              <i class="fa-solid fa-list mr-1"></i> Todas
+            </button>
+            <button onclick="setQuickFilter('confirmadas')" id="chip-confirmadas" class="quick-filter-chip shrink-0 px-4 py-2 rounded-full text-sm font-bold transition-all bg-slate-100 text-slate-600 active:scale-95 hover:bg-slate-200">
+              <i class="fa-solid fa-check-circle mr-1"></i> Confirmadas
+            </button>
+            <button onclick="setQuickFilter('agendadas')" id="chip-agendadas" class="quick-filter-chip shrink-0 px-4 py-2 rounded-full text-sm font-bold transition-all bg-slate-100 text-slate-600 active:scale-95 hover:bg-slate-200">
+              <i class="fa-solid fa-calendar mr-1"></i> Agendadas
+            </button>
+            <button onclick="setQuickFilter('canceladas')" id="chip-canceladas" class="quick-filter-chip shrink-0 px-4 py-2 rounded-full text-sm font-bold transition-all bg-slate-100 text-slate-600 active:scale-95 hover:bg-slate-200">
+              <i class="fa-solid fa-ban mr-1"></i> Canceladas
+            </button>
           </div>
         </div>
 
