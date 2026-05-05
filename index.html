@@ -409,12 +409,10 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
     <div class="absolute top-4 left-4 right-4 flex items-center justify-between gap-3 z-10 pointer-events-none">
       <div class="bg-white/15 text-white px-3 py-2 rounded-full text-xs font-black backdrop-blur-md pointer-events-auto" id="image-viewer-counter">1/1</div>
       <div class="flex gap-2 pointer-events-auto">
-        <button onclick="zoomDocument(-0.25)" class="w-11 h-11 flex items-center justify-center rounded-full bg-white/20 text-white text-lg backdrop-blur-md hover:bg-white/30 transition" title="Diminuir zoom"><i class="fa-solid fa-magnifying-glass-minus"></i></button>
-        <button onclick="resetDocumentZoom()" class="w-11 h-11 flex items-center justify-center rounded-full bg-white/20 text-white text-lg backdrop-blur-md hover:bg-white/30 transition" title="Resetar zoom"><i class="fa-solid fa-rotate-left"></i></button>
-        <button onclick="zoomDocument(0.25)" class="w-11 h-11 flex items-center justify-center rounded-full bg-white/20 text-white text-lg backdrop-blur-md hover:bg-white/30 transition" title="Aumentar zoom"><i class="fa-solid fa-magnifying-glass-plus"></i></button>
+        <button onclick="resetDocumentZoom()" class="w-11 h-11 flex items-center justify-center rounded-full bg-white/20 text-white text-lg backdrop-blur-md hover:bg-white/30 transition" title="Resetar posição"><i class="fa-solid fa-rotate-left"></i></button>
         <button onclick="downloadCurrentDocument()" class="w-11 h-11 flex items-center justify-center rounded-full bg-blue-600/90 text-white text-lg backdrop-blur-md shadow-lg" title="Baixar documento"><i class="fa-solid fa-download"></i></button>
         <button id="image-viewer-delete-btn" onclick="deleteCurrentDocument()" class="w-11 h-11 flex items-center justify-center rounded-full bg-red-600/90 text-white text-lg backdrop-blur-md shadow-lg" title="Excluir documento"><i class="fa-solid fa-trash"></i></button>
-        <button onclick="closeImageViewer()" class="w-11 h-11 flex items-center justify-center rounded-full bg-white/20 text-white text-lg backdrop-blur-md hover:bg-white/30 transition" title="Fechar"><i class="fa-solid fa-times"></i></button>
+        <button onclick="closeImageViewer()" class="w-11 h-11 flex items-center justify-center rounded-full bg-white text-slate-800 text-lg backdrop-blur-md hover:bg-slate-100 transition shadow-lg" title="Fechar"><i class="fa-solid fa-times"></i></button>
       </div>
     </div>
     <button onclick="navigateDocument(-1)" class="absolute left-3 top-1/2 -translate-y-1/2 z-10 w-12 h-12 flex items-center justify-center rounded-full bg-white/20 text-white text-xl backdrop-blur-md hover:bg-white/30 transition" id="image-viewer-prev"><i class="fa-solid fa-chevron-left"></i></button>
