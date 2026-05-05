@@ -208,6 +208,22 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
 
         <!-- FILTROS COM CHIPS RÁPIDOS E DRAWER LATERAL -->
         <div class="mb-4">
+          <!-- Botão de Drawer e Resumo de Filtros -->
+          <div class="flex items-center gap-2 mb-3">
+            <button onclick="toggleFilterDrawer()" class="flex-1 bg-white border border-slate-200 rounded-2xl px-4 py-3 shadow-sm flex items-center justify-between active:scale-[0.98] transition hover:bg-slate-50">
+              <span class="flex items-center gap-2 font-black text-slate-700 text-sm">
+                <i class="fa-solid fa-sliders text-blue-600"></i>
+                Refinar Busca
+                <span id="filter-count-badge" class="hidden bg-blue-600 text-white text-[10px] px-2 py-0.5 rounded-full font-black">0</span>
+              </span>
+              <i id="filter-drawer-chevron" class="fa-solid fa-chevron-right text-slate-400 text-xs transition-transform"></i>
+            </button>
+
+            <button onclick="clearCompraFilters()" class="bg-slate-100 text-slate-600 border border-slate-200 rounded-2xl px-3 py-3 shadow-sm active:scale-95 transition hover:bg-slate-200" title="Limpar filtros">
+              <i class="fa-solid fa-eraser"></i>
+            </button>
+          </div>
+
           <!-- Chips de Filtro Rápido -->
           <div class="flex items-center gap-2 overflow-x-auto hide-scroll pb-3 mb-3">
             <span class="text-[11px] font-black text-slate-500 uppercase tracking-wider shrink-0">Status:</span>
@@ -222,22 +238,6 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
             </button>
             <button onclick="setQuickFilter('canceladas')" id="chip-canceladas" class="quick-filter-chip shrink-0 px-4 py-2 rounded-full text-sm font-bold transition-all bg-slate-100 text-slate-600 active:scale-95 hover:bg-slate-200">
               <i class="fa-solid fa-ban mr-1"></i> Canceladas
-            </button>
-          </div>
-
-          <!-- Botão de Drawer e Resumo de Filtros -->
-          <div class="flex items-center gap-2">
-            <button onclick="toggleFilterDrawer()" class="flex-1 bg-white border border-slate-200 rounded-2xl px-4 py-3 shadow-sm flex items-center justify-between active:scale-[0.98] transition hover:bg-slate-50">
-              <span class="flex items-center gap-2 font-black text-slate-700 text-sm">
-                <i class="fa-solid fa-sliders text-blue-600"></i>
-                Refinar Busca
-                <span id="filter-count-badge" class="hidden bg-blue-600 text-white text-[10px] px-2 py-0.5 rounded-full font-black">0</span>
-              </span>
-              <i id="filter-drawer-chevron" class="fa-solid fa-chevron-right text-slate-400 text-xs transition-transform"></i>
-            </button>
-
-            <button onclick="clearCompraFilters()" class="bg-slate-100 text-slate-600 border border-slate-200 rounded-2xl px-3 py-3 shadow-sm active:scale-95 transition hover:bg-slate-200" title="Limpar filtros">
-              <i class="fa-solid fa-eraser"></i>
             </button>
           </div>
 
