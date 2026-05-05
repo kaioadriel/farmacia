@@ -68,6 +68,7 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
 .status-chip { display:inline-flex; align-items:center; gap:.35rem; padding:.25rem .55rem; border-radius:999px; font-size:10px; font-weight:900; letter-spacing:.03em; text-transform:uppercase; white-space:nowrap; }
 .status-chip-confirmada { background:#dcfce7; color:#15803d; }
 .status-chip-agendada { background:#ffedd5; color:#c2410c; animation: softPulse 1.8s ease infinite; }
+.status-chip-cancelada { background:#fee2e2; color:#b91c1c; }
 .document-upload-card { min-height: 176px; border-style: dashed !important; border-width: 2px !important; border-radius: 26px !important; background: linear-gradient(180deg, rgba(248,250,252,.96), rgba(241,245,249,.86)); }
 .document-upload-card:hover { background: #f8fafc; border-color: #93c5fd !important; }
 .floating-quick-buy { position: fixed; right: 18px; bottom: 94px; z-index: 45; box-shadow: 0 18px 35px rgba(37,99,235,.28); }
@@ -994,15 +995,18 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
         const clinName = AppState.data.clinicas.find(cl => cl.id === c.clinicaId)?.nome || '-';
         const medName = AppState.data.medicos.find(m => m.id === c.medicoId)?.nome || '-';
         const isAgendada = c.status === 'agendada';
-        const borderClass = isAgendada ? 'border-orange-300 border-l-4 border-l-orange-500 bg-orange-50/30' : 'border-slate-100 bg-white';
-        const timeColorClass = isAgendada ? 'text-orange-600' : 'text-blue-600';
+        const isCancelada = c.status === 'cancelada';
+        const statusLabel = isCancelada ? 'Cancelada' : (isAgendada ? 'Agendada' : 'Confirmada');
+        const statusChipClass = isCancelada ? 'status-chip-cancelada' : (isAgendada ? 'status-chip-agendada' : 'status-chip-confirmada');
+        const borderClass = isCancelada ? 'border-red-300 border-l-4 border-l-red-500 bg-red-50/40' : (isAgendada ? 'border-orange-300 border-l-4 border-l-orange-500 bg-orange-50/30' : 'border-slate-100 bg-white');
+        const timeColorClass = isCancelada ? 'text-red-600' : (isAgendada ? 'text-orange-600' : 'text-blue-600');
 
         return `<div class="p-4 rounded-xl shadow-sm border ${borderClass} mb-3 transition">
           <div class="flex justify-between items-start mb-2 gap-3">
             <div class="min-w-0 pr-2 flex-1">
               <div class="flex items-start gap-2 flex-wrap">
                 <h4 class="font-black text-slate-800 text-[14px] sm:text-base wrap-two-lines">${farmName}</h4>
-                <span class="status-chip ${isAgendada ? 'status-chip-agendada' : 'status-chip-confirmada'}">${isAgendada ? 'Agendada' : 'Confirmada'}</span>
+                <span class="status-chip ${statusChipClass}">${statusLabel}</span>
                 ${c.documentoBase64 ? '<span class="bg-blue-100 text-blue-700 text-[10px] px-1.5 py-0.5 rounded font-bold uppercase tracking-wide"><i class="fa-regular fa-image mr-1"></i>Doc</span>' : ''}
               </div>
               <p class="text-xs text-slate-500 wrap-two-lines mt-0.5"><i class="fa-regular fa-user mr-1 text-slate-400"></i>${pacName}</p>
@@ -1056,13 +1060,15 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
       const clinName = AppState.data.clinicas.find(cl => cl.id === c.clinicaId)?.nome || '-';
       const medName = AppState.data.medicos.find(m => m.id === c.medicoId)?.nome || '-';
       const isAgendada = c.status === 'agendada';
-      const statusLabel = isAgendada ? 'Agendada' : 'Confirmada';
-      const statusClass = isAgendada ? 'bg-orange-100 text-orange-700 border-orange-200' : 'bg-green-100 text-green-700 border-green-200';
+      const isCancelada = c.status === 'cancelada';
+      const statusLabel = isCancelada ? 'Cancelada' : (isAgendada ? 'Agendada' : 'Confirmada');
+      const statusClass = isCancelada ? 'bg-red-100 text-red-700 border-red-200' : (isAgendada ? 'bg-orange-100 text-orange-700 border-orange-200' : 'bg-green-100 text-green-700 border-green-200');
+      const statusIcon = isCancelada ? 'fa-ban' : (isAgendada ? 'fa-calendar' : 'fa-check-circle');
       const formattedDate = c.data ? c.data.split('-').reverse().join('/') : '-';
 
       let html = `<div class="space-y-4">
         <div class="${statusClass} p-3 rounded-xl text-sm font-bold border flex items-center gap-2">
-          <i class="fa-solid ${isAgendada ? 'fa-calendar' : 'fa-check-circle'}"></i> Compra ${statusLabel}
+          <i class="fa-solid ${statusIcon}"></i> Compra ${statusLabel}
         </div>
         <div class="bg-slate-50 p-5 rounded-2xl border border-slate-100 grid grid-cols-1 md:grid-cols-2 gap-4">
           <div><span class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">Data da Compra</span><span class="block font-medium text-slate-800 break-words">${formattedDate} — ${calcularDiasAtras(c.data)}</span></div>
@@ -1273,8 +1279,8 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
         { name: 'obs', label: 'Observações', type: 'textarea' },
       ];
 
-      if (id && isTodayOrFuture(data?.data)) {
-        fields.push({ name: 'status', label: 'Status da Compra', type: 'select', options: [{val:'confirmada', label:'Confirmada'}, {val:'agendada', label:'Agendada'}] });
+      if (id) {
+        fields.push({ name: 'status', label: 'Status da Compra', type: 'select', options: [{val:'confirmada', label:'Confirmada'}, {val:'agendada', label:'Agendada'}, {val:'cancelada', label:'Cancelada'}] });
       }
 
       let footerHtml = '';
