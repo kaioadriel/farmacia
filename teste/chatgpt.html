@@ -507,14 +507,25 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
         .filter(Boolean);
     }
 
+    function isNumericToken(value) {
+      return /^[0-9]+$/.test(String(value ?? ''));
+    }
+
     function smartTokenMatch(value, token) {
       if (!token) return true;
       const textTokens = getTextTokens(value);
       const digitsToken = onlyDigits(token);
 
-      // Busca numérica inteligente: ignora pontuação, mas evita bater em números soltos no meio de outro CPF/RG.
+      // Busca numérica inteligente:
+      // - CPF/RG compactado só bate quando o número completo começa com o termo buscado.
+      // - Números soltos em textos, datas e pagamentos também batem por token exato/prefixo.
       // Ex.: 381211 encontra 381.211.128-42, mas não encontra 238.681.978-77.
+      // Ex.: 9699 encontra "Cartão Adc C6 9699" sem confundir com 9996.
+      // Ex.: 13/05 encontra datas gravadas como 1991-05-13.
       if (digitsToken && digitsToken === token) {
+        const numericTokens = textTokens.filter(isNumericToken);
+        if (numericTokens.some(t => t === digitsToken || t.startsWith(digitsToken))) return true;
+
         const digitsValue = onlyDigits(value);
         return Boolean(digitsValue) && digitsValue.startsWith(digitsToken);
       }
@@ -550,7 +561,9 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
       const med = AppState.data.medicos.find(m => m.id === c.medicoId) || {};
 
       return {
+        codigoCompra: getCompraDisplayCode(c),
         data: c.data,
+        dataFormatada: c.data ? c.data.split('-').reverse().join('/') : '',
         status: c.status,
         qtd: c.qtd,
         valor: c.valor,
@@ -569,6 +582,73 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
         medicoCrm: med.crm,
         medicoEspecialidade: med.especialidade
       };
+    }
+
+    function formatCompraCode(seq) {
+      return `FARM${String(seq).padStart(4, '0')}`;
+    }
+
+    function parseCompraCode(code) {
+      const match = String(code || '').match(/^FARM(\d+)$/i);
+      return match ? parseInt(match[1], 10) : 0;
+    }
+
+    function compraSequenceTime(c) {
+      const time = c?.data ? new Date(c.data + 'T00:00:00').getTime() : 0;
+      return Number.isNaN(time) ? 0 : time;
+    }
+
+    function getComprasOldestFirst() {
+      return [...AppState.data.compras].sort((a, b) => {
+        const diff = compraSequenceTime(a) - compraSequenceTime(b);
+        if (diff !== 0) return diff;
+        return String(a.id || '').localeCompare(String(b.id || ''), 'pt-BR');
+      });
+    }
+
+    function getCompraDisplayCode(c) {
+      if (c?.codigoCompra) return c.codigoCompra;
+      const idx = getComprasOldestFirst().findIndex(item => item.id === c?.id);
+      return idx >= 0 ? formatCompraCode(idx + 1) : '';
+    }
+
+    function getNextCompraCode() {
+      const maxExisting = AppState.data.compras.reduce((max, c) => Math.max(max, parseCompraCode(c.codigoCompra)), 0);
+      if (maxExisting > 0) return formatCompraCode(maxExisting + 1);
+      return formatCompraCode(AppState.data.compras.length + 1);
+    }
+
+    let compraCodeSyncRunning = false;
+    async function ensureCompraCodes() {
+      if (!AppState.userId || compraCodeSyncRunning) return;
+      const ordered = getComprasOldestFirst();
+      const missing = ordered.filter(c => !c.codigoCompra);
+      if (!missing.length) return;
+
+      const codedCount = ordered.length - missing.length;
+      let updates = [];
+
+      // Primeira migração: todos os registros antigos sem código recebem a numeração pela data mais antiga.
+      if (codedCount === 0) {
+        updates = ordered.map((compra, index) => ({ compra, expected: formatCompraCode(index + 1) }));
+      } else {
+        // Depois da migração inicial, não renumera registros já numerados; apenas completa os que faltarem.
+        let nextSeq = ordered.reduce((max, c) => Math.max(max, parseCompraCode(c.codigoCompra)), 0) + 1;
+        updates = missing.map(compra => ({ compra, expected: formatCompraCode(nextSeq++) }));
+      }
+
+      compraCodeSyncRunning = true;
+      try {
+        for (const { compra, expected } of updates) {
+          const cleanData = JSON.parse(JSON.stringify({ ...compra, codigoCompra: expected }));
+          delete cleanData.id;
+          await setDoc(doc(db, 'users', AppState.userId, 'compras', compra.id), cleanData);
+        }
+      } catch (error) {
+        console.error('Erro ao numerar compras:', error);
+      } finally {
+        compraCodeSyncRunning = false;
+      }
     }
 
     function isTodayOrFuture(dateStr) {
@@ -660,6 +740,7 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
           const items = [];
           snapshot.forEach(doc => items.push({ id: doc.id, ...doc.data() }));
           AppState.data[colName] = items;
+          if (colName === 'compras') ensureCompraCodes();
           renderCompraFilterOptions();
           updateUI();
         }, (error) => console.error("Sync error:", error)));
@@ -1066,6 +1147,7 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
         const statusChipClass = isCancelada ? 'status-chip-cancelada' : (isAgendada ? 'status-chip-agendada' : 'status-chip-confirmada');
         const borderClass = isCancelada ? 'border-red-300 border-l-4 border-l-red-500 bg-red-50/40' : (isAgendada ? 'border-orange-300 border-l-4 border-l-orange-500 bg-orange-50/30' : 'border-slate-100 bg-white');
         const timeColorClass = isCancelada ? 'text-red-600' : (isAgendada ? 'text-orange-600' : 'text-blue-600');
+        const compraCode = getCompraDisplayCode(c);
 
         return `<div class="p-4 rounded-xl shadow-sm border ${borderClass} mb-3 transition">
           <div class="flex justify-between items-start mb-2 gap-3">
@@ -1073,6 +1155,7 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
               <div class="flex items-start gap-2 flex-wrap">
                 <h4 class="font-black text-slate-800 text-[14px] sm:text-base wrap-two-lines">${farmName}</h4>
                 <span class="status-chip ${statusChipClass}">${statusLabel}</span>
+                ${compraCode ? `<span class="bg-slate-100 text-slate-600 text-[10px] px-1.5 py-0.5 rounded font-black uppercase tracking-wide"><i class="fa-solid fa-hashtag mr-1"></i>${compraCode}</span>` : ''}
                 ${c.documentoBase64 ? '<span class="bg-blue-100 text-blue-700 text-[10px] px-1.5 py-0.5 rounded font-bold uppercase tracking-wide"><i class="fa-regular fa-image mr-1"></i>Doc</span>' : ''}
               </div>
               <p class="text-xs text-slate-500 wrap-two-lines mt-0.5"><i class="fa-regular fa-user mr-1 text-slate-400"></i>${pacName}</p>
@@ -1103,6 +1186,7 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
       if (c) {
         c.status = 'confirmada';
         c.data = new Date().toISOString().split('T')[0];
+        if (!c.codigoCompra) c.codigoCompra = getCompraDisplayCode(c) || getNextCompraCode();
         await dbSave('compras', c, id);
       }
     };
@@ -1131,12 +1215,14 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
       const statusClass = isCancelada ? 'bg-red-100 text-red-700 border-red-200' : (isAgendada ? 'bg-orange-100 text-orange-700 border-orange-200' : 'bg-green-100 text-green-700 border-green-200');
       const statusIcon = isCancelada ? 'fa-ban' : (isAgendada ? 'fa-calendar' : 'fa-check-circle');
       const formattedDate = c.data ? c.data.split('-').reverse().join('/') : '-';
+      const compraCode = getCompraDisplayCode(c) || '-';
 
       let html = `<div class="space-y-4">
         <div class="${statusClass} p-3 rounded-xl text-sm font-bold border flex items-center gap-2">
           <i class="fa-solid ${statusIcon}"></i> Compra ${statusLabel}
         </div>
         <div class="bg-slate-50 p-5 rounded-2xl border border-slate-100 grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div><span class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">Código da Compra</span><span class="block font-black text-blue-600 break-words">${compraCode}</span></div>
           <div><span class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">Data da Compra</span><span class="block font-medium text-slate-800 break-words">${formattedDate} — ${calcularDiasAtras(c.data)}</span></div>
           <div><span class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">Farmácia</span><span class="block font-medium text-slate-800 break-words">${farmName}</span></div>
           <div><span class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">Remédio</span><span class="block font-medium text-slate-800 break-words">${remName}</span></div>
@@ -1357,7 +1443,8 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
       }
 
       const docBase64 = data.documentoBase64 || '';
-      let compraFormHtml = generateFormFields(fields, data);
+      const compraCode = id ? (getCompraDisplayCode(data) || '-') : 'Será gerado ao salvar';
+      let compraFormHtml = `<div class="mb-5 bg-blue-50 border border-blue-100 rounded-2xl p-4"><span class="block text-[10px] font-bold text-blue-500 uppercase tracking-wider mb-1">Código da Compra</span><span class="block font-black text-blue-700 text-lg">${compraCode}</span><p class="text-[11px] text-blue-500 font-bold mt-1">Número automático, não editável.</p></div>` + generateFormFields(fields, data);
       compraFormHtml += `<div class="mt-6 border-t border-slate-200 pt-5">
         <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-3">Documento Anexo</label>
         <input type="hidden" id="field-documentoBase64" value="${docBase64}">
@@ -1493,6 +1580,13 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
       });
 
       if (document.getElementById('field-status')) dataObj.status = document.getElementById('field-status').value;
+
+      if (id) {
+        const existingCompra = AppState.data.compras.find(c => c.id === id);
+        if (existingCompra?.codigoCompra) dataObj.codigoCompra = existingCompra.codigoCompra;
+      } else {
+        dataObj.codigoCompra = getNextCompraCode();
+      }
 
       if (!dataObj.remedioId || !dataObj.data) return showToast("Data e Remédio obrigatórios.", "error");
 
