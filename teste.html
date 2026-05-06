@@ -1,0 +1,2036 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#2563eb">
+  <title>Controle de Farmácias</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #f1f1f1; }
+    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+    ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+    body { -webkit-tap-highlight-color: transparent; }
+    html, body { overflow-x: hidden; max-width: 100%; }
+    .hide-scroll::-webkit-scrollbar { display: none; }
+    .hide-scroll { -ms-overflow-style: none; scrollbar-width: none; }
+    .auth-bg { background: linear-gradient(135deg, #eff6ff 0%, #bfdbfe 100%); }
+
+    .wrap-two-lines {
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      white-space: normal !important;
+      word-break: break-word;
+      overflow-wrap: anywhere;
+      line-height: 1.2;
+    }
+    .wrap-soft {
+      white-space: normal !important;
+      word-break: break-word;
+      overflow-wrap: anywhere;
+      line-height: 1.25;
+    }
+
+/* ==== Layout experimental: ajustes visuais sem alterar funções ==== */
+:root { --app-radius: 22px; }
+.wrap-two-lines, .wrap-soft { line-height: 1.22; }
+#main-header, #mobile-nav, aside > div, .view-section .bg-white, #modal-content, #quick-add-content { transition: all .25s ease; }
+button { transition: transform .15s ease, box-shadow .2s ease, background .2s ease; }
+button:active { transform: scale(.97); }
+
+/* OPÇÃO 1 — Clean Azul Premium */
+body#app-body { background: radial-gradient(circle at top left, #dbeafe 0, #f8fafc 32%, #eef2ff 100%) !important; color: #172033; }
+#main-header { margin: 10px 12px 0; width: calc(100% - 24px) !important; border-radius: 24px; border: 1px solid rgba(148,163,184,.24) !important; box-shadow: 0 18px 45px rgba(15,23,42,.08) !important; backdrop-filter: blur(12px); background: rgba(255,255,255,.86) !important; }
+@media (min-width: 768px){ #main-header { left: 0; right: 0; } #main-content { padding-top: 20px !important; } }
+#main-content { max-width: 1180px !important; }
+aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184,.22) !important; box-shadow: 0 18px 40px rgba(15,23,42,.07) !important; background: rgba(255,255,255,.80) !important; backdrop-filter: blur(14px); }
+.nav-btn-desktop { border-radius: 18px !important; font-weight: 800; }
+.nav-btn-desktop.bg-blue-50 { background: linear-gradient(135deg,#2563eb,#60a5fa) !important; color: white !important; box-shadow: 0 12px 24px rgba(37,99,235,.25); }
+.view-section > .flex:first-child { background: rgba(255,255,255,.60); border: 1px solid rgba(148,163,184,.18); border-radius: 30px; padding: 14px; box-shadow: 0 16px 35px rgba(15,23,42,.06); }
+.view-section h2 { letter-spacing: -.04em; }
+.view-section .bg-white, #compra-filters-panel { border-radius: 28px !important; border: 1px solid rgba(148,163,184,.18) !important; box-shadow: 0 18px 38px rgba(15,23,42,.07) !important; background: rgba(255,255,255,.86) !important; backdrop-filter: blur(10px); }
+#erp-search, #auth-email, #auth-pass, select, input, textarea { border-radius: 18px !important; }
+#mobile-nav { left: 16px; right: 16px; bottom: 14px; width: calc(100% - 32px) !important; border-radius: 28px; border: 1px solid rgba(148,163,184,.25) !important; box-shadow: 0 18px 45px rgba(15,23,42,.18); overflow: hidden; }
+#modal-content { border-radius: 32px !important; }
+
+
+/* ==== Upgrades oficiais: animações, indicadores e documento anexo em todo ERP ==== */
+@keyframes fadeSlideUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes softPulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(37,99,235,.28); } 50% { box-shadow: 0 0 0 8px rgba(37,99,235,0); } }
+.view-section:not(.hidden) { animation: fadeSlideUp .28s ease both; }
+#list-erp > div, #list-compras > div, #dashboard-recent-compras > div { animation: fadeSlideUp .22s ease both; }
+#list-erp > div:hover, #list-compras > div:hover, #dashboard-recent-compras > div:hover { transform: translateY(-2px); }
+.quick-action-card { background: rgba(255,255,255,.78); border: 1px solid rgba(148,163,184,.22); border-radius: 22px; box-shadow: 0 12px 30px rgba(15,23,42,.06); }
+.status-chip { display:inline-flex; align-items:center; gap:.35rem; padding:.25rem .55rem; border-radius:999px; font-size:10px; font-weight:900; letter-spacing:.03em; text-transform:uppercase; white-space:nowrap; }
+.status-chip-confirmada { background:#dcfce7; color:#15803d; }
+.status-chip-agendada { background:#ffedd5; color:#c2410c; animation: softPulse 1.8s ease infinite; }
+.status-chip-cancelada { background:#fee2e2; color:#b91c1c; }
+.document-upload-card { min-height: 176px; border-style: dashed !important; border-width: 2px !important; border-radius: 26px !important; background: linear-gradient(180deg, rgba(248,250,252,.96), rgba(241,245,249,.86)); }
+.document-upload-card:hover { background: #f8fafc; border-color: #93c5fd !important; }
+.floating-quick-buy { position: fixed; right: 18px; bottom: 94px; z-index: 45; box-shadow: 0 18px 35px rgba(37,99,235,.28); }
+@media (min-width: 768px) { .floating-quick-buy { display: none; } }
+
+  </style>
+</head>
+
+<body class="bg-slate-50 text-slate-800 font-sans antialiased pb-20 md:pb-0 md:pt-16 hidden" id="app-body">
+
+  <!-- AUTHENTICATION SCREEN -->
+  <div id="auth-screen" class="fixed inset-0 z-[100] auth-bg flex items-center justify-center p-4">
+    <div class="bg-white p-8 rounded-3xl shadow-2xl w-full max-w-md flex flex-col items-center">
+      <div class="w-24 h-24 mb-4 rounded-3xl overflow-hidden flex items-center justify-center bg-white shadow-sm p-1 border-2 border-slate-100">
+        <img src="https://farmacia.kaioadriel.com.br/icone/images.png" alt="Logo Controle de Farmácias" class="w-full h-full object-contain">
+      </div>
+      <h1 class="text-2xl font-black text-slate-800 mb-2 text-center">Controle de Farmácias</h1>
+      <p class="text-sm text-slate-500 mb-8 text-center font-medium">Faça login para acessar e sincronizar seus dados.</p>
+
+      <div class="w-full space-y-4">
+        <div>
+          <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5 ml-1">E-mail</label>
+          <input type="email" id="auth-email" placeholder="seu@email.com" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3.5 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5 ml-1">Senha</label>
+          <input type="password" id="auth-pass" placeholder="••••••••" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3.5 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
+        </div>
+
+        <div class="flex gap-3 pt-2">
+          <button onclick="handleLoginEmail()" class="flex-1 bg-blue-600 text-white font-bold py-3.5 rounded-xl shadow-md hover:bg-blue-700 transition active:scale-95">Entrar</button>
+          <button onclick="handleRegisterEmail()" class="flex-1 bg-slate-100 text-slate-600 font-bold py-3.5 rounded-xl shadow-sm hover:bg-slate-200 transition active:scale-95">Criar Conta</button>
+        </div>
+
+        <div class="relative flex py-4 items-center">
+          <div class="flex-grow border-t border-slate-200"></div>
+          <span class="flex-shrink-0 mx-4 text-slate-400 text-xs font-bold uppercase">Ou</span>
+          <div class="flex-grow border-t border-slate-200"></div>
+        </div>
+
+        <button onclick="handleLoginGoogle()" class="w-full bg-white border-2 border-slate-100 text-slate-700 font-bold py-3.5 rounded-xl shadow-sm hover:bg-slate-50 transition active:scale-95 flex items-center justify-center gap-3">
+          <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" class="w-5 h-5"> Entrar com Google
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Header -->
+  <header id="main-header" class="bg-white text-blue-700 p-4 shadow-sm md:fixed md:top-0 md:w-full md:z-40 flex justify-between items-center border-b border-slate-200 hidden">
+    <div class="flex items-center gap-3">
+      <img src="https://farmacia.kaioadriel.com.br/icone/images.png" alt="Logo" class="h-8 w-8 object-contain rounded-md">
+      <h1 class="text-base sm:text-lg font-bold text-slate-800 leading-tight break-words max-w-[200px] sm:max-w-xs">Controle de Farmácias</h1>
+    </div>
+    <div class="flex items-center gap-2">
+      <button id="btn-install-app" onclick="installApp()" class="hidden bg-yellow-400 text-yellow-900 text-[10px] sm:text-xs font-bold px-3 py-1.5 rounded-full shadow-sm hover:bg-yellow-500 transition flex items-center gap-1 active:scale-95">
+        <i class="fa-solid fa-download"></i> <span class="hidden sm:inline">Instalar App</span>
+      </button>
+      <button onclick="logoutApp()" class="bg-slate-100 text-slate-600 text-[10px] sm:text-xs font-bold px-3 py-1.5 rounded-full hover:bg-slate-200 transition flex items-center gap-1 active:scale-95" title="Sair da Conta">
+        <i class="fa-solid fa-right-from-bracket"></i> Sair
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Content Area -->
+  <main id="main-content" class="w-full max-w-6xl mx-auto md:p-4 md:flex md:gap-6 mt-4 md:mt-0 hidden">
+
+    <!-- Desktop Sidebar -->
+    <aside class="hidden md:block w-64 shrink-0">
+      <div class="bg-white rounded-xl shadow-sm p-4 sticky top-24 border border-slate-100">
+        <div class="flex items-center gap-3 mb-6 p-2 bg-slate-50 rounded-lg border border-slate-100">
+          <div class="w-10 h-10 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center font-bold" id="sidebar-avatar">KA</div>
+          <div class="min-w-0">
+            <p class="text-xs text-slate-500 font-bold uppercase tracking-wider">Logado como</p>
+            <p class="text-sm font-bold text-slate-800 truncate" id="sidebar-username">...</p>
+          </div>
+        </div>
+        <nav class="flex flex-col gap-2">
+          <button onclick="switchView('dashboard')" class="nav-btn-desktop text-left p-3 rounded-lg hover:bg-slate-100 flex items-center gap-3 active-nav-desktop" data-target="dashboard">
+            <i class="fa-solid fa-chart-column w-5 text-blue-500"></i> Dash
+          </button>
+          <button onclick="switchView('compras')" class="nav-btn-desktop text-left p-3 rounded-lg hover:bg-slate-100 flex items-center gap-3" data-target="compras">
+            <i class="fa-solid fa-cart-shopping w-5 text-orange-500"></i> Compras
+          </button>
+          <button onclick="switchView('erp-categories')" class="nav-btn-desktop text-left p-3 rounded-lg hover:bg-slate-100 flex items-center gap-3" data-target="erp">
+            <i class="fa-regular fa-folder-open w-5 text-yellow-500"></i> Cadastros
+          </button>
+        </nav>
+      </div>
+    </aside>
+
+    <div class="flex-1 px-4 md:px-0 w-full" id="main-view-container">
+
+      <!-- Dashboard View -->
+      <section id="view-dashboard" class="view-section active">
+        <div class="flex justify-between items-center mb-4 md:mb-6">
+          <h2 class="text-2xl font-bold text-slate-800">Visão Geral</h2>
+          <button onclick="openCompraForm()" class="bg-blue-600 text-white px-4 py-2.5 text-sm md:text-base rounded-xl font-bold shadow-md hover:bg-blue-700 transition active:scale-95 flex items-center gap-2">
+            <i class="fa-solid fa-cart-plus"></i> <span class="hidden sm:inline">Nova Compra</span><span class="sm:hidden">Comprar</span>
+          </button>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6">
+          <div class="bg-white p-4 md:p-5 rounded-2xl shadow-sm border border-slate-100 flex flex-col h-full order-1 lg:order-none">
+            <div class="flex justify-between items-center mb-4">
+              <h3 class="font-bold text-slate-700"><i class="fa-solid fa-clock-rotate-left text-orange-500 mr-2"></i>Últimas Compras</h3>
+              <button onclick="switchView('compras')" class="text-xs font-bold text-blue-600 hover:underline">Ver Todas</button>
+            </div>
+            <div id="dashboard-recent-compras" class="space-y-3 flex-1 overflow-y-auto"></div>
+          </div>
+
+          <div class="bg-white p-4 md:p-5 rounded-2xl shadow-sm border border-slate-100 flex flex-col order-2 lg:order-none">
+            <div class="flex justify-between items-center mb-2">
+              <h3 class="font-bold text-slate-700">Histórico (6 Meses)</h3>
+              <button id="btn-toggle-chart" onclick="toggleChartType()" class="text-xs bg-slate-100 px-3 py-1.5 rounded-lg text-slate-600 hover:bg-slate-200 font-bold transition">Ver Gastos (R$)</button>
+            </div>
+            <div class="text-3xl font-black text-blue-600 mb-4" id="chart-total-label">0</div>
+            <div class="h-56 w-full relative mt-auto"><canvas id="mainChart"></canvas></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Compras View -->
+      <section id="view-compras" class="view-section hidden">
+        <div class="flex justify-between items-center mb-6">
+          <h2 class="text-2xl font-bold text-slate-800">Compras</h2>
+          <button onclick="openCompraForm()" class="bg-blue-600 text-white w-12 h-12 rounded-full shadow-lg flex items-center justify-center hover:bg-blue-700 transition active:scale-95 text-xl">
+            <i class="fa-solid fa-plus"></i>
+          </button>
+        </div>
+
+        <!-- Campo de Busca com Texto Livre -->
+        <div class="relative mb-4">
+          <i class="fa-solid fa-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
+          <input type="text" id="compra-search-input" onkeyup="handleCompraSearch()" placeholder="Buscar..." class="w-full bg-white border border-slate-200 rounded-2xl py-3 pl-12 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm">
+        </div>
+
+        <!-- FILTROS COM CHIPS RÁPIDOS E DRAWER LATERAL -->
+        <div class="mb-4">
+          <!-- Botão de Drawer e Resumo de Filtros -->
+          <div class="flex items-center gap-2 mb-3">
+            <button onclick="toggleFilterDrawer()" class="flex-1 bg-white border border-slate-200 rounded-2xl px-4 py-3 shadow-sm flex items-center justify-between active:scale-[0.98] transition hover:bg-slate-50">
+              <span class="flex items-center gap-2 font-black text-slate-700 text-sm">
+                <i class="fa-solid fa-sliders text-blue-600"></i>
+                Refinar Busca
+                <span id="filter-count-badge" class="hidden bg-blue-600 text-white text-[10px] px-2 py-0.5 rounded-full font-black">0</span>
+              </span>
+              <i id="filter-drawer-chevron" class="fa-solid fa-chevron-right text-slate-400 text-xs transition-transform"></i>
+            </button>
+
+            <button onclick="clearCompraFilters()" class="bg-slate-100 text-slate-600 border border-slate-200 rounded-2xl px-3 py-3 shadow-sm active:scale-95 transition hover:bg-slate-200" title="Limpar filtros">
+              <i class="fa-solid fa-eraser"></i>
+            </button>
+          </div>
+
+          <!-- Resumo de Filtros Ativos -->
+          <div id="active-filters-summary" class="hidden mb-3 flex flex-wrap gap-2">
+            <!-- Badges de filtros ativos serão inseridos aqui dinamicamente -->
+          </div>
+
+          <!-- Chips de Filtro Rápido -->
+          <div class="flex items-center gap-2 overflow-x-auto hide-scroll pb-3 mb-3">
+            <span class="text-[11px] font-black text-slate-500 uppercase tracking-wider shrink-0">Status:</span>
+            <button onclick="setQuickFilter('todas')" id="chip-todas" class="quick-filter-chip shrink-0 px-4 py-2 rounded-full text-sm font-bold transition-all bg-blue-600 text-white shadow-md active:scale-95">
+              <i class="fa-solid fa-list mr-1"></i> Todas
+            </button>
+            <button onclick="setQuickFilter('confirmadas')" id="chip-confirmadas" class="quick-filter-chip shrink-0 px-4 py-2 rounded-full text-sm font-bold transition-all bg-slate-100 text-slate-600 active:scale-95 hover:bg-slate-200">
+              <i class="fa-solid fa-check-circle mr-1"></i> Confirmadas
+            </button>
+            <button onclick="setQuickFilter('agendadas')" id="chip-agendadas" class="quick-filter-chip shrink-0 px-4 py-2 rounded-full text-sm font-bold transition-all bg-slate-100 text-slate-600 active:scale-95 hover:bg-slate-200">
+              <i class="fa-solid fa-calendar mr-1"></i> Agendadas
+            </button>
+            <button onclick="setQuickFilter('canceladas')" id="chip-canceladas" class="quick-filter-chip shrink-0 px-4 py-2 rounded-full text-sm font-bold transition-all bg-slate-100 text-slate-600 active:scale-95 hover:bg-slate-200">
+              <i class="fa-solid fa-ban mr-1"></i> Canceladas
+            </button>
+          </div>
+        </div>
+
+        <!-- Drawer Lateral de Refinamento -->
+        <div id="filter-drawer-overlay" class="fixed inset-0 bg-slate-900/40 z-50 hidden transition-opacity opacity-0 backdrop-blur-sm" onclick="closeFilterDrawer()"></div>
+        <div id="filter-drawer" class="fixed top-0 right-0 h-full w-full max-w-sm bg-white hidden shadow-2xl z-50 transform translate-x-full transition-transform duration-300 flex flex-col">
+          <div class="flex justify-between items-center p-5 border-b border-slate-100 shrink-0">
+            <h3 class="text-lg font-bold text-slate-800">Refinar Busca</h3>
+            <button onclick="closeFilterDrawer()" class="w-8 h-8 flex items-center justify-center rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200 transition">
+              <i class="fa-solid fa-times"></i>
+            </button>
+          </div>
+          <div class="p-5 overflow-y-auto flex-1 hide-scroll space-y-4">
+            <div class="space-y-2">
+              <label class="text-xs font-black text-slate-600 uppercase tracking-wider">Farmácia</label>
+              <select id="filter-farmacia" onchange="handleCompraFilterChange()" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm font-bold outline-none focus:ring-2 focus:ring-blue-500"></select>
+            </div>
+            <div class="space-y-2">
+              <label class="text-xs font-black text-slate-600 uppercase tracking-wider">Paciente</label>
+              <select id="filter-paciente" onchange="handleCompraFilterChange()" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm font-bold outline-none focus:ring-2 focus:ring-blue-500"></select>
+            </div>
+            <div class="space-y-2">
+              <label class="text-xs font-black text-slate-600 uppercase tracking-wider">Clínica</label>
+              <select id="filter-clinica" onchange="handleCompraFilterChange()" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm font-bold outline-none focus:ring-2 focus:ring-blue-500"></select>
+            </div>
+            <div class="space-y-2">
+              <label class="text-xs font-black text-slate-600 uppercase tracking-wider">Médico</label>
+              <select id="filter-medico" onchange="handleCompraFilterChange()" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm font-bold outline-none focus:ring-2 focus:ring-blue-500"></select>
+            </div>
+            <div class="space-y-2">
+              <label class="text-xs font-black text-slate-600 uppercase tracking-wider">Remédio</label>
+              <select id="filter-remedio" onchange="handleCompraFilterChange()" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm font-bold outline-none focus:ring-2 focus:ring-blue-500"></select>
+            </div>
+          </div>
+          <div class="p-5 border-t border-slate-100 bg-slate-50 flex gap-3 shrink-0">
+            <button onclick="clearCompraFilters()" class="flex-1 text-sm font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 px-4 py-3 rounded-xl transition">
+              <i class="fa-solid fa-eraser mr-1"></i> Limpar
+            </button>
+            <button onclick="closeFilterDrawer()" class="flex-1 text-sm font-bold text-white bg-blue-600 hover:bg-blue-700 px-4 py-3 rounded-xl transition">
+              <i class="fa-solid fa-check mr-1"></i> Aplicar
+            </button>
+          </div>
+        </div>
+
+        <div id="list-compras" class="space-y-3 pb-6"></div>
+      </section>
+
+      <!-- ERP Categories View -->
+      <section id="view-erp-categories" class="view-section hidden">
+        <h2 class="text-2xl font-bold text-slate-800 mb-6">Módulo ERP</h2>
+        <div class="grid grid-cols-2 gap-4">
+          <button onclick="openErpList('pacientes')" class="bg-white p-6 rounded-2xl shadow-[0_2px_10px_-3px_rgba(0,0,0,0.1)] border border-slate-50 flex flex-col items-center justify-center gap-3 hover:bg-slate-50 transition active:scale-95">
+            <span class="text-5xl">👤</span><span class="font-bold text-slate-700 text-sm md:text-base">Pacientes</span>
+          </button>
+          <button onclick="openErpList('medicos')" class="bg-white p-6 rounded-2xl shadow-[0_2px_10px_-3px_rgba(0,0,0,0.1)] border border-slate-50 flex flex-col items-center justify-center gap-3 hover:bg-slate-50 transition active:scale-95">
+            <span class="text-5xl">👨‍⚕️</span><span class="font-bold text-slate-700 text-sm md:text-base">Médicos</span>
+          </button>
+          <button onclick="openErpList('clinicas')" class="bg-white p-6 rounded-2xl shadow-[0_2px_10px_-3px_rgba(0,0,0,0.1)] border border-slate-50 flex flex-col items-center justify-center gap-3 hover:bg-slate-50 transition active:scale-95">
+            <span class="text-5xl">🏥</span><span class="font-bold text-slate-700 text-sm md:text-base">Clínicas</span>
+          </button>
+          <button onclick="openErpList('farmacias')" class="bg-white p-6 rounded-2xl shadow-[0_2px_10px_-3px_rgba(0,0,0,0.1)] border border-slate-50 flex flex-col items-center justify-center gap-3 hover:bg-slate-50 transition active:scale-95">
+            <span class="text-5xl">🏪</span><span class="font-bold text-slate-700 text-sm md:text-base">Farmácias</span>
+          </button>
+          <button onclick="openErpList('remedios')" class="bg-white p-6 rounded-2xl shadow-[0_2px_10px_-3px_rgba(0,0,0,0.1)] border border-slate-50 flex flex-col items-center justify-center gap-3 hover:bg-slate-50 transition active:scale-95">
+            <span class="text-5xl">💊</span><span class="font-bold text-slate-700 text-sm md:text-base">Remédios</span>
+          </button>
+        </div>
+      </section>
+
+      <!-- ERP List View -->
+      <section id="view-erp-list" class="view-section hidden">
+        <div class="flex justify-between items-center mb-4">
+          <div class="flex items-center gap-3">
+            <button onclick="switchView('erp-categories')" class="w-10 h-10 rounded-full bg-slate-200 text-slate-600 flex items-center justify-center hover:bg-slate-300 transition">
+              <i class="fa-solid fa-arrow-left"></i>
+            </button>
+            <h2 class="text-2xl font-bold text-slate-800 flex items-center gap-2" id="erp-list-title">Lista</h2>
+          </div>
+          <button onclick="openErpForm()" class="bg-blue-600 text-white w-12 h-12 rounded-full shadow-lg flex items-center justify-center hover:bg-blue-700 transition active:scale-95 text-xl">
+            <i class="fa-solid fa-plus"></i>
+          </button>
+        </div>
+        <div class="relative mb-3">
+          <i class="fa-solid fa-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
+          <input type="text" id="erp-search" onkeyup="filterErpList()" placeholder="Buscar..." class="w-full bg-white border border-slate-200 rounded-xl py-3 pl-12 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm">
+        </div>
+
+        <!-- Ordenação da lista ERP -->
+        <div class="mb-4 flex items-center gap-3 overflow-x-auto hide-scroll">
+          <span class="text-[11px] font-black text-slate-500 uppercase tracking-wider shrink-0">Ordenar:</span>
+          <button id="erp-sort-alpha" onclick="setErpSortMode('alpha')" class="erp-sort-btn shrink-0 bg-blue-600 text-white px-4 py-3 rounded-xl text-sm font-black shadow-md active:scale-95 transition">
+            A-Z
+          </button>
+          <button id="erp-sort-lastPurchase" onclick="setErpSortMode('lastPurchase')" class="erp-sort-btn shrink-0 bg-slate-100 text-slate-600 px-4 py-3 rounded-xl text-sm font-black active:scale-95 transition">
+            Última Compra
+          </button>
+        </div>
+
+        <div id="list-erp" class="space-y-3 pb-6"></div>
+      </section>
+
+    </div>
+  </main>
+
+
+  <button onclick="openCompraForm()" class="floating-quick-buy bg-blue-600 text-white w-14 h-14 rounded-full flex items-center justify-center text-xl active:scale-95 transition" title="Nova Compra">
+    <i class="fa-solid fa-cart-plus"></i>
+  </button>
+
+  <!-- Mobile Bottom Navigation -->
+  <nav id="mobile-nav" class="md:hidden fixed bottom-0 w-full bg-white border-t border-slate-200 z-40 pb-safe hidden">
+    <div class="flex justify-around items-center h-[68px]">
+      <button onclick="switchView('dashboard')" class="nav-btn relative flex flex-col items-center justify-center w-full h-full text-slate-400 hover:text-blue-600 transition" data-target="dashboard">
+        <div class="nav-indicator hidden absolute top-0 w-1/2 h-1 bg-blue-600 rounded-b-md"></div>
+        <i class="fa-solid fa-chart-column text-xl mb-1 mt-1"></i>
+        <span class="text-[11px] font-bold">Dash</span>
+      </button>
+      <button onclick="switchView('compras')" class="nav-btn relative flex flex-col items-center justify-center w-full h-full text-slate-400 hover:text-blue-600 transition" data-target="compras">
+        <div class="nav-indicator hidden absolute top-0 w-1/2 h-1 bg-blue-600 rounded-b-md"></div>
+        <i class="fa-solid fa-cart-shopping text-xl mb-1 mt-1"></i>
+        <span class="text-[11px] font-bold">Compras</span>
+      </button>
+      <button onclick="switchView('erp-categories')" class="nav-btn relative flex flex-col items-center justify-center w-full h-full text-slate-400 hover:text-blue-600 transition" data-target="erp">
+        <div class="nav-indicator hidden absolute top-0 w-1/2 h-1 bg-blue-600 rounded-b-md"></div>
+        <i class="fa-regular fa-folder-open text-xl mb-1 mt-1"></i>
+        <span class="text-[11px] font-bold">Cadastros</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Global Modal Overlay -->
+  <div id="modal-overlay" class="fixed inset-0 bg-slate-900/40 z-50 hidden flex items-end md:items-center justify-center transition-opacity opacity-0 backdrop-blur-sm">
+    <div id="modal-content" class="bg-white w-full max-w-2xl md:rounded-2xl rounded-t-3xl h-[90vh] md:h-auto md:max-h-[90vh] flex flex-col shadow-2xl transform translate-y-full md:translate-y-0 transition-transform duration-300">
+      <div class="flex justify-between items-center p-5 border-b border-slate-100">
+        <h3 id="modal-title" class="text-xl font-bold text-slate-800">Título</h3>
+        <button onclick="closeModal()" class="w-8 h-8 flex items-center justify-center rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200 transition"><i class="fa-solid fa-times"></i></button>
+      </div>
+      <div id="modal-body" class="p-5 overflow-y-auto flex-1 hide-scroll"></div>
+      <div id="modal-footer" class="p-5 border-t border-slate-100 bg-slate-50 flex gap-3 justify-end md:rounded-b-2xl pb-safe"></div>
+    </div>
+  </div>
+
+  <!-- Quick Add Modal -->
+  <div id="quick-add-overlay" class="fixed inset-0 bg-slate-900/60 z-[80] hidden flex items-center justify-center p-4 transition-opacity opacity-0 backdrop-blur-sm">
+    <div id="quick-add-content" class="bg-white rounded-2xl p-6 w-full max-w-sm shadow-2xl transform scale-95 transition-transform duration-300">
+      <div class="flex items-center justify-between mb-2">
+        <h3 class="font-bold text-lg text-slate-800">Cadastro Rápido ⚡</h3>
+        <button onclick="closeQuickAdd()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-times"></i></button>
+      </div>
+      <p class="text-sm text-slate-500 mb-5">Insira apenas o nome. Este cadastro ficará marcado como Incompleto no ERP.</p>
+      <input type="hidden" id="quick-add-collection">
+      <input type="hidden" id="quick-add-select-id">
+      <input type="text" id="quick-add-input" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 mb-5 focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-800 font-medium" placeholder="Digite o nome aqui...">
+      <div class="flex gap-3 justify-end">
+        <button onclick="closeQuickAdd()" class="px-5 py-2.5 bg-slate-100 rounded-xl text-slate-600 font-medium hover:bg-slate-200 transition">Cancelar</button>
+        <button onclick="confirmQuickAdd()" class="px-5 py-2.5 bg-blue-600 rounded-xl text-white font-bold shadow-md hover:bg-blue-700 transition">Salvar & Usar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Fullscreen Image Viewer -->
+  <div id="image-viewer" class="fixed inset-0 bg-black z-[90] hidden flex-col items-center justify-center overflow-hidden">
+    <div class="absolute top-4 left-4 right-4 flex items-center justify-between gap-3 z-10 pointer-events-none">
+      <div class="bg-white/15 text-white px-3 py-2 rounded-full text-xs font-black backdrop-blur-md pointer-events-auto" id="image-viewer-counter">1/1</div>
+      <div class="flex gap-2 pointer-events-auto">
+        <button onclick="resetDocumentZoom()" class="w-11 h-11 flex items-center justify-center rounded-full bg-white/20 text-white text-lg backdrop-blur-md hover:bg-white/30 transition" title="Resetar posição"><i class="fa-solid fa-rotate-left"></i></button>
+        <button onclick="downloadCurrentDocument()" class="w-11 h-11 flex items-center justify-center rounded-full bg-blue-600/90 text-white text-lg backdrop-blur-md shadow-lg" title="Baixar documento"><i class="fa-solid fa-download"></i></button>
+        <button id="image-viewer-delete-btn" onclick="deleteCurrentDocument()" class="w-11 h-11 flex items-center justify-center rounded-full bg-red-600/90 text-white text-lg backdrop-blur-md shadow-lg" title="Excluir documento"><i class="fa-solid fa-trash"></i></button>
+        <button onclick="closeImageViewer()" class="w-11 h-11 flex items-center justify-center rounded-full bg-white text-slate-800 text-lg backdrop-blur-md hover:bg-slate-100 transition shadow-lg" title="Fechar"><i class="fa-solid fa-times"></i></button>
+      </div>
+    </div>
+    <button onclick="navigateDocument(-1)" class="absolute left-3 top-1/2 -translate-y-1/2 z-10 w-12 h-12 flex items-center justify-center rounded-full bg-white/20 text-white text-xl backdrop-blur-md hover:bg-white/30 transition" id="image-viewer-prev"><i class="fa-solid fa-chevron-left"></i></button>
+    <button onclick="navigateDocument(1)" class="absolute right-3 top-1/2 -translate-y-1/2 z-10 w-12 h-12 flex items-center justify-center rounded-full bg-white/20 text-white text-xl backdrop-blur-md hover:bg-white/30 transition" id="image-viewer-next"><i class="fa-solid fa-chevron-right"></i></button>
+    <div id="image-viewer-stage" class="w-full h-full flex items-center justify-center overflow-hidden p-4 pt-20 pb-8" style="touch-action: none; cursor: grab;">
+      <img id="image-viewer-img" src="" draggable="false" class="max-w-full max-h-full object-contain origin-center select-none" style="transform: translate3d(0px, 0px, 0) scale(1); touch-action: none; user-select: none; -webkit-user-drag: none;">
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toast" class="fixed top-20 left-1/2 transform -translate-x-1/2 text-white px-5 py-3 rounded-xl shadow-xl z-[110] transition-opacity duration-300 opacity-0 pointer-events-none flex items-center gap-3 font-medium">
+    <i id="toast-icon" class="fa-solid fa-info-circle text-lg"></i>
+    <span id="toast-msg" class="text-sm"></span>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import { getFirestore, collection, onSnapshot, doc, setDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+    function injectPWA() {
+      const manifest = {
+        "name": "Controle de Farmácias - PharmaSync",
+        "short_name": "Controle de Farmácias",
+        "start_url": ".",
+        "display": "standalone",
+        "background_color": "#f8fafc",
+        "theme_color": "#2563eb",
+        "icons": [{"src": "https://farmacia.kaioadriel.com.br/icone/images.png", "sizes": "512x512", "type": "image/png", "purpose": "any"}]
+      };
+      const manifestBlob = new Blob([JSON.stringify(manifest)], {type: 'application/json'});
+      const link = document.createElement('link');
+      link.rel = 'manifest';
+      link.href = URL.createObjectURL(manifestBlob);
+      document.head.appendChild(link);
+
+      const swCode = `self.addEventListener('install', (e) => self.skipWaiting()); self.addEventListener('activate', (e) => e.waitUntil(clients.claim())); self.addEventListener('fetch', (e) => {});`;
+      const swBlob = new Blob([swCode], {type: 'text/javascript'});
+      if ('serviceWorker' in navigator) navigator.serviceWorker.register(URL.createObjectURL(swBlob)).catch(err => console.log('SW falhou', err));
+
+      let deferredPrompt;
+      window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        document.getElementById('btn-install-app').classList.remove('hidden');
+      });
+      window.installApp = async () => {
+        if (deferredPrompt) {
+          deferredPrompt.prompt();
+          const { outcome } = await deferredPrompt.userChoice;
+          if (outcome === 'accepted') document.getElementById('btn-install-app').classList.add('hidden');
+          deferredPrompt = null;
+        }
+      };
+    }
+    injectPWA();
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyB1HRg4rqLgyGMQ8GL6wP6zq9GSHUZlIZc",
+      authDomain: "farmacia-d7bb3.firebaseapp.com",
+      projectId: "farmacia-d7bb3",
+      storageBucket: "farmacia-d7bb3.firebasestorage.app",
+      messagingSenderId: "999252393322",
+      appId: "1:999252393322:web:2cd640bc6deac648cfb913"
+    };
+
+    window.AppState = {
+      user: null,
+      userId: null,
+      view: 'dashboard',
+      erpTab: 'pacientes',
+      data: { pacientes: [], medicos: [], clinicas: [], farmacias: [], remedios: [], compras: [] },
+      chartType: 'count',
+      erpSort: 'alpha'
+    };
+
+    let app, db, auth, provider, listeners = [];
+    let myChart = null;
+
+    function normalizeSearchText(value) {
+      return String(value ?? '')
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .toLowerCase();
+    }
+
+    function onlyDigits(value) {
+      return String(value ?? '').replace(/\D/g, '');
+    }
+
+    function getSearchTerms(term) {
+      return normalizeSearchText(term)
+        .split(/[^a-z0-9]+/i)
+        .map(t => t.trim())
+        .filter(Boolean);
+    }
+
+    function getTextTokens(value) {
+      return normalizeSearchText(value)
+        .split(/[^a-z0-9]+/i)
+        .filter(Boolean);
+    }
+
+    function isNumericToken(value) {
+      return /^[0-9]+$/.test(String(value ?? ''));
+    }
+
+    function smartTokenMatch(value, token) {
+      if (!token) return true;
+      const textTokens = getTextTokens(value);
+      const digitsToken = onlyDigits(token);
+
+      // Busca numérica inteligente:
+      // - CPF/RG compactado só bate quando o número completo começa com o termo buscado.
+      // - Números soltos em textos, datas e pagamentos também batem por token exato/prefixo.
+      // Ex.: 381211 encontra 381.211.128-42, mas não encontra 238.681.978-77.
+      // Ex.: 9699 encontra "Cartão Adc C6 9699" sem confundir com 9996.
+      // Ex.: 13/05 encontra datas gravadas como 1991-05-13.
+      if (digitsToken && digitsToken === token) {
+        const numericTokens = textTokens.filter(isNumericToken);
+        if (numericTokens.some(t => t === digitsToken || t.startsWith(digitsToken))) return true;
+
+        const digitsValue = onlyDigits(value);
+        return Boolean(digitsValue) && digitsValue.startsWith(digitsToken);
+      }
+
+      // Busca textual por palavra exata, sem acentos e sem diferenciar maiúsculas/minúsculas.
+      return textTokens.includes(token);
+    }
+
+    function flattenSearchValues(value, visited = new WeakSet()) {
+      if (value === null || value === undefined) return [];
+      if (typeof value !== 'object') return [String(value)];
+      if (visited.has(value)) return [];
+      visited.add(value);
+      if (Array.isArray(value)) return value.flatMap(v => flattenSearchValues(v, visited));
+      const ignoredKeys = new Set(['id', 'documentoBase64', 'documentosBase64']);
+      return Object.entries(value)
+        .filter(([key]) => !ignoredKeys.has(key))
+        .flatMap(([, v]) => flattenSearchValues(v, visited));
+    }
+
+    function recordMatchesDeep(record, term, extraRecords = []) {
+      const terms = getSearchTerms(term);
+      if (!terms.length) return true;
+      const values = [...flattenSearchValues(record), ...extraRecords.flatMap(r => flattenSearchValues(r))];
+      return terms.every(token => values.some(v => smartTokenMatch(v, token)));
+    }
+
+    function getCompraSearchRecord(c) {
+      const farm = AppState.data.farmacias.find(f => f.id === c.farmaciaId) || {};
+      const pac = AppState.data.pacientes.find(p => p.id === c.pacienteId) || {};
+      const rem = AppState.data.remedios.find(r => r.id === c.remedioId) || {};
+      const clin = AppState.data.clinicas.find(cl => cl.id === c.clinicaId) || {};
+      const med = AppState.data.medicos.find(m => m.id === c.medicoId) || {};
+
+      return {
+        codigoCompra: getCompraDisplayCode(c),
+        data: c.data,
+        dataFormatada: c.data ? c.data.split('-').reverse().join('/') : '',
+        status: c.status,
+        qtd: c.qtd,
+        valor: c.valor,
+        pagamento: c.pagamento,
+        obs: c.obs,
+        farmacia: farm.nome,
+        farmaciaRede: farm.rede,
+        paciente: pac.nome,
+        pacienteCpf: pac.cpf,
+        pacienteRg: pac.rg,
+        remedio: rem.nome,
+        remedioTipo: rem.tipo,
+        remedioDosagem: rem.dosagem,
+        clinica: clin.nome,
+        medico: med.nome,
+        medicoCrm: med.crm,
+        medicoEspecialidade: med.especialidade
+      };
+    }
+
+    function formatCompraCode(seq) {
+      return `FARM${String(seq).padStart(4, '0')}`;
+    }
+
+    function parseCompraCode(code) {
+      const match = String(code || '').match(/^FARM(\d+)$/i);
+      return match ? parseInt(match[1], 10) : 0;
+    }
+
+    function compraSequenceTime(c) {
+      const time = c?.data ? new Date(c.data + 'T00:00:00').getTime() : 0;
+      return Number.isNaN(time) ? 0 : time;
+    }
+
+    function getComprasOldestFirst() {
+      return [...AppState.data.compras].sort((a, b) => {
+        const diff = compraSequenceTime(a) - compraSequenceTime(b);
+        if (diff !== 0) return diff;
+        return String(a.id || '').localeCompare(String(b.id || ''), 'pt-BR');
+      });
+    }
+
+    function getCompraDisplayCode(c) {
+      if (c?.codigoCompra) return c.codigoCompra;
+      const idx = getComprasOldestFirst().findIndex(item => item.id === c?.id);
+      return idx >= 0 ? formatCompraCode(idx + 1) : '';
+    }
+
+    function getNextCompraCode() {
+      const maxExisting = AppState.data.compras.reduce((max, c) => Math.max(max, parseCompraCode(c.codigoCompra)), 0);
+      if (maxExisting > 0) return formatCompraCode(maxExisting + 1);
+      return formatCompraCode(AppState.data.compras.length + 1);
+    }
+
+    function safeParseDocumentList(value) {
+      if (!value) return [];
+      if (Array.isArray(value)) return value.filter(Boolean);
+      try {
+        const parsed = JSON.parse(String(value));
+        return Array.isArray(parsed) ? parsed.filter(Boolean) : [];
+      } catch (e) {
+        return [];
+      }
+    }
+
+    function getDocumentList(record = {}) {
+      const docs = safeParseDocumentList(record.documentosBase64);
+      if (record.documentoBase64 && !docs.includes(record.documentoBase64)) docs.unshift(record.documentoBase64);
+      return docs.filter(Boolean);
+    }
+
+    function getCurrentFormDocumentList() {
+      const multi = document.getElementById('field-documentosBase64');
+      const legacy = document.getElementById('field-documentoBase64');
+      const docs = safeParseDocumentList(multi?.value);
+      if (legacy?.value && !docs.includes(legacy.value)) docs.unshift(legacy.value);
+      return docs.filter(Boolean);
+    }
+
+    function setCurrentFormDocumentList(docs) {
+      const cleanDocs = (docs || []).filter(Boolean);
+      const legacy = document.getElementById('field-documentoBase64');
+      const multi = document.getElementById('field-documentosBase64');
+      if (legacy) legacy.value = cleanDocs[0] || '';
+      if (multi) multi.value = JSON.stringify(cleanDocs);
+      updateDocumentUploadPreview(cleanDocs);
+    }
+
+    function escapeTextareaContent(value) {
+      return String(value ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+
+    function renderDocumentUploadSection(data = {}) {
+      const docs = getDocumentList(data);
+      const legacyDoc = docs[0] || '';
+      const docsJson = escapeTextareaContent(JSON.stringify(docs));
+      const countText = docs.length ? `${docs.length} documento${docs.length > 1 ? 's' : ''} anexado${docs.length > 1 ? 's' : ''}` : 'Nenhum documento anexado';
+      return `<div class="mt-6 border-t border-slate-200 pt-5">
+        <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-3">Documentos Anexos</label>
+        <input type="hidden" id="field-documentoBase64" value="${legacyDoc}">
+        <textarea id="field-documentosBase64" class="hidden">${docsJson}</textarea>
+        <div id="doc-list-summary" class="mb-3 text-sm font-bold ${docs.length ? 'text-blue-700 bg-blue-50 border-blue-100' : 'text-slate-500 bg-slate-50 border-slate-100'} border rounded-2xl p-3 flex items-center justify-between gap-3">
+          <span><i class="fa-regular fa-images mr-2"></i>${countText}</span>
+          ${docs.length ? `<button type="button" onclick="viewDocument(0)" class="text-xs bg-slate-800 text-white px-3 py-2 rounded-xl font-black active:scale-95 transition"><i class="fa-regular fa-eye mr-1"></i>Ver</button>` : ''}
+        </div>
+        <label class="document-upload-card flex flex-col items-center justify-center w-full border-slate-300 cursor-pointer transition">
+          <i class="fa-solid fa-cloud-arrow-up text-5xl text-slate-400 mb-3"></i>
+          <span class="text-lg font-black text-slate-700">Adicionar Documento(s)</span>
+          <span class="text-xs text-slate-400 font-bold mt-1">Você pode selecionar mais de uma imagem.</span>
+          <input type="file" class="hidden" accept="image/*" multiple onchange="handleImageUpload(event)" />
+        </label>
+      </div>`;
+    }
+
+    function updateDocumentUploadPreview(docs) {
+      const summary = document.getElementById('doc-list-summary');
+      if (!summary) return;
+      const countText = docs.length ? `${docs.length} documento${docs.length > 1 ? 's' : ''} anexado${docs.length > 1 ? 's' : ''}` : 'Nenhum documento anexado';
+      summary.className = `mb-3 text-sm font-bold ${docs.length ? 'text-blue-700 bg-blue-50 border-blue-100' : 'text-slate-500 bg-slate-50 border-slate-100'} border rounded-2xl p-3 flex items-center justify-between gap-3`;
+      summary.innerHTML = `<span><i class="fa-regular fa-images mr-2"></i>${countText}</span>${docs.length ? `<button type="button" onclick="viewDocument(0)" class="text-xs bg-slate-800 text-white px-3 py-2 rounded-xl font-black active:scale-95 transition"><i class="fa-regular fa-eye mr-1"></i>Ver</button>` : ''}`;
+    }
+
+    function normalizeDocumentFields(dataObj) {
+      const docs = safeParseDocumentList(dataObj.documentosBase64);
+      if (dataObj.documentoBase64 && !docs.includes(dataObj.documentoBase64)) docs.unshift(dataObj.documentoBase64);
+      dataObj.documentosBase64 = JSON.stringify(docs.filter(Boolean));
+      dataObj.documentoBase64 = docs[0] || '';
+      return dataObj;
+    }
+
+    let currentDocumentList = [];
+    let currentDocumentIndex = 0;
+    let currentDocumentZoom = 1;
+    let currentDocumentPanX = 0;
+    let currentDocumentPanY = 0;
+    const imageViewerPointers = new Map();
+    let imageGestureStartDistance = 0;
+    let imageGestureStartZoom = 1;
+    let imageGestureStartPanX = 0;
+    let imageGestureStartPanY = 0;
+    let imageGestureStartMidX = 0;
+    let imageGestureStartMidY = 0;
+    let imageDragLastX = 0;
+    let imageDragLastY = 0;
+    let imageSwipeStartX = 0;
+    let imageSwipeStartY = 0;
+    let imageSwipeTriggered = false;
+
+    function canDeleteDocumentFromCurrentContext() {
+      return Boolean(document.getElementById('field-documentosBase64') || document.getElementById('field-documentoBase64'));
+    }
+
+    function openImageViewerWithList(docs, index = 0) {
+      currentDocumentList = (docs || []).filter(Boolean);
+      if (!currentDocumentList.length) return showToast('Nenhum documento anexado.', 'error');
+      currentDocumentIndex = Math.min(Math.max(index, 0), currentDocumentList.length - 1);
+      resetDocumentTransformState();
+      updateImageViewer();
+      document.getElementById('image-viewer').classList.remove('hidden');
+      document.getElementById('image-viewer').classList.add('flex');
+    }
+
+    function updateImageViewer() {
+      const img = document.getElementById('image-viewer-img');
+      const counter = document.getElementById('image-viewer-counter');
+      const prev = document.getElementById('image-viewer-prev');
+      const next = document.getElementById('image-viewer-next');
+      const del = document.getElementById('image-viewer-delete-btn');
+      if (!img) return;
+      img.src = currentDocumentList[currentDocumentIndex] || '';
+      img.style.transform = `translate3d(${currentDocumentPanX}px, ${currentDocumentPanY}px, 0) scale(${currentDocumentZoom})`;
+      if (counter) counter.innerText = `${currentDocumentIndex + 1}/${currentDocumentList.length}`;
+      if (prev) prev.classList.toggle('hidden', currentDocumentList.length <= 1);
+      if (next) next.classList.toggle('hidden', currentDocumentList.length <= 1);
+      if (del) del.classList.toggle('hidden', !canDeleteDocumentFromCurrentContext());
+    }
+
+    function resetDocumentTransformState() {
+      currentDocumentZoom = 1;
+      currentDocumentPanX = 0;
+      currentDocumentPanY = 0;
+      imageViewerPointers.clear();
+    }
+
+    function getPointerDistance(a, b) {
+      return Math.hypot(a.x - b.x, a.y - b.y);
+    }
+
+    function getPointerMidpoint(a, b) {
+      return { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 };
+    }
+
+    function clampDocumentZoom(value) {
+      return Math.min(5, Math.max(1, value));
+    }
+
+    function applyDocumentTransform() {
+      const img = document.getElementById('image-viewer-img');
+      if (!img) return;
+      img.style.transform = `translate3d(${currentDocumentPanX}px, ${currentDocumentPanY}px, 0) scale(${currentDocumentZoom})`;
+    }
+
+    function setupImageViewerGestures() {
+      const stage = document.getElementById('image-viewer-stage');
+      if (!stage || stage.dataset.gesturesReady === '1') return;
+      stage.dataset.gesturesReady = '1';
+
+      const updatePointer = (ev) => {
+        imageViewerPointers.set(ev.pointerId, { x: ev.clientX, y: ev.clientY });
+      };
+
+      stage.addEventListener('pointerdown', (ev) => {
+        if (ev.target.closest('button')) return;
+        ev.preventDefault();
+        stage.setPointerCapture?.(ev.pointerId);
+        updatePointer(ev);
+        stage.style.cursor = 'grabbing';
+
+        if (imageViewerPointers.size === 1) {
+          imageDragLastX = ev.clientX;
+          imageDragLastY = ev.clientY;
+          imageSwipeStartX = ev.clientX;
+          imageSwipeStartY = ev.clientY;
+          imageSwipeTriggered = false;
+        } else if (imageViewerPointers.size === 2) {
+          imageSwipeTriggered = true;
+          const pts = Array.from(imageViewerPointers.values());
+          imageGestureStartDistance = getPointerDistance(pts[0], pts[1]) || 1;
+          imageGestureStartZoom = currentDocumentZoom;
+          imageGestureStartPanX = currentDocumentPanX;
+          imageGestureStartPanY = currentDocumentPanY;
+          const mid = getPointerMidpoint(pts[0], pts[1]);
+          imageGestureStartMidX = mid.x;
+          imageGestureStartMidY = mid.y;
+        }
+      }, { passive: false });
+
+      stage.addEventListener('pointermove', (ev) => {
+        if (!imageViewerPointers.has(ev.pointerId)) return;
+        ev.preventDefault();
+        updatePointer(ev);
+
+        if (imageViewerPointers.size >= 2) {
+          const pts = Array.from(imageViewerPointers.values()).slice(0, 2);
+          const distance = getPointerDistance(pts[0], pts[1]) || 1;
+          const mid = getPointerMidpoint(pts[0], pts[1]);
+          const ratio = distance / (imageGestureStartDistance || distance);
+          currentDocumentZoom = clampDocumentZoom(imageGestureStartZoom * ratio);
+          currentDocumentPanX = imageGestureStartPanX + (mid.x - imageGestureStartMidX);
+          currentDocumentPanY = imageGestureStartPanY + (mid.y - imageGestureStartMidY);
+          applyDocumentTransform();
+          return;
+        }
+
+        if (imageViewerPointers.size === 1) {
+          const dx = ev.clientX - imageDragLastX;
+          const dy = ev.clientY - imageDragLastY;
+          const totalDx = ev.clientX - imageSwipeStartX;
+          const totalDy = ev.clientY - imageSwipeStartY;
+          imageDragLastX = ev.clientX;
+          imageDragLastY = ev.clientY;
+
+          // Com a imagem sem zoom, arrastar para os lados troca entre anexos.
+          // Com zoom aplicado, o mesmo gesto continua movendo a imagem.
+          if (currentDocumentZoom <= 1 && !imageSwipeTriggered && currentDocumentList.length > 1) {
+            const horizontalSwipe = Math.abs(totalDx) > 70 && Math.abs(totalDx) > Math.abs(totalDy) * 1.5;
+            if (horizontalSwipe) {
+              imageSwipeTriggered = true;
+              navigateDocument(totalDx < 0 ? 1 : -1);
+              return;
+            }
+          }
+
+          if (currentDocumentZoom > 1) {
+            currentDocumentPanX += dx;
+            currentDocumentPanY += dy;
+            applyDocumentTransform();
+          }
+        }
+      }, { passive: false });
+
+      const finishPointer = (ev) => {
+        if (imageViewerPointers.has(ev.pointerId)) imageViewerPointers.delete(ev.pointerId);
+        try { stage.releasePointerCapture?.(ev.pointerId); } catch(e) {}
+        stage.style.cursor = imageViewerPointers.size ? 'grabbing' : 'grab';
+        if (imageViewerPointers.size === 1) {
+          const p = Array.from(imageViewerPointers.values())[0];
+          imageDragLastX = p.x;
+          imageDragLastY = p.y;
+        }
+      };
+
+      stage.addEventListener('pointerup', finishPointer);
+      stage.addEventListener('pointercancel', finishPointer);
+      stage.addEventListener('pointerleave', (ev) => {
+        if (ev.pointerType === 'mouse') finishPointer(ev);
+      });
+
+      stage.addEventListener('wheel', (ev) => {
+        ev.preventDefault();
+        const delta = ev.deltaY < 0 ? 0.18 : -0.18;
+        currentDocumentZoom = clampDocumentZoom(currentDocumentZoom + delta);
+        if (currentDocumentZoom === 1) {
+          currentDocumentPanX = 0;
+          currentDocumentPanY = 0;
+        }
+        applyDocumentTransform();
+      }, { passive: false });
+    }
+
+    let compraCodeSyncRunning = false;
+    async function ensureCompraCodes() {
+      if (!AppState.userId || compraCodeSyncRunning) return;
+      const ordered = getComprasOldestFirst();
+      const missing = ordered.filter(c => !c.codigoCompra);
+      if (!missing.length) return;
+
+      const codedCount = ordered.length - missing.length;
+      let updates = [];
+
+      // Primeira migração: todos os registros antigos sem código recebem a numeração pela data mais antiga.
+      if (codedCount === 0) {
+        updates = ordered.map((compra, index) => ({ compra, expected: formatCompraCode(index + 1) }));
+      } else {
+        // Depois da migração inicial, não renumera registros já numerados; apenas completa os que faltarem.
+        let nextSeq = ordered.reduce((max, c) => Math.max(max, parseCompraCode(c.codigoCompra)), 0) + 1;
+        updates = missing.map(compra => ({ compra, expected: formatCompraCode(nextSeq++) }));
+      }
+
+      compraCodeSyncRunning = true;
+      try {
+        for (const { compra, expected } of updates) {
+          const cleanData = JSON.parse(JSON.stringify({ ...compra, codigoCompra: expected }));
+          delete cleanData.id;
+          await setDoc(doc(db, 'users', AppState.userId, 'compras', compra.id), cleanData);
+        }
+      } catch (error) {
+        console.error('Erro ao numerar compras:', error);
+      } finally {
+        compraCodeSyncRunning = false;
+      }
+    }
+
+    function isTodayOrFuture(dateStr) {
+      if (!dateStr) return false;
+      const today = new Date().toISOString().split('T')[0];
+      return dateStr >= today;
+    }
+
+    function getRelatedCompraRecords(c) {
+      return [
+        AppState.data.farmacias.find(f => f.id === c.farmaciaId),
+        AppState.data.pacientes.find(p => p.id === c.pacienteId),
+        AppState.data.remedios.find(r => r.id === c.remedioId),
+        AppState.data.clinicas.find(cl => cl.id === c.clinicaId),
+        AppState.data.medicos.find(m => m.id === c.medicoId)
+      ].filter(Boolean);
+    }
+
+    function initApp() {
+      document.getElementById('app-body').classList.remove('hidden');
+      try {
+        app = initializeApp(firebaseConfig);
+        auth = getAuth(app);
+        db = getFirestore(app);
+        provider = new GoogleAuthProvider();
+
+        onAuthStateChanged(auth, (user) => {
+          if (user) {
+            AppState.user = user;
+            AppState.userId = user.uid;
+
+            document.getElementById('auth-screen').classList.add('hidden');
+            document.getElementById('main-header').classList.remove('hidden');
+            document.getElementById('main-content').classList.remove('hidden');
+            document.getElementById('mobile-nav').classList.remove('hidden');
+
+            const name = user.displayName || user.email.split('@')[0];
+            document.getElementById('sidebar-username').innerText = name;
+            document.getElementById('sidebar-avatar').innerText = name.substring(0, 2).toUpperCase();
+
+            setupDatabaseListeners();
+            updateUI();
+          } else {
+            AppState.user = null;
+            AppState.userId = null;
+            document.getElementById('auth-screen').classList.remove('hidden');
+            document.getElementById('main-header').classList.add('hidden');
+            document.getElementById('main-content').classList.add('hidden');
+            document.getElementById('mobile-nav').classList.add('hidden');
+            listeners.forEach(unsub => unsub());
+            listeners = [];
+          }
+        });
+      } catch (error) {
+        showToast("Erro ao inicializar banco de dados.", "error");
+      }
+    }
+
+    window.handleLoginEmail = async () => {
+      const em = document.getElementById('auth-email').value;
+      const pw = document.getElementById('auth-pass').value;
+      if (!em || !pw) return showToast("Preencha e-mail e senha.", "error");
+      try { await signInWithEmailAndPassword(auth, em, pw); showToast("Bem-vindo de volta!", "success"); }
+      catch(e) { showToast("Erro no login. Verifique as credenciais.", "error"); }
+    };
+
+    window.handleRegisterEmail = async () => {
+      const em = document.getElementById('auth-email').value;
+      const pw = document.getElementById('auth-pass').value;
+      if (!em || !pw) return showToast("Preencha e-mail e senha.", "error");
+      try { await createUserWithEmailAndPassword(auth, em, pw); showToast("Conta criada com sucesso!", "success"); }
+      catch(e) { showToast("Erro ao criar conta. Senha fraca ou email já em uso.", "error"); }
+    };
+
+    window.handleLoginGoogle = async () => {
+      try { await signInWithPopup(auth, provider); showToast("Login efetuado!", "success"); }
+      catch(e) { showToast("Login cancelado ou com erro.", "error"); }
+    };
+
+    window.logoutApp = () => { signOut(auth); showToast("Você saiu.", "success"); };
+
+    function setupDatabaseListeners() {
+      listeners.forEach(unsub => unsub());
+      listeners = [];
+
+      ['pacientes', 'medicos', 'clinicas', 'farmacias', 'remedios', 'compras'].forEach(colName => {
+        const colRef = collection(db, 'users', AppState.userId, colName);
+        listeners.push(onSnapshot(colRef, (snapshot) => {
+          const items = [];
+          snapshot.forEach(doc => items.push({ id: doc.id, ...doc.data() }));
+          AppState.data[colName] = items;
+          if (colName === 'compras') ensureCompraCodes();
+          renderCompraFilterOptions();
+          updateUI();
+        }, (error) => console.error("Sync error:", error)));
+      });
+    }
+
+    window.dbSave = async (colName, dataObj, id = null) => {
+      if (!AppState.userId) return false;
+      try {
+        const cleanData = JSON.parse(JSON.stringify(dataObj));
+        const docId = id || crypto.randomUUID();
+        await setDoc(doc(db, 'users', AppState.userId, colName, docId), cleanData);
+        showToast(id ? "Atualizado!" : "Salvo!", "success");
+        return docId;
+      } catch (error) {
+        showToast("Erro ao salvar (verifique as Regras do Firestore).", "error");
+        return false;
+      }
+    };
+
+    window.dbDelete = async (colName, id) => {
+      if (!AppState.userId) return;
+      try {
+        await deleteDoc(doc(db, 'users', AppState.userId, colName, id));
+        showToast("Excluído com sucesso.", "success");
+      } catch (error) {
+        showToast("Erro ao excluir.", "error");
+      }
+    };
+
+    window.switchView = (viewName) => {
+      AppState.view = viewName.startsWith('erp') ? 'erp' : viewName;
+      document.querySelectorAll('.view-section').forEach(el => el.classList.add('hidden'));
+      document.getElementById(`view-${viewName}`).classList.remove('hidden');
+
+      document.querySelectorAll('.nav-btn').forEach(btn => {
+        btn.classList.remove('text-blue-600');
+        btn.classList.add('text-slate-400');
+        btn.querySelector('.nav-indicator').classList.add('hidden');
+        if (btn.dataset.target === AppState.view) {
+          btn.classList.remove('text-slate-400');
+          btn.classList.add('text-blue-600');
+          btn.querySelector('.nav-indicator').classList.remove('hidden');
+        }
+      });
+
+      document.querySelectorAll('.nav-btn-desktop').forEach(btn => {
+        btn.classList.remove('bg-blue-50', 'text-blue-700', 'font-bold');
+        if (btn.dataset.target === AppState.view) btn.classList.add('bg-blue-50', 'text-blue-700', 'font-bold');
+      });
+
+      if (viewName === 'compras') renderCompraFilterOptions();
+      if (viewName === 'erp-list') renderErpList();
+      updateUI();
+    };
+
+    window.openErpList = (tab) => {
+      AppState.erpTab = tab;
+      const titles = { pacientes: '👤 Pacientes', medicos: '👨‍⚕️ Médicos', clinicas: '🏥 Clínicas', farmacias: '🏪 Farmácias', remedios: '💊 Remédios' };
+      document.getElementById('erp-list-title').innerHTML = titles[tab];
+      document.getElementById('erp-search').value = '';
+      AppState.erpSort = 'alpha';
+      switchView('erp-list');
+    };
+
+    function updateUI() {
+      if (!AppState.user) return;
+      if (AppState.view === 'dashboard') renderDashboard();
+      else if (AppState.view === 'compras') renderCompras();
+      else if (AppState.view === 'erp' && !document.getElementById('view-erp-list').classList.contains('hidden')) renderErpList();
+    }
+
+    function calcularDiasAtras(dataStr) {
+      const diff = Math.floor((new Date().setHours(0,0,0,0) - new Date(dataStr + 'T00:00:00')) / 86400000);
+      if (diff === 0) return 'Hoje';
+      if (diff === 1) return 'Ontem';
+      if (diff === -1) return 'Amanhã';
+      if (diff > 1) return `Há ${diff} dias`;
+      return `Em ${Math.abs(diff)} dias`;
+    }
+
+    function formatCurrency(val) {
+      return (parseFloat(val) || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+    }
+
+    window.toggleChartType = () => {
+      AppState.chartType = AppState.chartType === 'count' ? 'value' : 'count';
+      document.getElementById('btn-toggle-chart').innerText = AppState.chartType === 'count' ? 'Ver Gastos (R$)' : 'Ver Quantidade';
+      renderDashboard();
+    };
+
+    const dataLabelsPlugin = {
+      id: 'dataLabelsPlugin',
+      afterDatasetsDraw(chart) {
+        const { ctx, data } = chart;
+        ctx.save();
+        ctx.font = 'bold 11px sans-serif';
+        ctx.fillStyle = '#64748b';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'bottom';
+        chart.getDatasetMeta(0).data.forEach((bar, index) => {
+          const val = data.datasets[0].data[index];
+          if (val === 0) return;
+          let text = val;
+          if (AppState.chartType !== 'count') text = val >= 1000 ? 'R$ ' + (val/1000).toFixed(1).replace('.', ',') + 'k' : 'R$ ' + val.toFixed(0);
+          ctx.fillText(text, bar.x, bar.y - 4);
+        });
+        ctx.restore();
+      }
+    };
+
+    function renderDashboard() {
+      const ctx = document.getElementById('mainChart');
+      if (!ctx) return;
+
+      const compras = AppState.data.compras.filter(c => c.status === 'confirmada');
+      const monthsMap = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"];
+      const labels = [];
+      const data = [];
+      let total = 0;
+      const currDate = new Date();
+
+      for (let i = 5; i >= 0; i--) {
+        const d = new Date(currDate.getFullYear(), currDate.getMonth() - i, 1);
+        const mk = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+        labels.push(`${monthsMap[d.getMonth()]} ${d.getFullYear().toString().slice(2)}`);
+        const mesCompras = compras.filter(c => c.data?.startsWith(mk));
+        if (AppState.chartType === 'count') {
+          data.push(mesCompras.length);
+          total += mesCompras.length;
+        } else {
+          const sum = mesCompras.reduce((a, b) => a + (parseFloat(b.valor) || 0), 0);
+          data.push(sum);
+          total += sum;
+        }
+      }
+
+      document.getElementById('chart-total-label').innerText = AppState.chartType === 'count' ? `${total} Compras` : formatCurrency(total);
+
+      if (myChart) myChart.destroy();
+      myChart = new Chart(ctx, {
+        type: 'bar',
+        data: { labels, datasets: [{ data, backgroundColor: '#3b82f6', borderRadius: 4 }] },
+        plugins: [dataLabelsPlugin],
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          layout: { padding: { top: 20 } },
+          plugins: { legend: { display: false } },
+          scales: {
+            y: { beginAtZero: true, grace: '15%', grid: { borderDash: [4, 4] } },
+            x: { grid: { display: false } }
+          }
+        }
+      });
+
+      const recent = [...compras].sort((a,b) => new Date(b.data) - new Date(a.data)).slice(0, 3);
+      document.getElementById('dashboard-recent-compras').innerHTML = recent.length ? recent.map(c => {
+        const farm = AppState.data.farmacias.find(f => f.id === c.farmaciaId)?.nome || '-';
+        const pac = AppState.data.pacientes.find(p => p.id === c.pacienteId)?.nome || '-';
+        const med = AppState.data.medicos.find(m => m.id === c.medicoId)?.nome || '-';
+        const clin = AppState.data.clinicas.find(cl => cl.id === c.clinicaId)?.nome || '-';
+        return `<div class="p-3 bg-white hover:bg-slate-50 rounded-xl border border-slate-100 mb-2 shadow-[0_1px_3px_rgba(0,0,0,0.02)] transition flex flex-col gap-1.5">
+          <div class="flex justify-between items-start gap-2">
+            <h4 class="font-black text-slate-800 text-[13px] wrap-two-lines flex-1 min-w-0"><i class="fa-solid fa-shop text-purple-600 mr-1.5"></i>${farm}</h4>
+            <span class="text-[10px] font-black text-blue-700 bg-blue-100 px-2 py-0.5 rounded-md shrink-0 uppercase tracking-wide">${calcularDiasAtras(c.data)}</span>
+          </div>
+          <div class="flex flex-wrap gap-x-3 gap-y-1 text-[11px] font-medium text-slate-500">
+            <span class="flex items-center gap-1 min-w-0"><i class="fa-solid fa-user text-slate-300"></i><span class="wrap-two-lines">${pac}</span></span>
+            <span class="flex items-center gap-1 min-w-0"><i class="fa-solid fa-user-doctor text-slate-300"></i><span class="wrap-two-lines">${med}</span></span>
+            <span class="flex items-center gap-1 min-w-0"><i class="fa-solid fa-house-medical text-slate-300"></i><span class="wrap-two-lines">${clin}</span></span>
+          </div>
+        </div>`;
+      }).join('') : '<div class="text-center py-6 text-slate-400"><i class="fa-solid fa-box-open text-3xl mb-2"></i><p class="text-sm">Nenhuma compra registrada.</p></div>';
+    }
+
+    function fillFilterSelect(id, label, items) {
+      const el = document.getElementById(id);
+      if (!el) return;
+
+      const current = el.value;
+      const sorted = [...items].sort((a, b) => (a.nome || '').localeCompare(b.nome || '', 'pt-BR'));
+
+      el.innerHTML = `<option value="">Todas</option>` + sorted.map(item => {
+        const status = item.status === 'inativo' ? ' (Inativo)' : '';
+        const incomplete = item.incomplete ? ' (Incompleto)' : '';
+        return `<option value="${item.id}">${item.nome || 'Sem nome'}${status}${incomplete}</option>`;
+      }).join('');
+
+      if (current && sorted.some(item => item.id === current)) el.value = current;
+    }
+
+    function renderCompraFilterOptions() {
+      fillFilterSelect('filter-farmacia', 'Farmácia', AppState.data.farmacias);
+      fillFilterSelect('filter-paciente', 'Paciente', AppState.data.pacientes);
+      fillFilterSelect('filter-clinica', 'Clínica', AppState.data.clinicas);
+      fillFilterSelect('filter-medico', 'Médico', AppState.data.medicos);
+      fillFilterSelect('filter-remedio', 'Remédio', AppState.data.remedios);
+      updateCompraFilterBadge();
+    }
+
+    // Novo sistema de filtros com Chips, Drawer e Badges
+    let AppState_QuickFilter = 'todas';
+    let AppState_SearchTerm = '';
+
+    window.handleCompraSearch = () => {
+      AppState_SearchTerm = document.getElementById('compra-search-input')?.value || '';
+      renderCompras();
+    };
+
+    window.setQuickFilter = (filter) => {
+      AppState_QuickFilter = filter;
+      updateQuickFilterChips();
+      renderCompras();
+    };
+
+    function updateQuickFilterChips() {
+      ['todas', 'confirmadas', 'agendadas', 'canceladas'].forEach(f => {
+        const chip = document.getElementById(`chip-${f}`);
+        if (!chip) return;
+        if (f === AppState_QuickFilter) {
+          chip.className = 'quick-filter-chip shrink-0 px-4 py-2 rounded-full text-sm font-bold transition-all bg-blue-600 text-white shadow-md active:scale-95';
+        } else {
+          chip.className = 'quick-filter-chip shrink-0 px-4 py-2 rounded-full text-sm font-bold transition-all bg-slate-100 text-slate-600 active:scale-95 hover:bg-slate-200';
+        }
+      });
+    }
+
+    window.toggleFilterDrawer = () => {
+      const drawer = document.getElementById('filter-drawer');
+      if (!drawer) return;
+      if (drawer.classList.contains('hidden') || drawer.classList.contains('translate-x-full')) openFilterDrawer();
+      else closeFilterDrawer();
+    };
+
+    window.openFilterDrawer = () => {
+      const drawer = document.getElementById('filter-drawer');
+      const overlay = document.getElementById('filter-drawer-overlay');
+      if (!drawer || !overlay) return;
+
+      drawer.classList.remove('hidden');
+      overlay.classList.remove('hidden');
+      requestAnimationFrame(() => {
+        drawer.classList.remove('translate-x-full');
+        overlay.classList.remove('opacity-0');
+      });
+    };
+
+    window.closeFilterDrawer = () => {
+      const drawer = document.getElementById('filter-drawer');
+      const overlay = document.getElementById('filter-drawer-overlay');
+      if (!drawer || !overlay) return;
+
+      drawer.classList.add('translate-x-full');
+      overlay.classList.add('opacity-0');
+      setTimeout(() => {
+        overlay.classList.add('hidden');
+        drawer.classList.add('hidden');
+      }, 300);
+    };
+
+    function updateActiveFiltersBadges() {
+      const filterMap = {
+        'filter-farmacia': 'Farmácia',
+        'filter-paciente': 'Paciente',
+        'filter-clinica': 'Clínica',
+        'filter-medico': 'Médico',
+        'filter-remedio': 'Remédio'
+      };
+
+      const summary = document.getElementById('active-filters-summary');
+      if (!summary) return;
+
+      const activeBadges = [];
+      Object.entries(filterMap).forEach(([id, label]) => {
+        const el = document.getElementById(id);
+        if (el && el.value) {
+          const selectedOption = el.options[el.selectedIndex];
+          const selectedText = selectedOption ? selectedOption.text : el.value;
+          activeBadges.push({ id, label, value: el.value, text: selectedText });
+        }
+      });
+
+      if (activeBadges.length === 0) {
+        summary.classList.add('hidden');
+        summary.innerHTML = '';
+      } else {
+        summary.classList.remove('hidden');
+        summary.innerHTML = activeBadges.map(badge => `
+          <div class="inline-flex items-center gap-2 bg-blue-100 text-blue-700 px-3 py-1.5 rounded-full text-xs font-bold">
+            <span>${badge.label}: ${badge.text}</span>
+            <button onclick="removeFilterBadge('${badge.id}')" class="ml-1 hover:text-blue-900 transition">
+              <i class="fa-solid fa-times"></i>
+            </button>
+          </div>
+        `).join('');
+      }
+    }
+
+    window.removeFilterBadge = (filterId) => {
+      const el = document.getElementById(filterId);
+      if (el) {
+        el.value = '';
+        handleCompraFilterChange();
+      }
+    };
+
+    window.toggleCompraFilters = () => {
+      toggleFilterDrawer();
+    };
+
+    window.handleCompraFilterChange = () => {
+      updateCompraFilterBadge();
+      updateActiveFiltersBadges();
+      renderCompras();
+    };
+
+    function updateCompraFilterBadge() {
+      const ids = ['filter-farmacia', 'filter-paciente', 'filter-clinica', 'filter-medico', 'filter-remedio'];
+      const activeCount = ids.filter(id => document.getElementById(id)?.value).length;
+      const badge = document.getElementById('filter-count-badge');
+
+      if (!badge) return;
+
+      if (activeCount > 0) {
+        badge.innerText = activeCount;
+        badge.classList.remove('hidden');
+      } else {
+        badge.classList.add('hidden');
+      }
+    }
+
+    window.clearCompraFilters = () => {
+      ['filter-farmacia', 'filter-paciente', 'filter-clinica', 'filter-medico', 'filter-remedio'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = '';
+      });
+
+      const searchInput = document.getElementById('compra-search-input');
+      if (searchInput) searchInput.value = '';
+
+      AppState_QuickFilter = 'todas';
+      AppState_SearchTerm = '';
+      updateQuickFilterChips();
+      updateCompraFilterBadge();
+      updateActiveFiltersBadges();
+      renderCompras();
+    };
+
+    window.renderCompras = function renderCompras() {
+      let compras = [...AppState.data.compras];
+
+      // Apply quick filter by status
+      if (AppState_QuickFilter === 'confirmadas') {
+        compras = compras.filter(c => c.status === 'confirmada');
+      } else if (AppState_QuickFilter === 'agendadas') {
+        compras = compras.filter(c => c.status === 'agendada');
+      } else if (AppState_QuickFilter === 'canceladas') {
+        compras = compras.filter(c => c.status === 'cancelada');
+      }
+
+      const farmaciaId = document.getElementById('filter-farmacia')?.value || '';
+      const pacienteId = document.getElementById('filter-paciente')?.value || '';
+      const clinicaId = document.getElementById('filter-clinica')?.value || '';
+      const medicoId = document.getElementById('filter-medico')?.value || '';
+      const remedioId = document.getElementById('filter-remedio')?.value || '';
+
+      compras = compras.filter(c =>
+        (!farmaciaId || c.farmaciaId === farmaciaId) &&
+        (!pacienteId || c.pacienteId === pacienteId) &&
+        (!clinicaId || c.clinicaId === clinicaId) &&
+        (!medicoId || c.medicoId === medicoId) &&
+        (!remedioId || c.remedioId === remedioId)
+      );
+
+      // Apply deep free text search across purchase and related ERP records, including observations and punctuation-free CPF/RG.
+      if (AppState_SearchTerm) {
+        compras = compras.filter(c => recordMatchesDeep(getCompraSearchRecord(c), AppState_SearchTerm));
+      }
+
+      compras.sort((a, b) => {
+        if (a.status === 'agendada' && b.status !== 'agendada') return -1;
+        if (a.status !== 'agendada' && b.status === 'agendada') return 1;
+        return new Date(b.data) - new Date(a.data);
+      });
+
+      const cont = document.getElementById('list-compras');
+      if (!cont) return;
+
+      if (!compras.length) {
+        cont.innerHTML = `<div class="text-center py-10 text-slate-400"><i class="fa-solid fa-box-open text-3xl mb-2"></i><p>Nenhuma compra encontrada.</p></div>`;
+        return;
+      }
+
+      cont.innerHTML = compras.map(c => {
+        const farmName = AppState.data.farmacias.find(f => f.id === c.farmaciaId)?.nome || 'Farmácia não informada';
+        const pacName = AppState.data.pacientes.find(p => p.id === c.pacienteId)?.nome || '-';
+        const remName = AppState.data.remedios.find(r => r.id === c.remedioId)?.nome || '-';
+        const clinName = AppState.data.clinicas.find(cl => cl.id === c.clinicaId)?.nome || '-';
+        const medName = AppState.data.medicos.find(m => m.id === c.medicoId)?.nome || '-';
+        const isAgendada = c.status === 'agendada';
+        const isCancelada = c.status === 'cancelada';
+        const statusLabel = isCancelada ? 'Cancelada' : (isAgendada ? 'Agendada' : 'Confirmada');
+        const statusChipClass = isCancelada ? 'status-chip-cancelada' : (isAgendada ? 'status-chip-agendada' : 'status-chip-confirmada');
+        const borderClass = isCancelada ? 'border-red-300 border-l-4 border-l-red-500 bg-red-50/40' : (isAgendada ? 'border-orange-300 border-l-4 border-l-orange-500 bg-orange-50/30' : 'border-slate-100 bg-white');
+        const timeColorClass = isCancelada ? 'text-red-600' : (isAgendada ? 'text-orange-600' : 'text-blue-600');
+        const compraCode = getCompraDisplayCode(c);
+
+        return `<div class="p-4 rounded-xl shadow-sm border ${borderClass} mb-3 transition">
+          <div class="flex justify-between items-start mb-2 gap-3">
+            <div class="min-w-0 pr-2 flex-1">
+              <div class="flex items-start gap-2 flex-wrap">
+                <h4 class="font-black text-slate-800 text-[14px] sm:text-base wrap-two-lines">${farmName}</h4>
+                <span class="status-chip ${statusChipClass}">${statusLabel}</span>
+                ${compraCode ? `<span class="bg-slate-100 text-slate-600 text-[10px] px-1.5 py-0.5 rounded font-black uppercase tracking-wide"><i class="fa-solid fa-hashtag mr-1"></i>${compraCode}</span>` : ''}
+                ${getDocumentList(c).length ? `<span class="bg-blue-100 text-blue-700 text-[10px] px-1.5 py-0.5 rounded font-bold uppercase tracking-wide"><i class="fa-regular fa-image mr-1"></i>${getDocumentList(c).length} Doc</span>` : ''}
+              </div>
+              <p class="text-xs text-slate-500 wrap-two-lines mt-0.5"><i class="fa-regular fa-user mr-1 text-slate-400"></i>${pacName}</p>
+            </div>
+            <div class="text-right shrink-0">
+              <span class="block font-black ${timeColorClass} text-base">${calcularDiasAtras(c.data)}</span>
+              <span class="text-[10px] text-slate-400 font-bold">${(c.data || '').split('-').reverse().join('/')}</span>
+            </div>
+          </div>
+
+          <div class="flex flex-col gap-1.5 text-[11px] text-slate-600 bg-slate-50/80 p-2.5 rounded-lg mb-3 font-medium border border-slate-100/80">
+            <div class="flex items-center gap-2 min-w-0"><i class="fa-solid fa-pills w-3.5 text-center text-slate-400"></i> <span class="font-bold text-slate-700 wrap-two-lines">${remName}</span></div>
+            <div class="flex items-center gap-2 min-w-0"><i class="fa-solid fa-house-medical w-3.5 text-center text-slate-400"></i> <span class="wrap-two-lines">${clinName}</span></div>
+            <div class="flex items-center gap-2 min-w-0"><i class="fa-solid fa-user-doctor w-3.5 text-center text-slate-400"></i> <span class="wrap-two-lines">${medName}</span></div>
+          </div>
+
+          <div class="flex justify-end gap-2 flex-wrap">
+            ${getDocumentList(c).length ? `<button onclick="viewCompraDocument('${c.id}')" class="px-4 py-2 text-xs font-bold text-blue-700 bg-blue-100 rounded-lg hover:bg-blue-200 transition active:scale-95"><i class="fa-regular fa-image mr-1"></i> Docs</button>` : ''}
+            <button onclick="viewCompraDetails('${c.id}')" class="px-4 py-2 text-xs font-bold text-slate-600 bg-slate-100 rounded-lg hover:bg-slate-200 transition active:scale-95">Ver Mais</button>
+            ${isAgendada ? `<button onclick="confirmarCompra('${c.id}')" class="px-4 py-2 text-xs font-bold text-white bg-green-500 rounded-lg hover:bg-green-600 shadow-sm transition active:scale-95"><i class="fa-solid fa-check mr-1"></i> Confirmar</button>` : ''}
+          </div>
+        </div>`;
+      }).join('');
+    };
+
+    window.confirmarCompra = async (id) => {
+      const c = AppState.data.compras.find(x => x.id === id);
+      if (c) {
+        c.status = 'confirmada';
+        c.data = new Date().toISOString().split('T')[0];
+        if (!c.codigoCompra) c.codigoCompra = getCompraDisplayCode(c) || getNextCompraCode();
+        await dbSave('compras', c, id);
+      }
+    };
+
+    window.viewCompraDocument = (id) => {
+      const compra = AppState.data.compras.find(x => x.id === id);
+      if (compra) openImageViewerWithList(getDocumentList(compra), 0);
+    };
+
+    window.viewCompraDetails = (id) => {
+      const c = AppState.data.compras.find(x => x.id === id);
+      if (!c) return;
+
+      const farmName = AppState.data.farmacias.find(f => f.id === c.farmaciaId)?.nome || '-';
+      const pacName = AppState.data.pacientes.find(p => p.id === c.pacienteId)?.nome || '-';
+      const remName = AppState.data.remedios.find(r => r.id === c.remedioId)?.nome || '-';
+      const clinName = AppState.data.clinicas.find(cl => cl.id === c.clinicaId)?.nome || '-';
+      const medName = AppState.data.medicos.find(m => m.id === c.medicoId)?.nome || '-';
+      const isAgendada = c.status === 'agendada';
+      const isCancelada = c.status === 'cancelada';
+      const statusLabel = isCancelada ? 'Cancelada' : (isAgendada ? 'Agendada' : 'Confirmada');
+      const statusClass = isCancelada ? 'bg-red-100 text-red-700 border-red-200' : (isAgendada ? 'bg-orange-100 text-orange-700 border-orange-200' : 'bg-green-100 text-green-700 border-green-200');
+      const statusIcon = isCancelada ? 'fa-ban' : (isAgendada ? 'fa-calendar' : 'fa-check-circle');
+      const formattedDate = c.data ? c.data.split('-').reverse().join('/') : '-';
+      const compraCode = getCompraDisplayCode(c) || '-';
+
+      let html = `<div class="space-y-4">
+        <div class="${statusClass} p-3 rounded-xl text-sm font-bold border flex items-center gap-2">
+          <i class="fa-solid ${statusIcon}"></i> Compra ${statusLabel}
+        </div>
+        <div class="bg-slate-50 p-5 rounded-2xl border border-slate-100 grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div><span class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">Código da Compra</span><span class="block font-black text-blue-600 break-words">${compraCode}</span></div>
+          <div><span class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">Data da Compra</span><span class="block font-medium text-slate-800 break-words">${formattedDate} — ${calcularDiasAtras(c.data)}</span></div>
+          <div><span class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">Farmácia</span><span class="block font-medium text-slate-800 break-words">${farmName}</span></div>
+          <div><span class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">Remédio</span><span class="block font-medium text-slate-800 break-words">${remName}</span></div>
+          <div><span class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">Qtd de Caixas</span><span class="block font-medium text-slate-800 break-words">${c.qtd || '-'}</span></div>
+          <div><span class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">Paciente</span><span class="block font-medium text-slate-800 break-words">${pacName}</span></div>
+          <div><span class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">Clínica</span><span class="block font-medium text-slate-800 break-words">${clinName}</span></div>
+          <div><span class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">Médico</span><span class="block font-medium text-slate-800 break-words">${medName}</span></div>
+          <div><span class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">Valor Total</span><span class="block font-medium text-slate-800 break-words">${formatCurrency(c.valor)}</span></div>
+          <div><span class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">Forma de Pagto</span><span class="block font-medium text-slate-800 break-words">${c.pagamento || '-'}</span></div>
+        </div>`;
+
+      if (c.obs) html += `<div class="bg-amber-50 p-4 rounded-2xl border border-amber-100"><span class="block text-[10px] font-bold text-amber-600 uppercase tracking-wider mb-1">Observações</span><p class="text-sm font-medium text-slate-700 whitespace-pre-wrap break-words">${c.obs}</p></div>`;
+      if (getDocumentList(c).length) html += `<div class="mt-4"><button onclick="viewCompraDocument('${id}')" class="w-full bg-slate-800 text-white font-bold py-3.5 rounded-xl shadow-md hover:bg-slate-700 transition"><i class="fa-regular fa-images mr-2"></i> Ver Documentos Anexos (${getDocumentList(c).length})</button></div>`;
+      html += `</div>`;
+
+      const footerHtml = `<button onclick="deleteErpConfirm('compras', '${id}')" class="px-4 py-2.5 bg-red-100 text-red-600 rounded-xl font-bold hover:bg-red-200 mr-auto transition flex items-center gap-2"><i class="fa-solid fa-trash"></i> <span class="hidden md:inline">Excluir</span></button><button onclick="closeModal()" class="px-5 py-2.5 bg-slate-200 text-slate-700 rounded-xl font-bold hover:bg-slate-300 transition">Voltar</button><button onclick="openCompraForm('${id}')" class="px-6 py-2.5 bg-blue-600 text-white rounded-xl font-bold shadow-md hover:bg-blue-700 transition"><i class="fa-solid fa-pen-to-square mr-2"></i>Editar</button>`;
+      openModal('Detalhes da Compra', html, footerHtml);
+    };
+
+    window.filterErpList = () => renderErpList();
+
+    window.setErpSortMode = (mode) => {
+      AppState.erpSort = mode === 'lastPurchase' ? 'lastPurchase' : 'alpha';
+      updateErpSortButtons();
+      renderErpList();
+    };
+
+    function updateErpSortButtons() {
+      const active = 'bg-blue-600 text-white shadow-md';
+      const inactive = 'bg-slate-100 text-slate-600';
+      const btnAlpha = document.getElementById('erp-sort-alpha');
+      const btnLast = document.getElementById('erp-sort-lastPurchase');
+      if (!btnAlpha || !btnLast) return;
+
+      btnAlpha.className = `erp-sort-btn shrink-0 px-4 py-3 rounded-xl text-sm font-black active:scale-95 transition ${AppState.erpSort === 'alpha' ? active : inactive}`;
+      btnLast.className = `erp-sort-btn shrink-0 px-4 py-3 rounded-xl text-sm font-black active:scale-95 transition ${AppState.erpSort === 'lastPurchase' ? active : inactive}`;
+    }
+
+    function renderErpList() {
+      const tab = AppState.erpTab;
+      const term = document.getElementById('erp-search').value;
+      let items = AppState.data[tab].filter(i => recordMatchesDeep(i, term));
+      const sortMode = AppState.erpSort || 'alpha';
+      updateErpSortButtons();
+      const idFieldMap = { pacientes: 'pacienteId', medicos: 'medicoId', clinicas: 'clinicaId', farmacias: 'farmaciaId', remedios: 'remedioId' };
+      const currentIdField = idFieldMap[tab];
+
+      const lastPurchaseMap = AppState.data.compras.reduce((acc, c) => {
+        if (c.status !== 'confirmada' || !c[currentIdField] || !c.data) return acc;
+        const time = new Date(c.data + 'T00:00:00').getTime();
+        if (Number.isNaN(time)) return acc;
+        acc[c[currentIdField]] = Math.max(acc[c[currentIdField]] || 0, time);
+        return acc;
+      }, {});
+
+      function getLastPurchaseTime(itemId) {
+        return lastPurchaseMap[itemId] || 0;
+      }
+
+      items.sort((a,b) => {
+        const aInactive = a.status === 'inativo';
+        const bInactive = b.status === 'inativo';
+
+        // Inativos sempre ficam no final da lista do ERP.
+        // Dentro de cada grupo, respeita o modo escolhido.
+        if (aInactive && !bInactive) return 1;
+        if (!aInactive && bInactive) return -1;
+
+        if (sortMode === 'lastPurchase') {
+          const lastA = getLastPurchaseTime(a.id);
+          const lastB = getLastPurchaseTime(b.id);
+
+          if (lastA !== lastB) return lastB - lastA;
+        }
+
+        return (a.nome || '').localeCompare(b.nome || '', 'pt-BR');
+      });
+
+      const cont = document.getElementById('list-erp');
+      if (!items.length) return cont.innerHTML = `<p class="text-center text-slate-500 py-10">Vazio.</p>`;
+
+      const cfg = { pacientes:{i:'fa-user',s:'cpf'}, medicos:{i:'fa-user-doctor',s:'especialidade'}, clinicas:{i:'fa-house-medical',s:'especialidade'}, farmacias:{i:'fa-store',s:'rede'}, remedios:{i:'fa-pills',s:'tipo'} }[tab];
+
+      cont.innerHTML = items.map(item => {
+        const isOff = item.status === 'inativo';
+        const inc = item.incomplete;
+        let bg = isOff ? "bg-red-50 border-red-200 opacity-70" : (inc ? "bg-orange-50 border-orange-300 border-l-4 border-l-orange-500" : "bg-white border-slate-100");
+        return `<div class="${bg} p-4 rounded-2xl shadow-sm border mb-3 flex items-center gap-4 cursor-pointer hover:shadow-md transition active:scale-[0.98]" onclick="viewErpDetails('${tab}', '${item.id}')">
+          <div class="w-12 h-12 rounded-full ${isOff ? 'bg-red-200 text-red-700' : (inc ? 'bg-orange-200 text-orange-700' : 'bg-blue-100 text-blue-600')} flex items-center justify-center shrink-0 text-xl"><i class="fa-solid ${cfg.i}"></i></div>
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center gap-2 flex-wrap"><h4 class="font-bold text-[14px] sm:text-base leading-tight text-slate-800 wrap-two-lines">${item.nome || '-'}</h4>${inc ? '<span class="bg-orange-500 text-white text-[10px] px-1.5 py-0.5 rounded font-bold uppercase tracking-wide">Incompleto</span>' : ''}${isOff ? '<span class="bg-red-100 text-red-700 text-[10px] px-1.5 py-0.5 rounded font-bold uppercase tracking-wide">Inativo</span>' : ''}${getDocumentList(item).length ? `<span class="bg-blue-100 text-blue-700 text-[10px] px-1.5 py-0.5 rounded font-bold uppercase tracking-wide"><i class="fa-regular fa-image mr-1"></i>${getDocumentList(item).length} Doc</span>` : ''}</div>
+            <p class="text-xs sm:text-sm ${isOff ? 'text-red-600' : 'text-slate-500'} font-medium wrap-two-lines">${item[cfg.s] || '---'}</p>
+            <p class="text-[10px] mt-1 font-bold text-slate-400 uppercase tracking-wide"><i class="fa-solid fa-clock-rotate-left mr-1"></i>Última Compra: <span class="${isOff ? 'text-red-500' : 'text-blue-500'}">${calcularDiasAtrasLastPurchase(item.id, idFieldMap[tab])}</span></p>
+          </div>
+          <button class="px-3 py-1.5 bg-slate-100 text-slate-600 rounded-lg text-xs font-bold hover:bg-slate-200 shadow-[0_1px_2px_rgba(0,0,0,0.05)]">Ver Mais</button>
+        </div>`;
+      }).join('');
+    }
+
+    function calcularDiasAtrasLastPurchase(id, fieldId) {
+      const compras = AppState.data.compras.filter(c => c.status === 'confirmada' && c[fieldId] === id).sort((a,b) => new Date(b.data) - new Date(a.data));
+      if (!compras.length) return 'Nunca';
+      return calcularDiasAtras(compras[0].data);
+    }
+
+    window.viewErpDetails = (tab, id) => {
+      const data = AppState.data[tab].find(i => i.id === id);
+      if (!data) return;
+
+      const fieldsDef = getErpFieldsConfig(tab);
+      let html = `<div class="space-y-4">`;
+      if (data.incomplete) html += `<div class="bg-orange-100 text-orange-800 p-3 rounded-xl text-sm font-bold border border-orange-200 flex items-center gap-2"><i class="fa-solid fa-triangle-exclamation"></i> Cadastro pendente de finalização.</div>`;
+      if (data.status === 'inativo') html += `<div class="bg-red-100 text-red-800 p-3 rounded-xl text-sm font-bold border border-red-200 flex items-center gap-2"><i class="fa-solid fa-ban"></i> Cadastro Inativo.</div>`;
+
+      html += `<div class="bg-slate-50 p-5 rounded-2xl border border-slate-100 grid grid-cols-1 md:grid-cols-2 gap-4">`;
+      fieldsDef.forEach(f => {
+        if (f.hidden || f.type === 'textarea') return;
+        let val = data[f.name] || '-';
+        if (f.type === 'db-select' && data[f.name]) val = AppState.data[f.collection].find(x => x.id === data[f.name])?.nome || '-';
+        if (f.name === 'dataNascimento' && val !== '-') val = val.split('-').reverse().join('/');
+        if (f.name === 'status' && val !== '-') val = val.charAt(0).toUpperCase() + val.slice(1);
+        html += `<div><span class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">${f.label}</span><span class="block font-medium text-slate-800 break-words">${val}</span></div>`;
+      });
+      html += `</div>`;
+
+      if (data.obs) html += `<div class="bg-amber-50 p-4 rounded-2xl border border-amber-100"><span class="block text-[10px] font-bold text-amber-600 uppercase tracking-wider mb-1">Observações</span><p class="text-sm font-medium text-slate-700">${data.obs}</p></div>`;
+      if (tab === 'medicos' && data.crm) html += `<button onclick="consultarCRM('${data.crm}')" class="w-full bg-blue-100 text-blue-700 font-bold py-3.5 rounded-xl shadow-sm hover:bg-blue-200 transition mt-2"><i class="fa-solid fa-magnifying-glass mr-2"></i> Consultar CRM no CREMESP</button>`;
+      if (['pacientes','medicos','clinicas','farmacias','remedios'].includes(tab) && getDocumentList(data).length) html += `<div class="mt-4"><button onclick="viewDocumentFromDetails('${tab}', '${id}')" class="w-full bg-slate-800 text-white font-bold py-3.5 rounded-xl shadow-md hover:bg-slate-700 transition"><i class="fa-regular fa-images mr-2"></i> Ver Documentos Anexos (${getDocumentList(data).length})</button></div>`;
+      html += `</div>`;
+
+      const footerHtml = `<button onclick="deleteErpConfirm('${tab}', '${id}')" class="px-4 py-2.5 bg-red-100 text-red-600 rounded-xl font-bold hover:bg-red-200 mr-auto transition flex items-center gap-2"><i class="fa-solid fa-trash"></i> <span class="hidden md:inline">Excluir</span></button><button onclick="closeModal()" class="px-5 py-2.5 bg-slate-200 text-slate-700 rounded-xl font-bold hover:bg-slate-300 transition">Voltar</button><button onclick="openErpForm('${id}')" class="px-6 py-2.5 bg-blue-600 text-white rounded-xl font-bold shadow-md hover:bg-blue-700 transition"><i class="fa-solid fa-pen-to-square mr-2"></i>Editar</button>`;
+      openModal(data.nome || 'Detalhes', html, footerHtml);
+    };
+
+    window.viewDocumentFromDetails = (tab, id) => {
+      const p = AppState.data[tab].find(x => x.id === id);
+      if (p) openImageViewerWithList(getDocumentList(p), 0);
+    };
+
+    window.deleteErpConfirm = (tab, id) => {
+      if (confirm("⚠️ ATENÇÃO EXTREMA!\n\nVocê está prestes a excluir este registro PERMANENTEMENTE.\n\nDeseja continuar?")) dbDelete(tab, id).then(() => closeModal());
+    };
+
+    function getErpFieldsConfig(tab) {
+      const b = [
+        { name: 'status', label: 'Status do Cadastro', type: 'select', options: [{val:'ativo', label:'Ativo'}, {val:'inativo', label:'Inativo (Vermelho)'}] },
+        { name: 'obs', label: 'Observações', type: 'textarea' }
+      ];
+      if (tab === 'pacientes') return [
+        { name: 'nome', label: 'Nome Completo' }, { name: 'cpf', label: 'CPF' }, { name: 'rg', label: 'RG' }, { name: 'dataNascimento', label: 'Data Nasc.', type: 'date-calc' },
+        { name: 'signo', label: 'Signo', readonly: true }, { name: 'cep', label: 'CEP', type: 'cep' }, { name: 'logradouro', label: 'Endereço' }, { name: 'numero', label: 'Número' },
+        { name: 'complemento', label: 'Complemento' }, { name: 'bairro', label: 'Bairro' }, { name: 'cidade', label: 'Cidade' }, { name: 'uf', label: 'UF' },
+        { name: 'telefone', label: 'Telefone' }, { name: 'email', label: 'E-mail' }, ...b
+      ];
+      if (tab === 'medicos') return [{ name: 'nome', label: 'Nome' }, { name: 'especialidade', label: 'Especialidade' }, { name: 'crm', label: 'CRM' }, { name: 'uf', label: 'UF do CRM' }, { name: 'rqe', label: 'RQE' }, ...b];
+      if (tab === 'clinicas') return [{ name: 'nome', label: 'Nome' }, { name: 'especialidade', label: 'Especialidade' }, { name: 'medicoResponsavelId', label: 'Méd. Responsável', type: 'db-select', collection: 'medicos' }, ...b];
+      if (tab === 'farmacias') return [{ name: 'nome', label: 'Nome' }, { name: 'rede', label: 'Rede', type: 'select', options: [{val:'Droga Raia', label:'Droga Raia'}, {val:'Drogaria São Paulo', label:'Drogaria São Paulo'}, {val:'Nissei', label:'Nissei'}, {val:'Farma Conde', label:'Farma Conde'}, {val:'Outros', label:'Outros'}] }, { name: 'cep', label: 'CEP', type: 'cep' }, { name: 'logradouro', label: 'Endereço' }, { name: 'telefone', label: 'Telefone' }, ...b];
+      if (tab === 'remedios') return [{ name: 'nome', label: 'Nome' }, { name: 'tipo', label: 'Tipo' }, { name: 'dosagem', label: 'Dosagem' }, { name: 'preco', label: 'Preço (R$)' }, ...b];
+      return [];
+    }
+
+    window.openErpForm = (id = null) => {
+      const tab = AppState.erpTab;
+      const data = id ? AppState.data[tab].find(i => i.id === id) : { status: 'ativo' };
+      let html = generateFormFields(getErpFieldsConfig(tab), data);
+
+      if (['pacientes','medicos','clinicas','farmacias','remedios'].includes(tab)) {
+        html += renderDocumentUploadSection(data);
+      }
+
+      const footerHtml = `<button onclick="${id ? `viewErpDetails('${tab}','${id}')` : 'closeModal()'}" class="px-5 py-2.5 bg-slate-200 text-slate-700 rounded-xl font-bold hover:bg-slate-300 mr-auto">Cancelar</button><button onclick="saveErp('${tab}', '${id || ''}')" class="px-8 py-2.5 bg-blue-600 text-white rounded-xl font-bold shadow-md hover:bg-blue-700">Salvar Dados</button>`;
+      openModal(`${id ? 'Editar' : 'Novo'} Registro`, html, footerHtml);
+      if (tab === 'pacientes') setTimeout(calcPacienteData, 100);
+    };
+
+    window.openCompraForm = (id = null) => {
+      const data = id ? AppState.data.compras.find(i => i.id === id) : { status: 'confirmada', data: new Date().toISOString().split('T')[0] };
+      const fields = [
+        { name: 'data', label: 'Data da Compra', type: 'date' },
+        { name: 'farmaciaId', label: 'Farmácia', type: 'db-select', collection: 'farmacias' },
+        { name: 'remedioId', label: 'Remédio', type: 'db-select', collection: 'remedios' },
+        { name: 'qtd', label: 'Qtd de Caixas', type: 'number' },
+        { name: 'pacienteId', label: 'Paciente', type: 'db-select', collection: 'pacientes' },
+        { name: 'clinicaId', label: 'Clínica', type: 'db-select', collection: 'clinicas' },
+        { name: 'medicoId', label: 'Médico', type: 'db-select', collection: 'medicos' },
+        { name: 'valor', label: 'Valor Total (R$)' },
+        { name: 'pagamento', label: 'Forma de Pagto' },
+        { name: 'obs', label: 'Observações', type: 'textarea' },
+      ];
+
+      if (id) {
+        fields.push({ name: 'status', label: 'Status da Compra', type: 'select', options: [{val:'confirmada', label:'Confirmada'}, {val:'agendada', label:'Agendada'}, {val:'cancelada', label:'Cancelada'}] });
+      }
+
+      let footerHtml = '';
+      if (id) {
+        footerHtml += `<button onclick="deleteErpConfirm('compras', '${id}')" class="px-4 py-2.5 bg-red-100 text-red-600 rounded-xl font-bold hover:bg-red-200 mr-auto"><i class="fa-solid fa-trash"></i></button><button onclick="viewCompraDetails('${id}')" class="px-5 py-2.5 bg-slate-200 text-slate-700 rounded-xl font-bold">Cancelar</button><button onclick="saveCompra('${id}', '${data.status}')" class="px-6 py-2.5 bg-blue-600 text-white rounded-xl font-bold shadow-md">Atualizar</button>`;
+      } else {
+        footerHtml += `<button onclick="closeModal()" class="px-5 py-2.5 bg-slate-200 text-slate-700 rounded-xl font-bold mr-auto">Cancelar</button><button onclick="saveCompra('', 'agendada')" class="px-5 py-2.5 bg-orange-100 text-orange-700 border border-orange-300 rounded-xl font-bold shadow-sm">Agendar</button><button onclick="saveCompra('', 'confirmada')" class="px-6 py-2.5 bg-blue-600 text-white rounded-xl font-bold shadow-md">Confirmar</button>`;
+      }
+
+      const compraCode = id ? (getCompraDisplayCode(data) || '-') : 'Será gerado ao salvar';
+      let compraFormHtml = `<div class="mb-5 bg-blue-50 border border-blue-100 rounded-2xl p-4"><span class="block text-[10px] font-bold text-blue-500 uppercase tracking-wider mb-1">Código da Compra</span><span class="block font-black text-blue-700 text-lg">${compraCode}</span><p class="text-[11px] text-blue-500 font-bold mt-1">Número automático, não editável.</p></div>` + generateFormFields(fields, data);
+      compraFormHtml += renderDocumentUploadSection(data);
+
+      openModal(id ? 'Editar Compra' : 'Nova Compra', compraFormHtml, footerHtml);
+
+      setupCompraClinicaAutoFill();
+
+      const valInp = document.getElementById('field-valor');
+      if (valInp) valInp.addEventListener('input', e => {
+        let v = e.target.value.replace(/\D/g, "");
+        if (v) {
+          v = (parseInt(v) / 100).toFixed(2).replace(".", ",").replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.");
+          e.target.value = v;
+        }
+      });
+    };
+
+    window.editCompra = (id) => openCompraForm(id);
+
+    function setupCompraClinicaAutoFill() {
+      const clinicaSelect = document.getElementById('field-clinicaId');
+      const medicoSelect = document.getElementById('field-medicoId');
+      if (!clinicaSelect || !medicoSelect) return;
+
+      clinicaSelect.addEventListener('change', () => {
+        const clinica = AppState.data.clinicas.find(c => c.id === clinicaSelect.value);
+        if (clinica?.medicoResponsavelId) {
+          medicoSelect.value = clinica.medicoResponsavelId;
+          const medicoNome = AppState.data.medicos.find(m => m.id === clinica.medicoResponsavelId)?.nome;
+          if (medicoNome) showToast(`Médico preenchido: ${medicoNome}`, "success");
+        }
+      });
+    }
+
+    function generateFormFields(fields, data = {}) {
+      return fields.map(f => {
+        const val = data[f.name] || '';
+        const lClass = "block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1.5";
+        const iClass = "w-full bg-slate-50 border border-slate-200 rounded-xl p-3.5 text-sm font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition shadow-[inset_0_1px_2px_rgba(0,0,0,0.02)]";
+
+        if (f.type === 'select') return `<div class="mb-4"><label class="${lClass}">${f.label}</label><select id="field-${f.name}" class="${iClass}">${f.options.map(o => `<option value="${o.val}" ${val === o.val ? 'selected' : ''}>${o.label}</option>`).join('')}</select></div>`;
+
+        if (f.type === 'textarea') return `<div class="mb-4"><label class="${lClass}">${f.label}</label><textarea id="field-${f.name}" rows="3" class="${iClass}">${val}</textarea></div>`;
+
+        if (f.type === 'db-select') {
+          const items = [...AppState.data[f.collection]].sort((a,b) => (a.nome || '').localeCompare(b.nome || '', 'pt-BR'));
+          return `<div class="mb-4"><label class="${lClass}">${f.label}</label><div class="flex gap-2"><select id="field-${f.name}" class="${iClass} flex-1"><option value="">Selecione...</option>${items.map(i => `<option value="${i.id}" ${val === i.id ? 'selected' : ''}>${i.nome}</option>`).join('')}</select><button type="button" onclick="openQuickAdd('${f.collection}', 'field-${f.name}')" class="w-12 bg-blue-100 text-blue-600 rounded-xl hover:bg-blue-200 transition font-bold shrink-0 shadow-sm border border-blue-200 text-lg"><i class="fa-solid fa-plus"></i></button></div></div>`;
+        }
+
+        if (f.type === 'cep') return `<div class="mb-4"><label class="${lClass}">${f.label}</label><input type="text" id="field-${f.name}" value="${val}" placeholder="00000-000" class="${iClass}" onblur="buscarCEP(this.value)"></div>`;
+
+        if (f.type === 'date-calc') return `<div class="mb-4"><label class="${lClass}">${f.label}</label><input type="date" id="field-${f.name}" value="${val}" class="${iClass}" onchange="calcPacienteData()"><div id="calc-result-dataNascimento" class="text-xs text-blue-600 font-bold mt-1.5 ml-1 h-4"></div></div>`;
+
+        return `<div class="mb-4"><label class="${lClass}">${f.label}</label><input type="${f.type || 'text'}" id="field-${f.name}" value="${val}" ${f.readonly ? 'readonly' : ''} class="${iClass} ${f.readonly ? 'bg-slate-100 text-slate-500' : ''}"></div>`;
+      }).join('');
+    }
+
+    window.openQuickAdd = (collection, selectId) => {
+      document.getElementById('quick-add-collection').value = collection;
+      document.getElementById('quick-add-select-id').value = selectId;
+      document.getElementById('quick-add-input').value = '';
+      const overlay = document.getElementById('quick-add-overlay');
+      const content = document.getElementById('quick-add-content');
+      overlay.classList.remove('hidden');
+      setTimeout(() => {
+        overlay.classList.remove('opacity-0');
+        content.classList.remove('scale-95');
+        document.getElementById('quick-add-input').focus();
+      }, 10);
+    };
+
+    window.closeQuickAdd = () => {
+      const overlay = document.getElementById('quick-add-overlay');
+      const content = document.getElementById('quick-add-content');
+      overlay.classList.add('opacity-0');
+      content.classList.add('scale-95');
+      setTimeout(() => overlay.classList.add('hidden'), 300);
+    };
+
+    window.confirmQuickAdd = async () => {
+      const name = document.getElementById('quick-add-input').value.trim();
+      if (!name) return showToast("Digite um nome!", "error");
+      const collection = document.getElementById('quick-add-collection').value;
+      const selectId = document.getElementById('quick-add-select-id').value;
+      const newId = await dbSave(collection, { nome: name, status: 'ativo', incomplete: true });
+      if (newId) {
+        const select = document.getElementById(selectId);
+        if (select) {
+          const opt = document.createElement('option');
+          opt.value = newId;
+          opt.text = name;
+          opt.selected = true;
+          select.appendChild(opt);
+        }
+        closeQuickAdd();
+      }
+    };
+
+    window.saveErp = async (colName, id) => {
+      const dataObj = {};
+      document.querySelectorAll('#modal-body input, #modal-body select, #modal-body textarea').forEach(i => {
+        if (i.id?.startsWith('field-')) dataObj[i.id.replace('field-', '')] = i.value;
+      });
+      dataObj.incomplete = false;
+      normalizeDocumentFields(dataObj);
+      if (await dbSave(colName, dataObj, id)) {
+        closeModal();
+        if (id) viewErpDetails(colName, id);
+        renderCompraFilterOptions();
+      }
+    };
+
+    window.saveCompra = async (id, status) => {
+      const dataObj = { status };
+      document.querySelectorAll('#modal-body input, #modal-body select, #modal-body textarea').forEach(i => {
+        if (i.id?.startsWith('field-')) {
+          let k = i.id.replace('field-', '');
+          let v = i.value;
+          if (k === 'valor') v = parseFloat(v.replace(/\./g, '').replace(',', '.')) || 0;
+          dataObj[k] = v;
+        }
+      });
+
+      if (document.getElementById('field-status')) dataObj.status = document.getElementById('field-status').value;
+      normalizeDocumentFields(dataObj);
+
+      if (id) {
+        const existingCompra = AppState.data.compras.find(c => c.id === id);
+        if (existingCompra?.codigoCompra) dataObj.codigoCompra = existingCompra.codigoCompra;
+      } else {
+        dataObj.codigoCompra = getNextCompraCode();
+      }
+
+      if (!dataObj.remedioId || !dataObj.data) return showToast("Data e Remédio obrigatórios.", "error");
+
+      if (await dbSave('compras', dataObj, id)) {
+        closeModal();
+        renderCompras();
+      }
+    };
+
+    window.openModal = (title, bodyHtml, footerHtml) => {
+      document.getElementById('modal-title').innerText = title;
+      document.getElementById('modal-body').innerHTML = bodyHtml;
+      document.getElementById('modal-footer').innerHTML = footerHtml;
+      const overlay = document.getElementById('modal-overlay');
+      const content = document.getElementById('modal-content');
+      overlay.classList.remove('hidden');
+      setTimeout(() => {
+        overlay.classList.remove('opacity-0');
+        if (window.innerWidth < 768) content.classList.remove('translate-y-full');
+        else content.classList.remove('scale-95');
+      }, 10);
+    };
+
+    window.closeModal = () => {
+      const overlay = document.getElementById('modal-overlay');
+      const content = document.getElementById('modal-content');
+      overlay.classList.add('opacity-0');
+      if (window.innerWidth < 768) content.classList.add('translate-y-full');
+      else content.classList.add('scale-95');
+      setTimeout(() => {
+        overlay.classList.add('hidden');
+        document.getElementById('modal-body').innerHTML = '';
+      }, 300);
+    };
+
+    window.showToast = (msg, type = "info") => {
+      const toast = document.getElementById('toast');
+      const icon = document.getElementById('toast-icon');
+      document.getElementById('toast-msg').innerText = msg;
+      toast.className = `fixed top-20 left-1/2 transform -translate-x-1/2 px-5 py-3 rounded-xl shadow-xl z-[110] transition-opacity duration-300 flex items-center gap-3 font-bold text-white ${type === 'error' ? 'bg-red-600' : (type === 'success' ? 'bg-green-600' : 'bg-slate-800')}`;
+      icon.className = `text-lg fa-solid ${type === 'error' ? 'fa-triangle-exclamation' : (type === 'success' ? 'fa-check-circle' : 'fa-info-circle')}`;
+      toast.classList.remove('opacity-0');
+      setTimeout(() => toast.classList.add('opacity-0'), 3000);
+    };
+
+    window.buscarCEP = async (cep) => {
+      if ((cep = cep.replace(/\D/g, '')).length === 8) {
+        try {
+          const d = await (await fetch(`https://viacep.com.br/ws/${cep}/json/`)).json();
+          if (!d.erro) {
+            ['logradouro', 'bairro', 'localidade', 'uf'].forEach(k => {
+              const el = document.getElementById(`field-${k === 'localidade' ? 'cidade' : k}`);
+              if (el) el.value = d[k];
+            });
+            showToast("Endereço preenchido!", "success");
+          }
+        } catch(e) {}
+      }
+    };
+
+    window.calcPacienteData = () => {
+      const val = document.getElementById('field-dataNascimento')?.value;
+      if (!val) return;
+      const date = new Date(val + 'T12:00:00');
+      const today = new Date();
+      let age = today.getFullYear() - date.getFullYear();
+      let m = today.getMonth() - date.getMonth();
+      if (m < 0 || (m === 0 && today.getDate() < date.getDate())) age--;
+
+      const d = date.getDate();
+      const mo = date.getMonth() + 1;
+      let sign = "";
+      if ((mo == 1 && d <= 20) || (mo == 12 && d >= 22)) sign = "Capricórnio";
+      else if ((mo == 1 && d >= 21) || (mo == 2 && d <= 18)) sign = "Aquário";
+      else if ((mo == 2 && d >= 19) || (mo == 3 && d <= 20)) sign = "Peixes";
+      else if ((mo == 3 && d >= 21) || (mo == 4 && d <= 20)) sign = "Áries";
+      else if ((mo == 4 && d >= 21) || (mo == 5 && d <= 20)) sign = "Touro";
+      else if ((mo == 5 && d >= 21) || (mo == 6 && d <= 20)) sign = "Gêmeos";
+      else if ((mo == 6 && d >= 21) || (mo == 7 && d <= 22)) sign = "Câncer";
+      else if ((mo == 7 && d >= 23) || (mo == 8 && d <= 23)) sign = "Leão";
+      else if ((mo == 8 && d >= 24) || (mo == 9 && d <= 23)) sign = "Virgem";
+      else if ((mo == 9 && d >= 24) || (mo == 10 && d <= 23)) sign = "Libra";
+      else if ((mo == 10 && d >= 24) || (mo == 11 && d <= 22)) sign = "Escorpião";
+      else if ((mo == 11 && d >= 23) || (mo == 12 && d <= 21)) sign = "Sagitário";
+
+      const result = document.getElementById('calc-result-dataNascimento');
+      if (result) result.innerText = `${age} anos`;
+      const fSigno = document.getElementById('field-signo');
+      if (fSigno) fSigno.value = sign;
+    };
+
+    window.consultarCRM = (crm) => {
+      navigator.clipboard.writeText(crm).then(() => {
+        showToast("Copiado! Redirecionando...");
+        setTimeout(() => window.open('https://guiamedico.cremesp.org.br/', '_blank'), 800);
+      }).catch(() => {
+        const t = document.createElement("textarea");
+        t.value = crm;
+        document.body.appendChild(t);
+        t.select();
+        try {
+          document.execCommand('copy');
+          showToast("Copiado! Redirecionando...");
+          setTimeout(() => window.open('https://guiamedico.cremesp.org.br/', '_blank'), 800);
+        } catch(e) {
+          showToast("Erro ao copiar.", "error");
+        }
+        document.body.removeChild(t);
+      });
+    };
+
+    function processImageFile(file) {
+      return new Promise((resolve, reject) => {
+        const r = new FileReader();
+        r.onload = function(ev) {
+          const img = new Image();
+          img.onload = function() {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            let w = img.width;
+            let h = img.height;
+            if (w > h) {
+              if (w > 1000) { h *= 1000 / w; w = 1000; }
+            } else {
+              if (h > 1000) { w *= 1000 / h; h = 1000; }
+            }
+            canvas.width = w;
+            canvas.height = h;
+            ctx.drawImage(img, 0, 0, w, h);
+            resolve(canvas.toDataURL('image/jpeg', 0.72));
+          };
+          img.onerror = reject;
+          img.src = ev.target.result;
+        };
+        r.onerror = reject;
+        r.readAsDataURL(file);
+      });
+    }
+
+    window.handleImageUpload = async (e) => {
+      const files = Array.from(e.target.files || []);
+      if (!files.length) return;
+      try {
+        const existingDocs = getCurrentFormDocumentList();
+        const newDocs = [];
+        for (const file of files) {
+          if (!file.type.startsWith('image/')) continue;
+          newDocs.push(await processImageFile(file));
+        }
+        if (!newDocs.length) return showToast('Selecione imagens válidas.', 'error');
+        setCurrentFormDocumentList([...existingDocs, ...newDocs]);
+        e.target.value = '';
+        showToast(newDocs.length > 1 ? `${newDocs.length} documentos processados!` : 'Documento processado!', 'success');
+      } catch (error) {
+        showToast('Erro ao processar documento.', 'error');
+      }
+    };
+
+    window.viewDocument = (index = 0) => {
+      openImageViewerWithList(getCurrentFormDocumentList(), index);
+    };
+
+    window.navigateDocument = (direction) => {
+      if (!currentDocumentList.length) return;
+      currentDocumentIndex = (currentDocumentIndex + direction + currentDocumentList.length) % currentDocumentList.length;
+      resetDocumentTransformState();
+      updateImageViewer();
+    };
+
+    window.zoomDocument = (delta) => {
+      currentDocumentZoom = clampDocumentZoom(currentDocumentZoom + delta);
+      if (currentDocumentZoom === 1) {
+        currentDocumentPanX = 0;
+        currentDocumentPanY = 0;
+      }
+      applyDocumentTransform();
+    };
+
+    window.resetDocumentZoom = () => {
+      resetDocumentTransformState();
+      applyDocumentTransform();
+    };
+
+    window.downloadCurrentDocument = () => {
+      const src = currentDocumentList[currentDocumentIndex];
+      if (!src) return;
+      const a = document.createElement('a');
+      a.href = src;
+      a.download = `documento-${String(currentDocumentIndex + 1).padStart(2, '0')}.jpg`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    };
+
+    window.closeImageViewer = () => {
+      document.getElementById('image-viewer').classList.add('hidden');
+      document.getElementById('image-viewer').classList.remove('flex');
+      resetDocumentTransformState();
+    };
+
+    window.deleteCurrentDocument = () => {
+      if (!canDeleteDocumentFromCurrentContext()) return showToast('Abra a edição para excluir anexos.', 'error');
+      if (confirm('Apagar documento atual?')) {
+        currentDocumentList.splice(currentDocumentIndex, 1);
+        setCurrentFormDocumentList(currentDocumentList);
+        if (!currentDocumentList.length) return closeImageViewer();
+        currentDocumentIndex = Math.min(currentDocumentIndex, currentDocumentList.length - 1);
+        resetDocumentTransformState();
+        updateImageViewer();
+      }
+    };
+
+    document.addEventListener('DOMContentLoaded', () => { setupImageViewerGestures(); initApp(); });
+  </script>
+</body>
+</html>
