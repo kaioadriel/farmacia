@@ -7,6 +7,9 @@
   <title>Controle de Farmácias</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
     ::-webkit-scrollbar { width: 6px; height: 6px; }
@@ -74,6 +77,62 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
 .document-upload-card:hover { background: #f8fafc; border-color: #93c5fd !important; }
 .floating-quick-buy { position: fixed; right: 18px; bottom: 94px; z-index: 45; box-shadow: 0 18px 35px rgba(37,99,235,.28); }
 @media (min-width: 768px) { .floating-quick-buy { display: none; } }
+
+
+    /* ==== Painel minimalista de backup e relatórios ==== */
+    .utility-panel-minimal {
+      background: linear-gradient(180deg, rgba(239,246,255,.82), rgba(248,250,252,.92));
+      border: 1px solid rgba(226,232,240,.9);
+      border-radius: 32px;
+      padding: 18px;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.7), 0 18px 42px rgba(15,23,42,.06);
+    }
+    .utility-panel-minimal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 16px;
+      padding: 0 4px;
+    }
+    .utility-action-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+    .utility-action-card {
+      min-height: 92px;
+      border-radius: 28px;
+      background: rgba(255,255,255,.94);
+      border: 1px solid rgba(226,232,240,.96);
+      box-shadow: 0 14px 30px rgba(15,23,42,.07);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      padding: 18px;
+      color: #334155;
+      font-size: clamp(14px, 2.7vw, 20px);
+      font-weight: 950;
+      text-transform: uppercase;
+      letter-spacing: -.02em;
+      white-space: nowrap;
+    }
+    .utility-action-card i { font-size: clamp(24px, 4vw, 34px); line-height: 1; }
+    .utility-action-card:hover { transform: translateY(-2px); box-shadow: 0 18px 38px rgba(15,23,42,.10); }
+    .utility-action-card:active { transform: scale(.98); }
+    .utility-purple { color: #7c3aed; }
+    .utility-teal { color: #0d9488; }
+    .utility-pink { color: #e11d48; }
+    @media (max-width: 430px) {
+      .utility-panel-minimal { padding: 14px; border-radius: 28px; }
+      .utility-action-grid { gap: 12px; }
+      .utility-action-card { min-height: 78px; border-radius: 24px; gap: 10px; padding: 14px 10px; font-size: 13px; }
+      .utility-action-card i { font-size: 24px; }
+    }
+    @media (max-width: 360px) {
+      .utility-action-grid { grid-template-columns: 1fr; }
+    }
 
   </style>
 </head>
@@ -189,6 +248,38 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
             <div class="h-56 w-full relative mt-auto"><canvas id="mainChart"></canvas></div>
           </div>
         </div>
+
+        <!-- Backup e Relatórios -->
+        <div class="utility-panel-minimal mb-8">
+          <div class="utility-panel-minimal-header">
+            <div>
+              <h3 class="text-base md:text-lg font-black text-slate-800 leading-tight">Backup e Relatórios</h3>
+              <p class="text-xs md:text-sm text-slate-500 font-semibold mt-1">Salve, restaure ou exporte seus dados.</p>
+            </div>
+            <i class="fa-solid fa-cloud-arrow-down text-blue-600 text-xl"></i>
+          </div>
+
+          <div class="utility-action-grid">
+            <button onclick="downloadManualBackup()" class="utility-action-card" type="button">
+              <i class="fa-solid fa-download utility-purple"></i>
+              <span>Backup</span>
+            </button>
+            <button onclick="triggerManualRestore()" class="utility-action-card" type="button">
+              <i class="fa-solid fa-upload utility-teal"></i>
+              <span>Restaurar</span>
+            </button>
+            <button onclick="openReportExportModal('csv')" class="utility-action-card" type="button">
+              <i class="fa-solid fa-download utility-teal"></i>
+              <span>Exportar CSV</span>
+            </button>
+            <button onclick="openReportExportModal('pdf')" class="utility-action-card" type="button">
+              <i class="fa-solid fa-download utility-pink"></i>
+              <span>Exportar PDF</span>
+            </button>
+          </div>
+          <input type="file" id="manual-restore-input" accept="application/json,.json" class="hidden" onchange="restoreManualBackup(event)">
+        </div>
+
       </section>
 
       <!-- Compras View -->
@@ -431,7 +522,7 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
     import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-    import { getFirestore, collection, onSnapshot, doc, setDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+    import { getFirestore, collection, onSnapshot, doc, setDoc, deleteDoc, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
     function injectPWA() {
       const manifest = {
@@ -968,6 +1059,7 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
           }
         });
       } catch (error) {
+        console.error('Erro ao inicializar app:', error);
         showToast("Erro ao inicializar banco de dados.", "error");
       }
     }
@@ -2029,6 +2121,498 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
         updateImageViewer();
       }
     };
+
+
+
+    // ==== Backup manual, restauração e exportações CSV/PDF ====
+    const REPORT_COLLECTIONS = ['compras', 'pacientes', 'medicos', 'clinicas', 'farmacias', 'remedios'];
+    const REPORT_LABELS = {
+      todos: 'Todos',
+      compras: 'Compras',
+      pacientes: 'Pacientes',
+      medicos: 'Médicos',
+      clinicas: 'Clínicas',
+      farmacias: 'Farmácias',
+      remedios: 'Remédios'
+    };
+
+    function sanitizeFileName(value) {
+      return String(value || 'relatorio')
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-+|-+$/g, '') || 'relatorio';
+    }
+
+    function downloadBlob(content, filename, mimeType) {
+      const blob = content instanceof Blob ? content : new Blob([content], { type: mimeType });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(() => URL.revokeObjectURL(url), 500);
+    }
+
+    function getTodayFileStamp() {
+      return new Date().toISOString().slice(0, 10);
+    }
+
+    function buildBackupPayload() {
+      return {
+        app: 'Controle de Farmácias',
+        generatedAt: new Date().toISOString(),
+        mode: 'autenticacao-firebase',
+        userId: AppState.userId,
+        collections: REPORT_COLLECTIONS.reduce((acc, key) => {
+          acc[key] = JSON.parse(JSON.stringify(AppState.data[key] || []));
+          return acc;
+        }, {})
+      };
+    }
+
+    window.downloadManualBackup = () => {
+      const payload = buildBackupPayload();
+      downloadBlob(JSON.stringify(payload, null, 2), `backup-controle-farmacias-${getTodayFileStamp()}.json`, 'application/json;charset=utf-8');
+      showToast('Backup gerado!', 'success');
+    };
+
+    window.triggerManualRestore = () => {
+      document.getElementById('manual-restore-input')?.click();
+    };
+
+    async function replaceCollectionFromBackup(collectionName, records = []) {
+      const colRef = collection(db, 'users', AppState.userId, collectionName);
+      const currentDocs = await getDocs(colRef);
+      for (const itemDoc of currentDocs.docs) {
+        await deleteDoc(doc(db, 'users', AppState.userId, collectionName, itemDoc.id));
+      }
+      for (const record of records) {
+        const clean = JSON.parse(JSON.stringify(record || {}));
+        const id = clean.id || crypto.randomUUID();
+        delete clean.id;
+        await setDoc(doc(db, 'users', AppState.userId, collectionName, id), clean);
+      }
+    }
+
+    window.restoreManualBackup = async (event) => {
+      const file = event.target.files?.[0];
+      event.target.value = '';
+      if (!file) return;
+      if (!confirm('Restaurar este backup? Os registros atuais serão substituídos pelos dados do arquivo.')) return;
+      try {
+        const text = await file.text();
+        const parsed = JSON.parse(text);
+        const collectionsData = parsed.collections || parsed.data || parsed;
+        for (const key of REPORT_COLLECTIONS) {
+          if (Array.isArray(collectionsData[key])) await replaceCollectionFromBackup(key, collectionsData[key]);
+        }
+        showToast('Backup restaurado!', 'success');
+      } catch (error) {
+        console.error('Erro ao restaurar backup:', error);
+        showToast('Erro ao restaurar backup.', 'error');
+      }
+    };
+
+    function getRelatedName(collectionName, id) {
+      const record = AppState.data[collectionName]?.find(item => item.id === id);
+      return record?.nome || '';
+    }
+
+    function getRecordStatusValue(record) {
+      const raw = String(record?.status ?? record?.ativo ?? record?.situacao ?? '').toLowerCase();
+      if (raw.includes('inativo') || raw === 'false' || raw === '0' || raw === 'não' || raw === 'nao') return 'Inativo';
+      return 'Ativo';
+    }
+
+    function sortErpRecords(records = []) {
+      return [...records].sort((a, b) => {
+        const aInactive = getRecordStatusValue(a) === 'Inativo' ? 1 : 0;
+        const bInactive = getRecordStatusValue(b) === 'Inativo' ? 1 : 0;
+        if (aInactive !== bInactive) return aInactive - bInactive;
+        return String(a.nome || '').localeCompare(String(b.nome || ''), 'pt-BR', { sensitivity: 'base' });
+      });
+    }
+
+    function filterComprasByDate(records = [], startDate = '', endDate = '') {
+      return [...records].filter(item => {
+        const date = item.data || '';
+        if (startDate && date < startDate) return false;
+        if (endDate && date > endDate) return false;
+        return true;
+      }).sort((a, b) => String(a.data || '').localeCompare(String(b.data || '')) || String(getCompraDisplayCode(a)).localeCompare(String(getCompraDisplayCode(b))));
+    }
+
+    function getReportRows(type, startDate = '', endDate = '') {
+      if (type === 'compras') {
+        const rows = filterComprasByDate(AppState.data.compras || [], startDate, endDate).map(c => ({
+          Código: getCompraDisplayCode(c),
+          Data: c.data ? c.data.split('-').reverse().join('/') : '',
+          Status: c.status || '',
+          Farmácia: getRelatedName('farmacias', c.farmaciaId),
+          Paciente: getRelatedName('pacientes', c.pacienteId),
+          Médico: getRelatedName('medicos', c.medicoId),
+          Clínica: getRelatedName('clinicas', c.clinicaId),
+          Remédio: getRelatedName('remedios', c.remedioId),
+          Quantidade: c.qtd || '',
+          Valor: formatCurrency(c.valor),
+          Pagamento: c.pagamento || '',
+          Observações: c.obs || ''
+        }));
+        return rows;
+      }
+
+      return sortErpRecords(AppState.data[type] || []).map(record => {
+        const base = {
+          Nome: record.nome || '',
+          Status: getRecordStatusValue(record)
+        };
+        Object.entries(record).forEach(([key, value]) => {
+          if (['id', 'nome', 'status', 'ativo', 'situacao', 'documentoBase64', 'documentosBase64'].includes(key)) return;
+          if (value === null || value === undefined || typeof value === 'object') return;
+          const label = key.charAt(0).toUpperCase() + key.slice(1);
+          base[label] = String(value);
+        });
+        return base;
+      });
+    }
+
+    function rowsToCsv(rows = []) {
+      if (!rows.length) return 'Sem registros\n';
+      const headers = Array.from(rows.reduce((set, row) => {
+        Object.keys(row).forEach(key => set.add(key));
+        return set;
+      }, new Set()));
+      const escapeCsv = (value) => '"' + String(value ?? '').replace(/"/g, '""') + '"';
+      return [headers.map(escapeCsv).join(';'), ...rows.map(row => headers.map(h => escapeCsv(row[h])).join(';'))].join('\n');
+    }
+
+
+    function reportCleanValue(value) {
+      return String(value ?? '').trim();
+    }
+
+    function firstReportValue(record, keys = []) {
+      for (const key of keys) {
+        const value = reportCleanValue(record?.[key]);
+        if (value) return value;
+      }
+      return '';
+    }
+
+    function formatReportDateBR(value) {
+      const raw = reportCleanValue(value);
+      if (!raw) return '';
+      const match = raw.match(/^(\d{4})-(\d{2})-(\d{2})/);
+      return match ? `${match[3]}/${match[2]}/${match[1]}` : raw;
+    }
+
+    function addWrappedPdfText(docPdf, text, x, y, maxWidth, lineHeight = 11, options = {}) {
+      const clean = reportCleanValue(text) || '-';
+      const lines = docPdf.splitTextToSize(clean, maxWidth);
+      docPdf.text(lines, x, y, options);
+      return y + (lines.length * lineHeight);
+    }
+
+    function createPacientesPdfBlob(rows, sourceRecords = []) {
+      const { jsPDF } = window.jspdf || {};
+      if (!jsPDF) throw new Error('jsPDF não carregado');
+      const docPdf = new jsPDF({ orientation: 'portrait', unit: 'pt', format: 'a4' });
+      const pageWidth = docPdf.internal.pageSize.getWidth();
+      const pageHeight = docPdf.internal.pageSize.getHeight();
+      const margin = 36;
+      const cardWidth = pageWidth - (margin * 2);
+      const safeBottom = pageHeight - 42;
+      let y = 42;
+
+      const drawHeader = () => {
+        docPdf.setFont('helvetica', 'bold');
+        docPdf.setFontSize(18);
+        docPdf.setTextColor(15, 23, 42);
+        docPdf.text('Relatório - Pacientes', margin, 32);
+        docPdf.setFont('helvetica', 'normal');
+        docPdf.setFontSize(9);
+        docPdf.setTextColor(71, 85, 105);
+        docPdf.text('Layout em cartões, ordem alfabética, com inativos por último', margin, 48);
+        y = 76;
+      };
+
+      const drawField = (label, value, x, fieldY, width) => {
+        docPdf.setFont('helvetica', 'bold');
+        docPdf.setFontSize(7.5);
+        docPdf.setTextColor(100, 116, 139);
+        docPdf.text(label.toUpperCase(), x, fieldY);
+        docPdf.setFont('helvetica', 'normal');
+        docPdf.setFontSize(9);
+        docPdf.setTextColor(30, 41, 59);
+        const lines = docPdf.splitTextToSize(reportCleanValue(value) || '-', width);
+        docPdf.text(lines, x, fieldY + 12);
+        return fieldY + 12 + (lines.length * 10);
+      };
+
+      drawHeader();
+
+      const orderedRecords = sourceRecords.length ? sourceRecords : sortErpRecords(AppState.data.pacientes || []);
+      if (!orderedRecords.length) {
+        docPdf.setFontSize(11);
+        docPdf.setTextColor(51, 65, 85);
+        docPdf.text('Sem pacientes cadastrados.', margin, y);
+        return docPdf.output('blob');
+      }
+
+      orderedRecords.forEach((record, index) => {
+        const status = getRecordStatusValue(record);
+        const nome = reportCleanValue(record.nome) || 'Paciente sem nome';
+        const cpf = firstReportValue(record, ['cpf', 'Cpf', 'CPF']);
+        const rg = firstReportValue(record, ['rg', 'Rg', 'RG']);
+        const telefone = firstReportValue(record, ['telefone', 'Telefone', 'celular', 'Celular']);
+        const email = firstReportValue(record, ['email', 'Email']);
+        const nascimento = formatReportDateBR(firstReportValue(record, ['dataNascimento', 'dataNascimento', 'nascimento', 'DataNascimento']));
+        const signo = firstReportValue(record, ['signo', 'Signo']);
+        const cidade = firstReportValue(record, ['cidade', 'Cidade']);
+        const uf = firstReportValue(record, ['uf', 'Uf', 'UF']);
+        const bairro = firstReportValue(record, ['bairro', 'Bairro']);
+        const logradouro = firstReportValue(record, ['logradouro', 'Logradouro', 'endereco', 'Endereço']);
+        const numero = firstReportValue(record, ['numero', 'Número', 'Numero']);
+        const complemento = firstReportValue(record, ['complemento', 'Complemento']);
+        const cep = firstReportValue(record, ['cep', 'Cep', 'CEP']);
+        const obs = firstReportValue(record, ['obs', 'Obs', 'observacao', 'observação', 'Observações']);
+        const endereco1 = [logradouro, numero].filter(Boolean).join(', ');
+        const endereco2 = [bairro, cidade, uf].filter(Boolean).join(' - ');
+        const endereco3 = [complemento, cep ? `CEP ${cep}` : ''].filter(Boolean).join(' | ');
+        const endereco = [endereco1, endereco2, endereco3].filter(Boolean).join('\n');
+
+        const obsLines = obs ? docPdf.splitTextToSize(obs, cardWidth - 28) : [];
+        const baseHeight = 156;
+        const obsHeight = obs ? Math.max(30, 22 + obsLines.length * 10) : 0;
+        const cardHeight = baseHeight + obsHeight;
+
+        if (y + cardHeight > safeBottom) {
+          docPdf.addPage('a4', 'portrait');
+          drawHeader();
+        }
+
+        docPdf.setFillColor(248, 250, 252);
+        docPdf.setDrawColor(226, 232, 240);
+        docPdf.roundedRect(margin, y, cardWidth, cardHeight, 12, 12, 'FD');
+
+        docPdf.setFont('helvetica', 'bold');
+        docPdf.setFontSize(13);
+        docPdf.setTextColor(15, 23, 42);
+        const nameLines = docPdf.splitTextToSize(nome, cardWidth - 118);
+        docPdf.text(nameLines, margin + 14, y + 24);
+
+        const statusWidth = status === 'Inativo' ? 54 : 42;
+        docPdf.setFillColor(status === 'Inativo' ? 254 : 220, status === 'Inativo' ? 226 : 252, status === 'Inativo' ? 226 : 231);
+        docPdf.roundedRect(margin + cardWidth - statusWidth - 14, y + 12, statusWidth, 18, 9, 9, 'F');
+        docPdf.setFont('helvetica', 'bold');
+        docPdf.setFontSize(7.5);
+        docPdf.setTextColor(status === 'Inativo' ? 185 : 21, status === 'Inativo' ? 28 : 128, status === 'Inativo' ? 28 : 61);
+        docPdf.text(status.toUpperCase(), margin + cardWidth - statusWidth - 7, y + 24);
+
+        const colGap = 16;
+        const colW = (cardWidth - 28 - colGap) / 2;
+        let leftY = y + 58;
+        let rightY = y + 58;
+        const leftX = margin + 14;
+        const rightX = margin + 14 + colW + colGap;
+
+        leftY = drawField('CPF', cpf, leftX, leftY, colW);
+        leftY = drawField('RG', rg, leftX, leftY + 7, colW);
+        leftY = drawField('Nascimento', nascimento, leftX, leftY + 7, colW);
+        if (signo) leftY = drawField('Signo', signo, leftX, leftY + 7, colW);
+
+        rightY = drawField('Telefone', telefone, rightX, rightY, colW);
+        rightY = drawField('E-mail', email, rightX, rightY + 7, colW);
+        rightY = drawField('Endereço', endereco, rightX, rightY + 7, colW);
+
+        if (obs) {
+          const obsY = y + baseHeight - 2;
+          docPdf.setDrawColor(226, 232, 240);
+          docPdf.line(margin + 14, obsY - 14, margin + cardWidth - 14, obsY - 14);
+          docPdf.setFont('helvetica', 'bold');
+          docPdf.setFontSize(7.5);
+          docPdf.setTextColor(100, 116, 139);
+          docPdf.text('OBSERVAÇÕES', margin + 14, obsY);
+          docPdf.setFont('helvetica', 'normal');
+          docPdf.setFontSize(9);
+          docPdf.setTextColor(30, 41, 59);
+          docPdf.text(obsLines, margin + 14, obsY + 12);
+        }
+
+        y += cardHeight + 12;
+      });
+
+      const totalPages = docPdf.internal.getNumberOfPages();
+      for (let i = 1; i <= totalPages; i++) {
+        docPdf.setPage(i);
+        docPdf.setFont('helvetica', 'normal');
+        docPdf.setFontSize(8);
+        docPdf.setTextColor(148, 163, 184);
+        docPdf.text(`Página ${i} de ${totalPages}`, pageWidth - margin, pageHeight - 20, { align: 'right' });
+      }
+
+      return docPdf.output('blob');
+    }
+
+    function buildConsolidatedCsv(startDate = '', endDate = '') {
+      return REPORT_COLLECTIONS.map(type => {
+        const title = `### ${REPORT_LABELS[type].toUpperCase()} ###`;
+        return `${title}\n${rowsToCsv(getReportRows(type, startDate, endDate))}`;
+      }).join('\n\n');
+    }
+
+    function createPdfBlob(type, rows, startDate = '', endDate = '') {
+      if (type === 'pacientes') return createPacientesPdfBlob(rows, sortErpRecords(AppState.data.pacientes || []));
+      const { jsPDF } = window.jspdf || {};
+      if (!jsPDF) throw new Error('jsPDF não carregado');
+      const docPdf = new jsPDF({ orientation: type === 'compras' ? 'landscape' : 'portrait', unit: 'pt', format: 'a4' });
+      const title = `Relatório - ${REPORT_LABELS[type] || type}`;
+      const periodText = type === 'compras'
+        ? `Período: ${startDate || 'início'} até ${endDate || 'fim'}`
+        : 'Cadastros em ordem alfabética, com inativos por último';
+      docPdf.setFontSize(15);
+      docPdf.text(title, 40, 40);
+      docPdf.setFontSize(9);
+      docPdf.text(periodText, 40, 58);
+      if (!rows.length) {
+        docPdf.text('Sem registros para este relatório.', 40, 88);
+      } else {
+        const headers = Array.from(rows.reduce((set, row) => {
+          Object.keys(row).forEach(key => set.add(key));
+          return set;
+        }, new Set()));
+        docPdf.autoTable({
+          startY: 76,
+          head: [headers],
+          body: rows.map(row => headers.map(h => String(row[h] ?? ''))),
+          styles: { fontSize: 7, cellPadding: 3, overflow: 'linebreak' },
+          headStyles: { fontStyle: 'bold' },
+          margin: { left: 32, right: 32 }
+        });
+      }
+      return docPdf.output('blob');
+    }
+
+    function createConsolidatedPdfBlob(startDate = '', endDate = '') {
+      const { jsPDF } = window.jspdf || {};
+      if (!jsPDF) throw new Error('jsPDF não carregado');
+      const docPdf = new jsPDF({ orientation: 'landscape', unit: 'pt', format: 'a4' });
+      REPORT_COLLECTIONS.forEach((type, index) => {
+        if (index > 0) docPdf.addPage('a4', type === 'compras' ? 'landscape' : 'landscape');
+        const rows = getReportRows(type, startDate, endDate);
+        docPdf.setFontSize(15);
+        docPdf.text(`Relatório - ${REPORT_LABELS[type]}`, 40, 40);
+        docPdf.setFontSize(9);
+        docPdf.text(type === 'compras' ? `Período: ${startDate || 'início'} até ${endDate || 'fim'}` : 'Cadastros em ordem alfabética, com inativos por último', 40, 58);
+        if (!rows.length) {
+          docPdf.text('Sem registros para este relatório.', 40, 88);
+          return;
+        }
+        const headers = Array.from(rows.reduce((set, row) => {
+          Object.keys(row).forEach(key => set.add(key));
+          return set;
+        }, new Set()));
+        docPdf.autoTable({
+          startY: 76,
+          head: [headers],
+          body: rows.map(row => headers.map(h => String(row[h] ?? ''))),
+          styles: { fontSize: 7, cellPadding: 3, overflow: 'linebreak' },
+          headStyles: { fontStyle: 'bold' },
+          margin: { left: 32, right: 32 }
+        });
+      });
+      return docPdf.output('blob');
+    }
+
+    window.openReportExportModal = (format) => {
+      const formatLabel = format === 'pdf' ? 'PDF' : 'CSV';
+      const body = `
+        <div class="space-y-4">
+          <div>
+            <label class="block text-xs font-black text-slate-500 uppercase tracking-wider mb-2">Tipo de relatório</label>
+            <select id="report-type" onchange="toggleReportDateFilters()" class="w-full bg-slate-50 border border-slate-200 rounded-2xl p-3 text-sm font-bold outline-none focus:ring-2 focus:ring-blue-500">
+              <option value="todos">Todos</option>
+              <option value="compras">Compras</option>
+              <option value="pacientes">Pacientes</option>
+              <option value="medicos">Médicos</option>
+              <option value="clinicas">Clínicas</option>
+              <option value="farmacias">Farmácias</option>
+              <option value="remedios">Remédios</option>
+            </select>
+          </div>
+          <div id="report-date-filters" class="grid grid-cols-1 sm:grid-cols-2 gap-3 bg-blue-50 border border-blue-100 rounded-3xl p-4">
+            <div>
+              <label class="block text-xs font-black text-blue-700 uppercase tracking-wider mb-2">Data inicial das compras</label>
+              <input type="date" id="report-start-date" class="w-full bg-white border border-blue-100 rounded-2xl p-3 text-sm font-bold outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+            <div>
+              <label class="block text-xs font-black text-blue-700 uppercase tracking-wider mb-2">Data final das compras</label>
+              <input type="date" id="report-end-date" class="w-full bg-white border border-blue-100 rounded-2xl p-3 text-sm font-bold outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+            <p class="sm:col-span-2 text-xs text-blue-700/80 font-semibold">O filtro de data é aplicado somente ao relatório de compras. Cadastros ERP saem completos.</p>
+          </div>
+        </div>`;
+      const footer = `
+        <button onclick="closeModal()" class="px-5 py-3 bg-slate-100 text-slate-600 rounded-xl font-bold hover:bg-slate-200 transition">Cancelar</button>
+        <button onclick="generateSelectedReport('${format}')" class="px-5 py-3 bg-blue-600 text-white rounded-xl font-bold shadow-md hover:bg-blue-700 transition">Gerar ${formatLabel}</button>`;
+      openModal(`Exportar ${formatLabel}`, body, footer);
+      setTimeout(() => toggleReportDateFilters(), 0);
+    };
+
+    window.toggleReportDateFilters = () => {
+      const type = document.getElementById('report-type')?.value || 'todos';
+      const el = document.getElementById('report-date-filters');
+      if (!el) return;
+      el.classList.toggle('hidden', !['todos', 'compras'].includes(type));
+    };
+
+    window.generateSelectedReport = async (format) => {
+      const type = document.getElementById('report-type')?.value || 'todos';
+      const startDate = document.getElementById('report-start-date')?.value || '';
+      const endDate = document.getElementById('report-end-date')?.value || '';
+      const stamp = getTodayFileStamp();
+      try {
+        if (format === 'csv') {
+          if (type === 'todos') {
+            if (window.JSZip) {
+              const zip = new JSZip();
+              REPORT_COLLECTIONS.forEach(key => zip.file(`relatorio-${sanitizeFileName(REPORT_LABELS[key])}.csv`, rowsToCsv(getReportRows(key, startDate, endDate))));
+              const blob = await zip.generateAsync({ type: 'blob' });
+              downloadBlob(blob, `relatorios-controle-farmacias-csv-${stamp}.zip`, 'application/zip');
+            } else {
+              downloadBlob(buildConsolidatedCsv(startDate, endDate), `relatorio-todos-controle-farmacias-${stamp}.csv`, 'text/csv;charset=utf-8');
+            }
+          } else {
+            downloadBlob(rowsToCsv(getReportRows(type, startDate, endDate)), `relatorio-${sanitizeFileName(REPORT_LABELS[type])}-${stamp}.csv`, 'text/csv;charset=utf-8');
+          }
+        } else {
+          if (type === 'todos') {
+            if (window.JSZip) {
+              const zip = new JSZip();
+              for (const key of REPORT_COLLECTIONS) {
+                zip.file(`relatorio-${sanitizeFileName(REPORT_LABELS[key])}.pdf`, createPdfBlob(key, getReportRows(key, startDate, endDate), startDate, endDate));
+              }
+              const blob = await zip.generateAsync({ type: 'blob' });
+              downloadBlob(blob, `relatorios-controle-farmacias-pdf-${stamp}.zip`, 'application/zip');
+            } else {
+              downloadBlob(createConsolidatedPdfBlob(startDate, endDate), `relatorio-todos-controle-farmacias-${stamp}.pdf`, 'application/pdf');
+            }
+          } else {
+            downloadBlob(createPdfBlob(type, getReportRows(type, startDate, endDate), startDate, endDate), `relatorio-${sanitizeFileName(REPORT_LABELS[type])}-${stamp}.pdf`, 'application/pdf');
+          }
+        }
+        closeModal();
+        showToast('Relatório gerado!', 'success');
+      } catch (error) {
+        console.error('Erro ao gerar relatório:', error);
+        showToast('Erro ao gerar relatório.', 'error');
+      }
+    };
+
 
     document.addEventListener('DOMContentLoaded', () => { setupImageViewerGestures(); initApp(); });
   </script>
