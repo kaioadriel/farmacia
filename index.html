@@ -75,8 +75,6 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
 .status-chip-cancelada { background:#fee2e2; color:#b91c1c; }
 .document-upload-card { min-height: 176px; border-style: dashed !important; border-width: 2px !important; border-radius: 26px !important; background: linear-gradient(180deg, rgba(248,250,252,.96), rgba(241,245,249,.86)); }
 .document-upload-card:hover { background: #f8fafc; border-color: #93c5fd !important; }
-.floating-quick-buy { position: fixed; right: 18px; bottom: 94px; z-index: 45; box-shadow: 0 18px 35px rgba(37,99,235,.28); }
-@media (min-width: 768px) { .floating-quick-buy { display: none; } }
 
 
     /* ==== Painel minimalista de backup e relatórios ==== */
@@ -452,12 +450,6 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
 
     </div>
   </main>
-
-
-  <button onclick="openCompraForm()" class="floating-quick-buy bg-blue-600 text-white w-14 h-14 rounded-full flex items-center justify-center text-xl active:scale-95 transition" title="Nova Compra">
-    <i class="fa-solid fa-cart-plus"></i>
-  </button>
-
   <!-- Mobile Bottom Navigation -->
   <nav id="mobile-nav" class="md:hidden fixed bottom-0 w-full bg-white border-t border-slate-200 z-40 pb-safe hidden">
     <div class="flex justify-around items-center h-[68px]">
