@@ -548,7 +548,7 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-    import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithRedirect, getRedirectResult, GoogleAuthProvider, onAuthStateChanged, signOut, deleteUser } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut, deleteUser } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
     import { getFirestore, collection, onSnapshot, doc, setDoc, deleteDoc, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
     function injectPWA() {
@@ -1133,20 +1133,6 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
         provider = new GoogleAuthProvider();
         provider.setCustomParameters({ prompt: 'select_account' });
 
-        getRedirectResult(auth)
-          .then(async (result) => {
-            if (!result?.user) return;
-            if (!isAllowedAuthEmail(result.user.email)) {
-              await rejectUnauthorizedFirebaseUser(result.user, true);
-              return;
-            }
-            showToast("Login com Google efetuado!", "success");
-          })
-          .catch((error) => {
-            console.error('Erro no retorno do login Google:', error);
-            showToast("Erro ao concluir login com Google.", "error");
-          });
-
         onAuthStateChanged(auth, async (user) => {
           if (user) {
             if (!isAllowedAuthEmail(user.email)) {
@@ -1199,10 +1185,21 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
 
     window.handleLoginGoogle = async () => {
       try {
-        await signInWithRedirect(auth, provider);
+        const result = await signInWithPopup(auth, provider);
+        if (!result?.user) return;
+        if (!isAllowedAuthEmail(result.user.email)) {
+          await rejectUnauthorizedFirebaseUser(result.user, true);
+          return;
+        }
+        showToast("Login com Google efetuado!", "success");
       } catch(e) {
         console.error('Erro ao iniciar login Google:', e);
-        showToast("Erro ao iniciar login com Google.", "error");
+        const code = e?.code || '';
+        let msg = "Erro ao iniciar login com Google.";
+        if (code.includes('popup-closed-by-user')) msg = "Login cancelado antes de concluir.";
+        if (code.includes('popup-blocked')) msg = "O navegador bloqueou a janela de login. Tente pelo Chrome normal.";
+        if (code.includes('unauthorized-domain')) msg = "Domínio não autorizado no Firebase Authentication.";
+        showToast(msg, "error");
       }
     };
 
