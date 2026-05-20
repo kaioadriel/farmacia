@@ -527,8 +527,9 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-    import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut, deleteUser } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
     import { getFirestore, collection, onSnapshot, doc, setDoc, deleteDoc, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+    import { initializeAppCheck, ReCaptchaV3Provider } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app-check.js";
 
     function injectPWA() {
       const manifest = {
@@ -588,6 +589,51 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
 
     let app, db, auth, provider, listeners = [];
     let myChart = null;
+
+    const ALLOWED_EMAIL = 'kaioadrielguimaraes@gmail.com';
+
+    function normalizeAuthEmail(email) {
+      return String(email || '').trim().toLowerCase();
+    }
+
+    function isAllowedAuthEmail(email) {
+      return normalizeAuthEmail(email) === ALLOWED_EMAIL;
+    }
+
+    function getRestrictedAccessMessage() {
+      return `Acesso restrito. Somente o e-mail ${ALLOWED_EMAIL} pode usar este app.`;
+    }
+
+    function clearAppSessionState() {
+      AppState.user = null;
+      AppState.userId = null;
+      AppState.data = { pacientes: [], medicos: [], clinicas: [], farmacias: [], remedios: [], compras: [] };
+      listeners.forEach(unsub => unsub());
+      listeners = [];
+      try {
+        document.getElementById('auth-screen')?.classList.remove('hidden');
+        document.getElementById('main-header')?.classList.add('hidden');
+        document.getElementById('main-content')?.classList.add('hidden');
+        document.getElementById('mobile-nav')?.classList.add('hidden');
+      } catch (e) {
+        console.warn('Não foi possível limpar a interface após bloqueio de acesso:', e);
+      }
+    }
+
+    async function rejectUnauthorizedFirebaseUser(user, shouldDeleteAccount = false) {
+      clearAppSessionState();
+      try {
+        if (shouldDeleteAccount && user) {
+          await deleteUser(user);
+        } else {
+          await signOut(auth);
+        }
+      } catch (error) {
+        console.warn('Não foi possível remover a conta não autorizada; saindo da sessão.', error);
+        try { await signOut(auth); } catch (signOutError) { console.warn('Falha ao sair da sessão não autorizada:', signOutError); }
+      }
+      showToast(getRestrictedAccessMessage(), 'error');
+    }
 
     function normalizeSearchText(value) {
       return String(value ?? '')
@@ -1033,12 +1079,23 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
       document.getElementById('app-body').classList.remove('hidden');
       try {
         app = initializeApp(firebaseConfig);
+
+        initializeAppCheck(app, {
+          provider: new ReCaptchaV3Provider("6Lf4ePMsAAAAAJiLVyuQwS54RJdMzAlIhuYHJ3fq"),
+          isTokenAutoRefreshEnabled: true
+        });
+
         auth = getAuth(app);
         db = getFirestore(app);
         provider = new GoogleAuthProvider();
 
-        onAuthStateChanged(auth, (user) => {
+        onAuthStateChanged(auth, async (user) => {
           if (user) {
+            if (!isAllowedAuthEmail(user.email)) {
+              await rejectUnauthorizedFirebaseUser(user, true);
+              return;
+            }
+
             AppState.user = user;
             AppState.userId = user.uid;
 
@@ -1054,14 +1111,7 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
             setupDatabaseListeners();
             updateUI();
           } else {
-            AppState.user = null;
-            AppState.userId = null;
-            document.getElementById('auth-screen').classList.remove('hidden');
-            document.getElementById('main-header').classList.add('hidden');
-            document.getElementById('main-content').classList.add('hidden');
-            document.getElementById('mobile-nav').classList.add('hidden');
-            listeners.forEach(unsub => unsub());
-            listeners = [];
+            clearAppSessionState();
           }
         });
       } catch (error) {
@@ -1071,23 +1121,32 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
     }
 
     window.handleLoginEmail = async () => {
-      const em = document.getElementById('auth-email').value;
+      const em = normalizeAuthEmail(document.getElementById('auth-email').value);
       const pw = document.getElementById('auth-pass').value;
       if (!em || !pw) return showToast("Preencha e-mail e senha.", "error");
+      if (!isAllowedAuthEmail(em)) return showToast(getRestrictedAccessMessage(), "error");
       try { await signInWithEmailAndPassword(auth, em, pw); showToast("Bem-vindo de volta!", "success"); }
       catch(e) { showToast("Erro no login. Verifique as credenciais.", "error"); }
     };
 
     window.handleRegisterEmail = async () => {
-      const em = document.getElementById('auth-email').value;
+      const em = normalizeAuthEmail(document.getElementById('auth-email').value);
       const pw = document.getElementById('auth-pass').value;
       if (!em || !pw) return showToast("Preencha e-mail e senha.", "error");
+      if (!isAllowedAuthEmail(em)) return showToast(getRestrictedAccessMessage(), "error");
       try { await createUserWithEmailAndPassword(auth, em, pw); showToast("Conta criada com sucesso!", "success"); }
       catch(e) { showToast("Erro ao criar conta. Senha fraca ou email já em uso.", "error"); }
     };
 
     window.handleLoginGoogle = async () => {
-      try { await signInWithPopup(auth, provider); showToast("Login efetuado!", "success"); }
+      try {
+        const result = await signInWithPopup(auth, provider);
+        if (!isAllowedAuthEmail(result?.user?.email)) {
+          await rejectUnauthorizedFirebaseUser(result.user, true);
+          return;
+        }
+        showToast("Login efetuado!", "success");
+      }
       catch(e) { showToast("Login cancelado ou com erro.", "error"); }
     };
 
