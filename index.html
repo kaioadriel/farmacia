@@ -548,7 +548,7 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-    import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut, deleteUser } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithRedirect, getRedirectResult, GoogleAuthProvider, onAuthStateChanged, signOut, deleteUser } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
     import { getFirestore, collection, onSnapshot, doc, setDoc, deleteDoc, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
     import { initializeAppCheck, ReCaptchaV3Provider } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app-check.js";
 
@@ -1136,6 +1136,22 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
         auth = getAuth(app);
         db = getFirestore(app);
         provider = new GoogleAuthProvider();
+        provider.setCustomParameters({ prompt: 'select_account' });
+
+        getRedirectResult(auth)
+          .then(async (result) => {
+            if (result?.user) {
+              if (!isAllowedAuthEmail(result.user.email)) {
+                await rejectUnauthorizedFirebaseUser(result.user, true);
+                return;
+              }
+              showToast("Login efetuado!", "success");
+            }
+          })
+          .catch((error) => {
+            console.error('Erro no retorno do login Google:', error);
+            showToast("Erro no login com Google. Tente novamente.", "error");
+          });
 
         onAuthStateChanged(auth, async (user) => {
           if (user) {
@@ -1189,14 +1205,11 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
 
     window.handleLoginGoogle = async () => {
       try {
-        const result = await signInWithPopup(auth, provider);
-        if (!isAllowedAuthEmail(result?.user?.email)) {
-          await rejectUnauthorizedFirebaseUser(result.user, true);
-          return;
-        }
-        showToast("Login efetuado!", "success");
+        await signInWithRedirect(auth, provider);
+      } catch(e) {
+        console.error('Erro ao iniciar login Google:', e);
+        showToast("Erro ao abrir login com Google.", "error");
       }
-      catch(e) { showToast("Login cancelado ou com erro.", "error"); }
     };
 
     window.logoutApp = () => { closeAccountMenu(); signOut(auth); showToast("Você saiu.", "success"); };
