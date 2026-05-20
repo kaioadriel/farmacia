@@ -550,7 +550,6 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
     import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithRedirect, getRedirectResult, GoogleAuthProvider, onAuthStateChanged, signOut, deleteUser } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
     import { getFirestore, collection, onSnapshot, doc, setDoc, deleteDoc, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-    import { initializeAppCheck, ReCaptchaV3Provider } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app-check.js";
 
     function injectPWA() {
       const manifest = {
@@ -1128,10 +1127,6 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
       try {
         app = initializeApp(firebaseConfig);
 
-        initializeAppCheck(app, {
-          provider: new ReCaptchaV3Provider("6Lf4ePMsAAAAAJiLVyuQwS54RJdMzAlIhuYHJ3fq"),
-          isTokenAutoRefreshEnabled: true
-        });
 
         auth = getAuth(app);
         db = getFirestore(app);
@@ -1140,17 +1135,16 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
 
         getRedirectResult(auth)
           .then(async (result) => {
-            if (result?.user) {
-              if (!isAllowedAuthEmail(result.user.email)) {
-                await rejectUnauthorizedFirebaseUser(result.user, true);
-                return;
-              }
-              showToast("Login efetuado!", "success");
+            if (!result?.user) return;
+            if (!isAllowedAuthEmail(result.user.email)) {
+              await rejectUnauthorizedFirebaseUser(result.user, true);
+              return;
             }
+            showToast("Login com Google efetuado!", "success");
           })
           .catch((error) => {
             console.error('Erro no retorno do login Google:', error);
-            showToast("Erro no login com Google. Tente novamente.", "error");
+            showToast("Erro ao concluir login com Google.", "error");
           });
 
         onAuthStateChanged(auth, async (user) => {
@@ -1208,7 +1202,7 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
         await signInWithRedirect(auth, provider);
       } catch(e) {
         console.error('Erro ao iniciar login Google:', e);
-        showToast("Erro ao abrir login com Google.", "error");
+        showToast("Erro ao iniciar login com Google.", "error");
       }
     };
 
