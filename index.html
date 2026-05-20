@@ -194,11 +194,32 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
       <button id="btn-install-app" onclick="installApp()" class="hidden bg-yellow-400 text-yellow-900 text-[10px] sm:text-xs font-bold px-3 py-1.5 rounded-full shadow-sm hover:bg-yellow-500 transition flex items-center gap-1 active:scale-95">
         <i class="fa-solid fa-download"></i> <span class="hidden sm:inline">Instalar App</span>
       </button>
-      <button onclick="logoutApp()" class="bg-slate-100 text-slate-600 text-[10px] sm:text-xs font-bold px-3 py-1.5 rounded-full hover:bg-slate-200 transition flex items-center gap-1 active:scale-95" title="Sair da Conta">
-        <i class="fa-solid fa-right-from-bracket"></i> Sair
+      <button id="btn-account-menu" onclick="toggleAccountMenu()" class="bg-slate-100 text-slate-600 text-[10px] sm:text-xs font-bold px-3 py-1.5 rounded-full hover:bg-slate-200 transition flex items-center gap-1 active:scale-95" title="Ver conta logada">
+        <i class="fa-solid fa-user-shield"></i> Conta
       </button>
     </div>
   </header>
+
+  <!-- Account Menu -->
+  <div id="account-menu-overlay" class="fixed inset-0 z-[70] hidden" onclick="closeAccountMenu()"></div>
+  <div id="account-menu" class="hidden fixed top-24 right-5 z-[75] w-[calc(100%-2.5rem)] max-w-sm bg-white border border-slate-200 rounded-3xl shadow-2xl p-4">
+    <div class="flex items-start gap-3 mb-4">
+      <div class="w-12 h-12 rounded-2xl bg-blue-100 text-blue-700 flex items-center justify-center shrink-0">
+        <i class="fa-solid fa-user-shield text-xl"></i>
+      </div>
+      <div class="min-w-0">
+        <p class="text-[11px] font-black text-slate-500 uppercase tracking-wider">Conta logada</p>
+        <p id="account-menu-name" class="text-sm font-black text-slate-800 truncate">--</p>
+        <p id="account-menu-email" class="text-xs font-bold text-slate-500 break-all">--</p>
+      </div>
+    </div>
+    <div class="bg-blue-50 border border-blue-100 text-blue-800 rounded-2xl p-3 text-xs font-bold mb-4">
+      <i class="fa-solid fa-lock mr-1"></i> Acesso restrito ao e-mail autorizado.
+    </div>
+    <button onclick="handleAccountLogout()" class="w-full bg-slate-100 text-slate-700 font-black py-3 rounded-2xl hover:bg-slate-200 active:scale-95 transition flex items-center justify-center gap-2">
+      <i class="fa-solid fa-right-from-bracket"></i> Sair da conta
+    </button>
+  </div>
 
   <!-- Main Content Area -->
   <main id="main-content" class="w-full max-w-6xl mx-auto md:p-4 md:flex md:gap-6 mt-4 md:mt-0 hidden">
@@ -615,10 +636,37 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
         document.getElementById('main-header')?.classList.add('hidden');
         document.getElementById('main-content')?.classList.add('hidden');
         document.getElementById('mobile-nav')?.classList.add('hidden');
+        closeAccountMenu();
       } catch (e) {
         console.warn('Não foi possível limpar a interface após bloqueio de acesso:', e);
       }
     }
+
+    function refreshAccountMenuInfo() {
+      const user = AppState.user;
+      const email = user?.email || '--';
+      const name = user?.displayName || (user?.email ? user.email.split('@')[0] : '--');
+      const nameEl = document.getElementById('account-menu-name');
+      const emailEl = document.getElementById('account-menu-email');
+      if (nameEl) nameEl.innerText = name;
+      if (emailEl) emailEl.innerText = email;
+    }
+
+    window.toggleAccountMenu = () => {
+      refreshAccountMenuInfo();
+      document.getElementById('account-menu-overlay')?.classList.toggle('hidden');
+      document.getElementById('account-menu')?.classList.toggle('hidden');
+    };
+
+    window.closeAccountMenu = () => {
+      document.getElementById('account-menu-overlay')?.classList.add('hidden');
+      document.getElementById('account-menu')?.classList.add('hidden');
+    };
+
+    window.handleAccountLogout = () => {
+      closeAccountMenu();
+      logoutApp();
+    };
 
     async function rejectUnauthorizedFirebaseUser(user, shouldDeleteAccount = false) {
       clearAppSessionState();
@@ -1107,6 +1155,7 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
             const name = user.displayName || user.email.split('@')[0];
             document.getElementById('sidebar-username').innerText = name;
             document.getElementById('sidebar-avatar').innerText = name.substring(0, 2).toUpperCase();
+            refreshAccountMenuInfo();
 
             setupDatabaseListeners();
             updateUI();
@@ -1150,7 +1199,7 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
       catch(e) { showToast("Login cancelado ou com erro.", "error"); }
     };
 
-    window.logoutApp = () => { signOut(auth); showToast("Você saiu.", "success"); };
+    window.logoutApp = () => { closeAccountMenu(); signOut(auth); showToast("Você saiu.", "success"); };
 
     function setupDatabaseListeners() {
       listeners.forEach(unsub => unsub());
