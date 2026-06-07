@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <meta name="theme-color" content="#2563eb">
-  <title>FarmaLista</title>
+  <title>Controle de Farmácias</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
@@ -142,61 +142,18 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
       .utility-action-card i { font-size: 20px; }
     }
 
-
-    /* ==== Tela de inicialização FarmaLista ==== */
-    .splash-screen {
-      background: radial-gradient(circle at top, #dbeafe 0%, #eff6ff 34%, #f8fafc 100%);
-    }
-    .splash-logo-card {
-      animation: splashFloat .9s ease both;
-    }
-    .splash-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 999px;
-      background: #2563eb;
-      opacity: .35;
-      animation: splashBlink 1.1s infinite ease-in-out;
-    }
-    .splash-dot:nth-child(2) { animation-delay: .18s; }
-    .splash-dot:nth-child(3) { animation-delay: .36s; }
-    @keyframes splashFloat {
-      from { opacity: 0; transform: translateY(12px) scale(.96); }
-      to { opacity: 1; transform: translateY(0) scale(1); }
-    }
-    @keyframes splashBlink {
-      0%, 100% { opacity: .25; transform: scale(.85); }
-      50% { opacity: 1; transform: scale(1.15); }
-    }
-
   </style>
 </head>
 
 <body class="bg-slate-50 text-slate-800 font-sans antialiased pb-20 md:pb-0 md:pt-16 hidden" id="app-body">
 
-  <!-- SPLASH SCREEN -->
-  <div id="splash-screen" class="fixed inset-0 z-[120] splash-screen flex items-center justify-center p-6">
-    <div class="splash-logo-card flex flex-col items-center text-center">
-      <div class="w-28 h-28 mb-5 rounded-[2rem] overflow-hidden flex items-center justify-center bg-white shadow-xl p-2 border border-blue-100">
-        <img src="https://farmacia.kaioadriel.com.br/icone/images.png" alt="Logo FarmaLista" class="w-full h-full object-contain">
-      </div>
-      <h1 class="text-3xl font-black text-slate-800 tracking-tight">FarmaLista</h1>
-      <p class="text-sm text-slate-500 font-bold mt-2">Organizando suas compras de farmácia</p>
-      <div class="flex items-center justify-center gap-2 mt-6" aria-label="Carregando">
-        <span class="splash-dot"></span>
-        <span class="splash-dot"></span>
-        <span class="splash-dot"></span>
-      </div>
-    </div>
-  </div>
-
   <!-- AUTHENTICATION SCREEN -->
-  <div id="auth-screen" class="fixed inset-0 z-[100] auth-bg hidden items-center justify-center p-4">
+  <div id="auth-screen" class="fixed inset-0 z-[100] auth-bg flex items-center justify-center p-4">
     <div class="bg-white p-8 rounded-3xl shadow-2xl w-full max-w-md flex flex-col items-center">
       <div class="w-24 h-24 mb-4 rounded-3xl overflow-hidden flex items-center justify-center bg-white shadow-sm p-1 border-2 border-slate-100">
-        <img src="https://farmacia.kaioadriel.com.br/icone/images.png" alt="Logo FarmaLista" class="w-full h-full object-contain">
+        <img src="https://farmacia.kaioadriel.com.br/icone/images.png" alt="Logo Controle de Farmácias" class="w-full h-full object-contain">
       </div>
-      <h1 class="text-2xl font-black text-slate-800 mb-2 text-center">FarmaLista</h1>
+      <h1 class="text-2xl font-black text-slate-800 mb-2 text-center">Controle de Farmácias</h1>
       <p class="text-sm text-slate-500 mb-8 text-center font-medium">Faça login para acessar e sincronizar seus dados.</p>
 
       <div class="w-full space-y-4">
@@ -231,7 +188,7 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
   <header id="main-header" class="bg-white text-blue-700 p-4 shadow-sm md:fixed md:top-0 md:w-full md:z-40 flex justify-between items-center border-b border-slate-200 hidden">
     <div class="flex items-center gap-3">
       <img src="https://farmacia.kaioadriel.com.br/icone/images.png" alt="Logo" class="h-8 w-8 object-contain rounded-md">
-      <h1 class="text-base sm:text-lg font-bold text-slate-800 leading-tight break-words max-w-[200px] sm:max-w-xs">FarmaLista</h1>
+      <h1 class="text-base sm:text-lg font-bold text-slate-800 leading-tight break-words max-w-[200px] sm:max-w-xs">Controle de Farmácias</h1>
     </div>
     <div class="flex items-center gap-2">
       <button id="btn-install-app" onclick="installApp()" class="hidden bg-yellow-400 text-yellow-900 text-[10px] sm:text-xs font-bold px-3 py-1.5 rounded-full shadow-sm hover:bg-yellow-500 transition flex items-center gap-1 active:scale-95">
@@ -427,12 +384,12 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
             <div class="space-y-2">
               <label class="text-xs font-black text-slate-600 uppercase tracking-wider">Bairro</label>
               <select id="filter-bairro" multiple onchange="handleCompraFilterChange()" class="multi-filter-select w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm font-bold outline-none focus:ring-2 focus:ring-blue-500"></select>
-              <span class="multi-filter-hint">Selecione um ou mais bairros. Para remover, toque novamente na opção selecionada.</span>
+              <span class="multi-filter-hint">Selecione um ou mais bairros para limitar a lista de farmácias abaixo.</span>
             </div>
             <div class="space-y-2">
               <label class="text-xs font-black text-slate-600 uppercase tracking-wider">Farmácia</label>
               <select id="filter-farmacia" multiple onchange="handleCompraFilterChange()" class="multi-filter-select w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm font-bold outline-none focus:ring-2 focus:ring-blue-500"></select>
-              <span class="multi-filter-hint">Selecione uma ou mais farmácias. Para remover, toque novamente na opção selecionada.</span>
+              <span class="multi-filter-hint">Sem bairro selecionado, aparecem todas as farmácias com o bairro ao lado. Com bairro selecionado, aparecem apenas as farmácias correspondentes.</span>
             </div>
             <div class="space-y-2">
               <label class="text-xs font-black text-slate-600 uppercase tracking-wider">Paciente</label>
@@ -606,8 +563,8 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
 
     function injectPWA() {
       const manifest = {
-        "name": "FarmaLista",
-        "short_name": "FarmaLista",
+        "name": "Controle de Farmácias - PharmaSync",
+        "short_name": "Controle de Farmácias",
         "start_url": ".",
         "display": "standalone",
         "background_color": "#f8fafc",
@@ -677,30 +634,6 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
       return `Acesso restrito. Somente o e-mail ${ALLOWED_EMAIL} pode usar este app.`;
     }
 
-    function showSplashScreen() {
-      document.getElementById('splash-screen')?.classList.remove('hidden');
-      document.getElementById('splash-screen')?.classList.add('flex');
-    }
-
-    function hideSplashScreen() {
-      document.getElementById('splash-screen')?.classList.add('hidden');
-      document.getElementById('splash-screen')?.classList.remove('flex');
-    }
-
-    function showAuthScreen() {
-      const authScreen = document.getElementById('auth-screen');
-      if (!authScreen) return;
-      authScreen.classList.remove('hidden');
-      authScreen.classList.add('flex');
-    }
-
-    function hideAuthScreen() {
-      const authScreen = document.getElementById('auth-screen');
-      if (!authScreen) return;
-      authScreen.classList.add('hidden');
-      authScreen.classList.remove('flex');
-    }
-
     function clearAppSessionState() {
       AppState.user = null;
       AppState.userId = null;
@@ -708,8 +641,7 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
       listeners.forEach(unsub => unsub());
       listeners = [];
       try {
-        hideSplashScreen();
-        showAuthScreen();
+        document.getElementById('auth-screen')?.classList.remove('hidden');
         document.getElementById('main-header')?.classList.add('hidden');
         document.getElementById('main-content')?.classList.add('hidden');
         document.getElementById('mobile-nav')?.classList.add('hidden');
@@ -847,8 +779,8 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
         pagamento: c.pagamento,
         obs: c.obs,
         farmacia: farm.nome,
-        farmaciaBairro: farm.bairro,
         farmaciaRede: farm.rede,
+        farmaciaBairro: farm.bairro,
         paciente: pac.nome,
         pacienteCpf: pac.cpf,
         pacienteRg: pac.rg,
@@ -1203,11 +1135,6 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
 
     function initApp() {
       document.getElementById('app-body').classList.remove('hidden');
-      showSplashScreen();
-      hideAuthScreen();
-      document.getElementById('main-header')?.classList.add('hidden');
-      document.getElementById('main-content')?.classList.add('hidden');
-      document.getElementById('mobile-nav')?.classList.add('hidden');
       try {
         app = initializeApp(firebaseConfig);
 
@@ -1227,8 +1154,7 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
             AppState.user = user;
             AppState.userId = user.uid;
 
-            hideSplashScreen();
-            hideAuthScreen();
+            document.getElementById('auth-screen').classList.add('hidden');
             document.getElementById('main-header').classList.remove('hidden');
             document.getElementById('main-content').classList.remove('hidden');
             document.getElementById('mobile-nav').classList.remove('hidden');
@@ -1246,8 +1172,6 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
         });
       } catch (error) {
         console.error('Erro ao inicializar app:', error);
-        hideSplashScreen();
-        showAuthScreen();
         showToast("Erro ao inicializar banco de dados.", "error");
       }
     }
@@ -1496,55 +1420,80 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
       });
     }
 
-    function fillFilterSelect(id, label, items) {
-      const el = document.getElementById(id);
-      if (!el) return;
-
-      const currentValues = getMultiSelectValues(id);
-      const sorted = [...items].sort((a, b) => (a.nome || '').localeCompare(b.nome || '', 'pt-BR'));
-
-      el.innerHTML = sorted.map(item => {
-        const status = item.status === 'inativo' ? ' (Inativo)' : '';
-        const incomplete = item.incomplete ? ' (Incompleto)' : '';
-        return `<option value="${item.id}">${item.nome || 'Sem nome'}${status}${incomplete}</option>`;
-      }).join('');
-
-      setMultiSelectValues(id, currentValues.filter(value => sorted.some(item => item.id === value)));
-    }
-
     function normalizeBairroValue(value) {
-      return normalizeSearchText(value).trim();
+      const clean = String(value || '').trim();
+      return clean || '__sem_bairro__';
     }
 
-    function getFarmaciaBairro(farmacia = {}) {
-      return String(farmacia.bairro || '').trim();
+    function getFarmaciaBairroText(farmacia = {}) {
+      return String(farmacia?.bairro || '').trim();
     }
 
-    function getBairroOptionsFromFarmacias(includeEmpty = false) {
+    function getFarmaciaBairroDisplay(farmacia = {}) {
+      return getFarmaciaBairroText(farmacia) || 'Sem bairro cadastrado';
+    }
+
+    function getFarmaciaOptionLabel(farmacia = {}) {
+      const nome = farmacia?.nome || 'Sem nome';
+      return `${nome} - ${getFarmaciaBairroDisplay(farmacia)}`;
+    }
+
+    function getBairroOptionsFromFarmacias() {
       const map = new Map();
       AppState.data.farmacias.forEach(farmacia => {
-        const bairro = getFarmaciaBairro(farmacia);
-        const key = normalizeBairroValue(bairro);
-        if (!key) {
-          if (includeEmpty) map.set('__sem_bairro__', 'Sem bairro cadastrado');
-          return;
-        }
-        if (!map.has(key)) map.set(key, bairro);
+        const key = normalizeBairroValue(farmacia.bairro);
+        if (!map.has(key)) map.set(key, getFarmaciaBairroDisplay(farmacia));
       });
-
       return Array.from(map.entries())
         .map(([id, nome]) => ({ id, nome }))
         .sort((a, b) => a.nome.localeCompare(b.nome, 'pt-BR'));
     }
 
+    function bairroMatchesSelected(farmacia = {}, selectedBairros = []) {
+      if (!selectedBairros.length) return true;
+      return selectedBairros.includes(normalizeBairroValue(farmacia.bairro));
+    }
+
+    function fillBairroFilterSelect() {
+      const el = document.getElementById('filter-bairro');
+      if (!el) return;
+      const currentValues = getMultiSelectValues('filter-bairro');
+      const bairros = getBairroOptionsFromFarmacias();
+      el.innerHTML = bairros.map(bairro => `<option value="${bairro.id}">${bairro.nome}</option>`).join('');
+      setMultiSelectValues('filter-bairro', currentValues.filter(value => bairros.some(bairro => bairro.id === value)));
+    }
+
+    function fillFilterSelect(id, label, items) {
+      const el = document.getElementById(id);
+      if (!el) return;
+
+      const currentValues = getMultiSelectValues(id);
+      let sorted = [...items].sort((a, b) => (a.nome || '').localeCompare(b.nome || '', 'pt-BR'));
+
+      if (id === 'filter-farmacia') {
+        const selectedBairros = getMultiSelectValues('filter-bairro');
+        sorted = sorted.filter(item => bairroMatchesSelected(item, selectedBairros));
+      }
+
+      el.innerHTML = sorted.map(item => {
+        const status = item.status === 'inativo' ? ' (Inativo)' : '';
+        const incomplete = item.incomplete ? ' (Incompleto)' : '';
+        const displayName = id === 'filter-farmacia' ? getFarmaciaOptionLabel(item) : (item.nome || 'Sem nome');
+        return `<option value="${item.id}">${displayName}${status}${incomplete}</option>`;
+      }).join('');
+
+      setMultiSelectValues(id, currentValues.filter(value => sorted.some(item => item.id === value)));
+    }
+
     function renderCompraFilterOptions() {
-      fillFilterSelect('filter-bairro', 'Bairro', getBairroOptionsFromFarmacias());
+      fillBairroFilterSelect();
       fillFilterSelect('filter-farmacia', 'Farmácia', AppState.data.farmacias);
       fillFilterSelect('filter-paciente', 'Paciente', AppState.data.pacientes);
       fillFilterSelect('filter-clinica', 'Clínica', AppState.data.clinicas);
       fillFilterSelect('filter-medico', 'Médico', AppState.data.medicos);
       fillFilterSelect('filter-remedio', 'Remédio', AppState.data.remedios);
       updateCompraFilterBadge();
+      updateActiveFiltersBadges();
     }
 
     // Novo sistema de filtros com Chips, Drawer e Badges
@@ -1667,6 +1616,7 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
     };
 
     window.handleCompraFilterChange = () => {
+      fillFilterSelect('filter-farmacia', 'Farmácia', AppState.data.farmacias);
       updateCompraFilterBadge();
       updateActiveFiltersBadges();
       renderCompras();
@@ -1723,9 +1673,8 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
       const remedioIds = getMultiSelectValues('filter-remedio');
 
       compras = compras.filter(c => {
-        const farmaciaCompra = AppState.data.farmacias.find(f => f.id === c.farmaciaId) || {};
-        const bairroFarmacia = normalizeBairroValue(farmaciaCompra.bairro);
-        return (!bairroIds.length || bairroIds.includes(bairroFarmacia)) &&
+        const farmacia = AppState.data.farmacias.find(f => f.id === c.farmaciaId) || {};
+        return bairroMatchesSelected(farmacia, bairroIds) &&
         (!farmaciaIds.length || farmaciaIds.includes(c.farmaciaId)) &&
         (!pacienteIds.length || pacienteIds.includes(c.pacienteId)) &&
         (!clinicaIds.length || clinicaIds.includes(c.clinicaId)) &&
@@ -1753,9 +1702,9 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
       }
 
       cont.innerHTML = compras.map(c => {
-        const farm = AppState.data.farmacias.find(f => f.id === c.farmaciaId) || {};
-        const farmName = farm.nome || 'Farmácia não informada';
-        const farmBairro = getFarmaciaBairro(farm);
+        const farmaciaRecord = AppState.data.farmacias.find(f => f.id === c.farmaciaId) || {};
+        const farmName = farmaciaRecord.nome || 'Farmácia não informada';
+        const farmBairro = getFarmaciaBairroText(farmaciaRecord);
         const pacName = AppState.data.pacientes.find(p => p.id === c.pacienteId)?.nome || '-';
         const remName = AppState.data.remedios.find(r => r.id === c.remedioId)?.nome || '-';
         const clinName = AppState.data.clinicas.find(cl => cl.id === c.clinicaId)?.nome || '-';
@@ -1777,7 +1726,7 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
                 ${compraCode ? `<span class="bg-slate-100 text-slate-600 text-[10px] px-1.5 py-0.5 rounded font-black uppercase tracking-wide"><i class="fa-solid fa-hashtag mr-1"></i>${compraCode}</span>` : ''}
                 ${getDocumentList(c).length ? `<span class="bg-blue-100 text-blue-700 text-[10px] px-1.5 py-0.5 rounded font-bold uppercase tracking-wide"><i class="fa-regular fa-image mr-1"></i>${getDocumentList(c).length} Doc</span>` : ''}
               </div>
-              ${farmBairro ? `<p class="text-xs text-slate-500 wrap-two-lines mt-0.5"><i class="fa-solid fa-location-dot mr-1 text-slate-400"></i>${farmBairro}</p>` : ''}
+              ${farmBairro ? `<p class="text-sm text-black font-black wrap-two-lines mt-1"><i class="fa-solid fa-location-dot mr-1 text-slate-700"></i>${farmBairro}</p>` : ''}
               <p class="text-xs text-slate-500 wrap-two-lines mt-0.5"><i class="fa-regular fa-user mr-1 text-slate-400"></i>${pacName}</p>
             </div>
             <div class="text-right shrink-0">
@@ -1821,7 +1770,9 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
       const c = AppState.data.compras.find(x => x.id === id);
       if (!c) return;
 
-      const farmName = AppState.data.farmacias.find(f => f.id === c.farmaciaId)?.nome || '-';
+      const farmaciaRecord = AppState.data.farmacias.find(f => f.id === c.farmaciaId) || {};
+      const farmName = farmaciaRecord.nome || '-';
+      const farmBairro = getFarmaciaBairroText(farmaciaRecord);
       const pacName = AppState.data.pacientes.find(p => p.id === c.pacienteId)?.nome || '-';
       const remName = AppState.data.remedios.find(r => r.id === c.remedioId)?.nome || '-';
       const clinName = AppState.data.clinicas.find(cl => cl.id === c.clinicaId)?.nome || '-';
@@ -1841,7 +1792,7 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
         <div class="bg-slate-50 p-5 rounded-2xl border border-slate-100 grid grid-cols-1 md:grid-cols-2 gap-4">
           <div><span class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">Código da Compra</span><span class="block font-black text-blue-600 break-words">${compraCode}</span></div>
           <div><span class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">Data da Compra</span><span class="block font-medium text-slate-800 break-words">${formattedDate} — ${calcularDiasAtras(c.data)}</span></div>
-          <div><span class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">Farmácia</span><span class="block font-medium text-slate-800 break-words">${farmName}</span></div>
+          <div><span class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">Farmácia</span><span class="block font-medium text-slate-800 break-words">${farmName}</span>${farmBairro ? `<span class="block text-sm font-black text-black break-words mt-0.5"><i class="fa-solid fa-location-dot mr-1 text-slate-700"></i>${farmBairro}</span>` : ''}</div>
           <div><span class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">Remédio</span><span class="block font-medium text-slate-800 break-words">${remName}</span></div>
           <div><span class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">Qtd de Caixas</span><span class="block font-medium text-slate-800 break-words">${c.qtd || '-'}</span></div>
           <div><span class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">Paciente</span><span class="block font-medium text-slate-800 break-words">${pacName}</span></div>
@@ -1931,8 +1882,8 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
           <div class="w-12 h-12 rounded-full ${isOff ? 'bg-red-200 text-red-700' : (inc ? 'bg-orange-200 text-orange-700' : 'bg-blue-100 text-blue-600')} flex items-center justify-center shrink-0 text-xl"><i class="fa-solid ${cfg.i}"></i></div>
           <div class="flex-1 min-w-0">
             <div class="flex items-center gap-2 flex-wrap"><h4 class="font-bold text-[14px] sm:text-base leading-tight text-slate-800 wrap-two-lines">${item.nome || '-'}</h4>${inc ? '<span class="bg-orange-500 text-white text-[10px] px-1.5 py-0.5 rounded font-bold uppercase tracking-wide">Incompleto</span>' : ''}${isOff ? '<span class="bg-red-100 text-red-700 text-[10px] px-1.5 py-0.5 rounded font-bold uppercase tracking-wide">Inativo</span>' : ''}${getDocumentList(item).length ? `<span class="bg-blue-100 text-blue-700 text-[10px] px-1.5 py-0.5 rounded font-bold uppercase tracking-wide"><i class="fa-regular fa-image mr-1"></i>${getDocumentList(item).length} Doc</span>` : ''}</div>
-            ${tab === 'farmacias' && item.bairro ? `<p class="text-xs sm:text-sm ${isOff ? 'text-red-600' : 'text-slate-500'} font-bold wrap-two-lines"><i class="fa-solid fa-location-dot mr-1 text-slate-400"></i>${item.bairro}</p>` : ''}
             <p class="text-xs sm:text-sm ${isOff ? 'text-red-600' : 'text-slate-500'} font-medium wrap-two-lines">${item[cfg.s] || '---'}</p>
+            ${tab === 'farmacias' && item.bairro ? `<p class="text-xs sm:text-sm ${isOff ? 'text-red-600' : 'text-slate-700'} font-black wrap-two-lines mt-0.5"><i class="fa-solid fa-location-dot mr-1 text-slate-500"></i>${item.bairro}</p>` : ''}
             <p class="text-[10px] mt-1 font-bold text-slate-400 uppercase tracking-wide"><i class="fa-solid fa-clock-rotate-left mr-1"></i>Última Compra: <span class="${isOff ? 'text-red-500' : 'text-blue-500'}">${calcularDiasAtrasLastPurchase(item.id, idFieldMap[tab])}</span></p>
           </div>
           <button class="px-3 py-1.5 bg-slate-100 text-slate-600 rounded-lg text-xs font-bold hover:bg-slate-200 shadow-[0_1px_2px_rgba(0,0,0,0.05)]">Ver Mais</button>
@@ -2027,10 +1978,6 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
         delete data.id;
         delete data.codigoCompra;
       }
-
-      const farmaciaAtual = AppState.data.farmacias.find(f => f.id === data.farmaciaId);
-      if (farmaciaAtual) data.bairroCompra = normalizeBairroValue(farmaciaAtual.bairro);
-
       const fields = [
         { name: 'data', label: 'Data da Compra', type: 'date' },
         { name: 'bairroCompra', label: 'Bairro', type: 'bairro-select' },
@@ -2065,7 +2012,7 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
 
       openModal(id ? 'Editar Compra' : (isDuplicate ? 'Duplicar Compra' : 'Nova Compra'), compraFormHtml, footerHtml);
 
-      setupCompraBairroFarmaciaFilter();
+      setupCompraBairroFarmaciaFilter(data.farmaciaId || '');
       setupCompraClinicaAutoFill();
 
       if (isDuplicate) {
@@ -2101,38 +2048,47 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
       openCompraForm(null, duplicated);
     };
 
-    window.updateCompraFarmaciaOptionsByBairro = function updateCompraFarmaciaOptionsByBairro() {
+    function setupCompraBairroFarmaciaFilter(defaultFarmaciaId = '') {
       const bairroSelect = document.getElementById('field-bairroCompra');
       const farmaciaSelect = document.getElementById('field-farmaciaId');
       if (!bairroSelect || !farmaciaSelect) return;
 
-      const selectedBairro = bairroSelect.value;
-      const previousFarmaciaId = farmaciaSelect.value;
-      const filteredFarmacias = AppState.data.farmacias
-        .filter(f => {
-          const bairroKey = normalizeBairroValue(f.bairro);
-          if (!selectedBairro) return false;
-          if (selectedBairro === '__sem_bairro__') return !bairroKey;
-          return bairroKey === selectedBairro;
-        })
-        .sort((a, b) => (a.nome || '').localeCompare(b.nome || '', 'pt-BR'));
+      const originalFarmaciaId = defaultFarmaciaId || farmaciaSelect.value || '';
+      const originalFarmacia = AppState.data.farmacias.find(f => f.id === originalFarmaciaId);
+      const originalBairro = originalFarmacia ? normalizeBairroValue(originalFarmacia.bairro) : '';
+      if (originalBairro && originalBairro !== '__sem_bairro__' && !bairroSelect.value) bairroSelect.value = originalBairro;
+      if (originalBairro === '__sem_bairro__' && !bairroSelect.value && originalFarmacia) bairroSelect.value = '__sem_bairro__';
 
-      const placeholder = selectedBairro ? 'Selecione a farmácia...' : 'Selecione primeiro o bairro...';
-      farmaciaSelect.innerHTML = `<option value="">${placeholder}</option>` + filteredFarmacias
-        .map(f => `<option value="${f.id}" ${f.id === previousFarmaciaId ? 'selected' : ''}>${f.nome || 'Sem nome'}</option>`)
-        .join('');
+      const renderFarmaciasByBairro = (selectedFarmaciaId = '') => {
+        const selectedBairro = bairroSelect.value;
+        const farmacias = [...AppState.data.farmacias]
+          .filter(farmacia => !selectedBairro || normalizeBairroValue(farmacia.bairro) === selectedBairro)
+          .sort((a, b) => (a.nome || '').localeCompare(b.nome || '', 'pt-BR'));
 
-      if (previousFarmaciaId && !filteredFarmacias.some(f => f.id === previousFarmaciaId)) farmaciaSelect.value = '';
-    };
+        const previousValue = selectedFarmaciaId || farmaciaSelect.value;
+        farmaciaSelect.innerHTML = '<option value="">Selecione...</option>' + farmacias.map(farmacia => {
+          const status = farmacia.status === 'inativo' ? ' (Inativo)' : '';
+          const incomplete = farmacia.incomplete ? ' (Incompleto)' : '';
+          return `<option value="${farmacia.id}">${getFarmaciaOptionLabel(farmacia)}${status}${incomplete}</option>`;
+        }).join('');
 
-    function setupCompraBairroFarmaciaFilter() {
-      const bairroSelect = document.getElementById('field-bairroCompra');
-      const farmaciaSelect = document.getElementById('field-farmaciaId');
-      if (!bairroSelect || !farmaciaSelect) return;
+        if (previousValue && farmacias.some(farmacia => farmacia.id === previousValue)) {
+          farmaciaSelect.value = previousValue;
+        } else {
+          farmaciaSelect.value = '';
+        }
+      };
 
-      const selectedFarmacia = AppState.data.farmacias.find(f => f.id === farmaciaSelect.value);
-      if (selectedFarmacia && !bairroSelect.value) bairroSelect.value = normalizeBairroValue(selectedFarmacia.bairro) || '__sem_bairro__';
-      updateCompraFarmaciaOptionsByBairro();
+      renderFarmaciasByBairro(originalFarmaciaId);
+
+      bairroSelect.addEventListener('change', () => {
+        renderFarmaciasByBairro('');
+      });
+
+      farmaciaSelect.addEventListener('change', () => {
+        if (bairroSelect.value) return;
+        renderFarmaciasByBairro(farmaciaSelect.value);
+      });
     }
 
     function setupCompraClinicaAutoFill() {
@@ -2161,14 +2117,19 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
         if (f.type === 'textarea') return `<div class="mb-4"><label class="${lClass}">${f.label}</label><textarea id="field-${f.name}" rows="3" class="${iClass}">${val}</textarea></div>`;
 
         if (f.type === 'bairro-select') {
-          const bairros = getBairroOptionsFromFarmacias(true);
-          return `<div class="mb-4"><label class="${lClass}">${f.label}</label><select id="field-${f.name}" class="${iClass}" onchange="updateCompraFarmaciaOptionsByBairro()"><option value="">Selecione o bairro...</option>${bairros.map(b => `<option value="${b.id}" ${val === b.id ? 'selected' : ''}>${b.nome}</option>`).join('')}</select><p class="text-[11px] text-slate-400 font-bold mt-1.5 ml-1">A lista de farmácias será filtrada pelo bairro selecionado.</p></div>`;
+          const farmacias = [...AppState.data.farmacias];
+          const selectedFarmacia = data.farmaciaId ? farmacias.find(farmacia => farmacia.id === data.farmaciaId) : null;
+          const selectedBairro = val || (selectedFarmacia ? normalizeBairroValue(selectedFarmacia.bairro) : '');
+          const bairros = getBairroOptionsFromFarmacias();
+          return `<div class="mb-4"><label class="${lClass}">${f.label}</label><select id="field-${f.name}" class="${iClass}"><option value="">Todos os bairros</option>${bairros.map(bairro => `<option value="${bairro.id}" ${selectedBairro === bairro.id ? 'selected' : ''}>${bairro.nome}</option>`).join('')}</select><p class="text-[11px] text-slate-400 font-bold mt-1 ml-1">Sem bairro selecionado, a lista abaixo mostra todas as farmácias com o bairro ao lado.</p></div>`;
         }
 
         if (f.type === 'db-select') {
           const items = [...AppState.data[f.collection]].sort((a,b) => (a.nome || '').localeCompare(b.nome || '', 'pt-BR'));
-          const filterAttr = f.filterByBairro ? ' data-filter-by-bairro="1"' : '';
-          return `<div class="mb-4"><label class="${lClass}">${f.label}</label><div class="flex gap-2"><select id="field-${f.name}" class="${iClass} flex-1"${filterAttr}><option value="">Selecione...</option>${items.map(i => `<option value="${i.id}" ${val === i.id ? 'selected' : ''}>${i.nome}</option>`).join('')}</select><button type="button" onclick="openQuickAdd('${f.collection}', 'field-${f.name}')" class="w-12 bg-blue-100 text-blue-600 rounded-xl hover:bg-blue-200 transition font-bold shrink-0 shadow-sm border border-blue-200 text-lg"><i class="fa-solid fa-plus"></i></button></div></div>`;
+          return `<div class="mb-4"><label class="${lClass}">${f.label}</label><div class="flex gap-2"><select id="field-${f.name}" class="${iClass} flex-1"><option value="">Selecione...</option>${items.map(i => {
+            const displayName = f.collection === 'farmacias' ? getFarmaciaOptionLabel(i) : (i.nome || 'Sem nome');
+            return `<option value="${i.id}" ${val === i.id ? 'selected' : ''}>${displayName}</option>`;
+          }).join('')}</select><button type="button" onclick="openQuickAdd('${f.collection}', 'field-${f.name}')" class="w-12 bg-blue-100 text-blue-600 rounded-xl hover:bg-blue-200 transition font-bold shrink-0 shadow-sm border border-blue-200 text-lg"><i class="fa-solid fa-plus"></i></button></div></div>`;
         }
 
         if (f.type === 'cep') return `<div class="mb-4"><label class="${lClass}">${f.label}</label><input type="text" id="field-${f.name}" value="${val}" placeholder="00000-000" class="${iClass}" onblur="buscarCEP(this.value)"></div>`;
@@ -2239,9 +2200,9 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
       document.querySelectorAll('#modal-body input, #modal-body select, #modal-body textarea').forEach(i => {
         if (i.id?.startsWith('field-')) {
           let k = i.id.replace('field-', '');
-          if (k === 'bairroCompra') return;
           let v = i.value;
           if (k === 'valor') v = parseFloat(v.replace(/\./g, '').replace(',', '.')) || 0;
+          if (k === 'bairroCompra') return;
           dataObj[k] = v;
         }
       });
@@ -2508,7 +2469,7 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
 
     function buildBackupPayload() {
       return {
-        app: 'FarmaLista',
+        app: 'Controle de Farmácias',
         generatedAt: new Date().toISOString(),
         mode: 'autenticacao-firebase',
         userId: AppState.userId,
@@ -2521,7 +2482,7 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
 
     window.downloadManualBackup = () => {
       const payload = buildBackupPayload();
-      downloadBlob(JSON.stringify(payload, null, 2), `backup-farmalista-${getTodayFileStamp()}.json`, 'application/json;charset=utf-8');
+      downloadBlob(JSON.stringify(payload, null, 2), `backup-controle-farmacias-${getTodayFileStamp()}.json`, 'application/json;charset=utf-8');
       showToast('Backup gerado!', 'success');
     };
 
@@ -2927,9 +2888,9 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
               const zip = new JSZip();
               REPORT_COLLECTIONS.forEach(key => zip.file(`relatorio-${sanitizeFileName(REPORT_LABELS[key])}.csv`, rowsToCsv(getReportRows(key, startDate, endDate))));
               const blob = await zip.generateAsync({ type: 'blob' });
-              downloadBlob(blob, `relatorios-farmalista-csv-${stamp}.zip`, 'application/zip');
+              downloadBlob(blob, `relatorios-controle-farmacias-csv-${stamp}.zip`, 'application/zip');
             } else {
-              downloadBlob(buildConsolidatedCsv(startDate, endDate), `relatorio-todos-farmalista-${stamp}.csv`, 'text/csv;charset=utf-8');
+              downloadBlob(buildConsolidatedCsv(startDate, endDate), `relatorio-todos-controle-farmacias-${stamp}.csv`, 'text/csv;charset=utf-8');
             }
           } else {
             downloadBlob(rowsToCsv(getReportRows(type, startDate, endDate)), `relatorio-${sanitizeFileName(REPORT_LABELS[type])}-${stamp}.csv`, 'text/csv;charset=utf-8');
@@ -2942,9 +2903,9 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
                 zip.file(`relatorio-${sanitizeFileName(REPORT_LABELS[key])}.pdf`, createPdfBlob(key, getReportRows(key, startDate, endDate), startDate, endDate));
               }
               const blob = await zip.generateAsync({ type: 'blob' });
-              downloadBlob(blob, `relatorios-farmalista-pdf-${stamp}.zip`, 'application/zip');
+              downloadBlob(blob, `relatorios-controle-farmacias-pdf-${stamp}.zip`, 'application/zip');
             } else {
-              downloadBlob(createConsolidatedPdfBlob(startDate, endDate), `relatorio-todos-farmalista-${stamp}.pdf`, 'application/pdf');
+              downloadBlob(createConsolidatedPdfBlob(startDate, endDate), `relatorio-todos-controle-farmacias-${stamp}.pdf`, 'application/pdf');
             }
           } else {
             downloadBlob(createPdfBlob(type, getReportRows(type, startDate, endDate), startDate, endDate), `relatorio-${sanitizeFileName(REPORT_LABELS[type])}-${stamp}.pdf`, 'application/pdf');
