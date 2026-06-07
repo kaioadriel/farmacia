@@ -1720,14 +1720,16 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
         return `<div class="p-4 rounded-xl shadow-sm border ${borderClass} mb-3 transition">
           <div class="flex justify-between items-start mb-2 gap-3">
             <div class="min-w-0 pr-2 flex-1">
-              <div class="flex items-start gap-2 flex-wrap">
+              <div class="flex flex-col items-start gap-1.5">
                 <h4 class="font-black text-slate-800 text-[14px] sm:text-base wrap-two-lines">${farmName}</h4>
-                <span class="status-chip ${statusChipClass}">${statusLabel}</span>
-                ${compraCode ? `<span class="bg-slate-100 text-slate-600 text-[10px] px-1.5 py-0.5 rounded font-black uppercase tracking-wide"><i class="fa-solid fa-hashtag mr-1"></i>${compraCode}</span>` : ''}
-                ${getDocumentList(c).length ? `<span class="bg-blue-100 text-blue-700 text-[10px] px-1.5 py-0.5 rounded font-bold uppercase tracking-wide"><i class="fa-regular fa-image mr-1"></i>${getDocumentList(c).length} Doc</span>` : ''}
+                ${farmBairro ? `<p class="font-black text-slate-800 text-[14px] sm:text-base wrap-two-lines leading-tight"><i class="fa-solid fa-location-dot mr-1 text-slate-700"></i>${farmBairro}</p>` : ''}
+                <div class="flex items-center gap-2 flex-wrap">
+                  <span class="status-chip ${statusChipClass}">${statusLabel}</span>
+                  ${compraCode ? `<span class="bg-slate-100 text-slate-600 text-[10px] px-1.5 py-0.5 rounded font-black uppercase tracking-wide"><i class="fa-solid fa-hashtag mr-1"></i>${compraCode}</span>` : ''}
+                  ${getDocumentList(c).length ? `<span class="bg-blue-100 text-blue-700 text-[10px] px-1.5 py-0.5 rounded font-bold uppercase tracking-wide"><i class="fa-regular fa-image mr-1"></i>${getDocumentList(c).length} Doc</span>` : ''}
+                </div>
               </div>
-              ${farmBairro ? `<p class="text-sm text-black font-black wrap-two-lines mt-1"><i class="fa-solid fa-location-dot mr-1 text-slate-700"></i>${farmBairro}</p>` : ''}
-              <p class="text-xs text-slate-500 wrap-two-lines mt-0.5"><i class="fa-regular fa-user mr-1 text-slate-400"></i>${pacName}</p>
+              <p class="text-xs text-slate-500 wrap-two-lines mt-1"><i class="fa-regular fa-user mr-1 text-slate-400"></i>${pacName}</p>
             </div>
             <div class="text-right shrink-0">
               <span class="block font-black ${timeColorClass} text-base">${calcularDiasAtras(c.data)}</span>
