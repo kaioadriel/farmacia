@@ -382,6 +382,11 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
           </div>
           <div class="p-5 overflow-y-auto flex-1 hide-scroll space-y-4">
             <div class="space-y-2">
+              <label class="text-xs font-black text-slate-600 uppercase tracking-wider">Bairro</label>
+              <select id="filter-bairro" multiple onchange="handleCompraFilterChange()" class="multi-filter-select w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm font-bold outline-none focus:ring-2 focus:ring-blue-500"></select>
+              <span class="multi-filter-hint">Selecione um ou mais bairros. Para remover, toque novamente na opção selecionada.</span>
+            </div>
+            <div class="space-y-2">
               <label class="text-xs font-black text-slate-600 uppercase tracking-wider">Farmácia</label>
               <select id="filter-farmacia" multiple onchange="handleCompraFilterChange()" class="multi-filter-select w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm font-bold outline-none focus:ring-2 focus:ring-blue-500"></select>
               <span class="multi-filter-hint">Selecione uma ou mais farmácias. Para remover, toque novamente na opção selecionada.</span>
@@ -774,6 +779,7 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
         pagamento: c.pagamento,
         obs: c.obs,
         farmacia: farm.nome,
+        farmaciaBairro: farm.bairro,
         farmaciaRede: farm.rede,
         paciente: pac.nome,
         pacienteCpf: pac.cpf,
@@ -1430,7 +1436,26 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
       setMultiSelectValues(id, currentValues.filter(value => sorted.some(item => item.id === value)));
     }
 
+    function fillBairroFilterSelect() {
+      const el = document.getElementById('filter-bairro');
+      if (!el) return;
+
+      const currentValues = getMultiSelectValues('filter-bairro');
+      const bairrosMap = new Map();
+      AppState.data.farmacias.forEach(farmacia => {
+        const bairro = String(farmacia.bairro || '').trim();
+        if (!bairro) return;
+        const key = normalizeSearchText(bairro);
+        if (!bairrosMap.has(key)) bairrosMap.set(key, bairro);
+      });
+
+      const bairros = Array.from(bairrosMap.entries()).sort((a, b) => a[1].localeCompare(b[1], 'pt-BR'));
+      el.innerHTML = bairros.map(([key, bairro]) => `<option value="${key}">${bairro}</option>`).join('');
+      setMultiSelectValues('filter-bairro', currentValues.filter(value => bairrosMap.has(value)));
+    }
+
     function renderCompraFilterOptions() {
+      fillBairroFilterSelect();
       fillFilterSelect('filter-farmacia', 'Farmácia', AppState.data.farmacias);
       fillFilterSelect('filter-paciente', 'Paciente', AppState.data.pacientes);
       fillFilterSelect('filter-clinica', 'Clínica', AppState.data.clinicas);
@@ -1503,6 +1528,7 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
 
     function updateActiveFiltersBadges() {
       const filterMap = {
+        'filter-bairro': 'Bairro',
         'filter-farmacia': 'Farmácia',
         'filter-paciente': 'Paciente',
         'filter-clinica': 'Clínica',
@@ -1564,7 +1590,7 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
     };
 
     function updateCompraFilterBadge() {
-      const ids = ['filter-farmacia', 'filter-paciente', 'filter-clinica', 'filter-medico', 'filter-remedio'];
+      const ids = ['filter-bairro', 'filter-farmacia', 'filter-paciente', 'filter-clinica', 'filter-medico', 'filter-remedio'];
       const activeCount = ids.reduce((total, id) => total + getMultiSelectValues(id).length, 0);
       const badge = document.getElementById('filter-count-badge');
 
@@ -1579,7 +1605,7 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
     }
 
     window.clearCompraFilters = () => {
-      ['filter-farmacia', 'filter-paciente', 'filter-clinica', 'filter-medico', 'filter-remedio'].forEach(id => {
+      ['filter-bairro', 'filter-farmacia', 'filter-paciente', 'filter-clinica', 'filter-medico', 'filter-remedio'].forEach(id => {
         setMultiSelectValues(id, []);
       });
 
@@ -1606,19 +1632,23 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
         compras = compras.filter(c => c.status === 'cancelada');
       }
 
+      const bairroFilters = getMultiSelectValues('filter-bairro');
       const farmaciaIds = getMultiSelectValues('filter-farmacia');
       const pacienteIds = getMultiSelectValues('filter-paciente');
       const clinicaIds = getMultiSelectValues('filter-clinica');
       const medicoIds = getMultiSelectValues('filter-medico');
       const remedioIds = getMultiSelectValues('filter-remedio');
 
-      compras = compras.filter(c =>
+      compras = compras.filter(c => {
+        const farmacia = AppState.data.farmacias.find(f => f.id === c.farmaciaId) || {};
+        const farmaciaBairroKey = normalizeSearchText(farmacia.bairro || '');
+        return (!bairroFilters.length || bairroFilters.includes(farmaciaBairroKey)) &&
         (!farmaciaIds.length || farmaciaIds.includes(c.farmaciaId)) &&
         (!pacienteIds.length || pacienteIds.includes(c.pacienteId)) &&
         (!clinicaIds.length || clinicaIds.includes(c.clinicaId)) &&
         (!medicoIds.length || medicoIds.includes(c.medicoId)) &&
-        (!remedioIds.length || remedioIds.includes(c.remedioId))
-      );
+        (!remedioIds.length || remedioIds.includes(c.remedioId));
+      });
 
       // Apply deep free text search across purchase and related ERP records, including observations and punctuation-free CPF/RG.
       if (AppState_SearchTerm) {
@@ -1640,7 +1670,9 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
       }
 
       cont.innerHTML = compras.map(c => {
-        const farmName = AppState.data.farmacias.find(f => f.id === c.farmaciaId)?.nome || 'Farmácia não informada';
+        const farmacia = AppState.data.farmacias.find(f => f.id === c.farmaciaId) || {};
+        const farmName = farmacia.nome || 'Farmácia não informada';
+        const farmBairro = farmacia.bairro || 'Bairro não informado';
         const pacName = AppState.data.pacientes.find(p => p.id === c.pacienteId)?.nome || '-';
         const remName = AppState.data.remedios.find(r => r.id === c.remedioId)?.nome || '-';
         const clinName = AppState.data.clinicas.find(cl => cl.id === c.clinicaId)?.nome || '-';
@@ -1662,6 +1694,7 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
                 ${compraCode ? `<span class="bg-slate-100 text-slate-600 text-[10px] px-1.5 py-0.5 rounded font-black uppercase tracking-wide"><i class="fa-solid fa-hashtag mr-1"></i>${compraCode}</span>` : ''}
                 ${getDocumentList(c).length ? `<span class="bg-blue-100 text-blue-700 text-[10px] px-1.5 py-0.5 rounded font-bold uppercase tracking-wide"><i class="fa-regular fa-image mr-1"></i>${getDocumentList(c).length} Doc</span>` : ''}
               </div>
+              <p class="text-xs text-slate-500 wrap-two-lines mt-1"><i class="fa-solid fa-location-dot mr-1 text-slate-400"></i>${farmBairro}</p>
               <p class="text-xs text-slate-500 wrap-two-lines mt-0.5"><i class="fa-regular fa-user mr-1 text-slate-400"></i>${pacName}</p>
             </div>
             <div class="text-right shrink-0">
@@ -1705,7 +1738,9 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
       const c = AppState.data.compras.find(x => x.id === id);
       if (!c) return;
 
-      const farmName = AppState.data.farmacias.find(f => f.id === c.farmaciaId)?.nome || '-';
+      const farmacia = AppState.data.farmacias.find(f => f.id === c.farmaciaId) || {};
+      const farmName = farmacia.nome || '-';
+      const farmBairro = farmacia.bairro || '-';
       const pacName = AppState.data.pacientes.find(p => p.id === c.pacienteId)?.nome || '-';
       const remName = AppState.data.remedios.find(r => r.id === c.remedioId)?.nome || '-';
       const clinName = AppState.data.clinicas.find(cl => cl.id === c.clinicaId)?.nome || '-';
@@ -1726,6 +1761,7 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
           <div><span class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">Código da Compra</span><span class="block font-black text-blue-600 break-words">${compraCode}</span></div>
           <div><span class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">Data da Compra</span><span class="block font-medium text-slate-800 break-words">${formattedDate} — ${calcularDiasAtras(c.data)}</span></div>
           <div><span class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">Farmácia</span><span class="block font-medium text-slate-800 break-words">${farmName}</span></div>
+          <div><span class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">Bairro da Farmácia</span><span class="block font-medium text-slate-800 break-words">${farmBairro}</span></div>
           <div><span class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">Remédio</span><span class="block font-medium text-slate-800 break-words">${remName}</span></div>
           <div><span class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">Qtd de Caixas</span><span class="block font-medium text-slate-800 break-words">${c.qtd || '-'}</span></div>
           <div><span class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">Paciente</span><span class="block font-medium text-slate-800 break-words">${pacName}</span></div>
@@ -1815,6 +1851,7 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
           <div class="w-12 h-12 rounded-full ${isOff ? 'bg-red-200 text-red-700' : (inc ? 'bg-orange-200 text-orange-700' : 'bg-blue-100 text-blue-600')} flex items-center justify-center shrink-0 text-xl"><i class="fa-solid ${cfg.i}"></i></div>
           <div class="flex-1 min-w-0">
             <div class="flex items-center gap-2 flex-wrap"><h4 class="font-bold text-[14px] sm:text-base leading-tight text-slate-800 wrap-two-lines">${item.nome || '-'}</h4>${inc ? '<span class="bg-orange-500 text-white text-[10px] px-1.5 py-0.5 rounded font-bold uppercase tracking-wide">Incompleto</span>' : ''}${isOff ? '<span class="bg-red-100 text-red-700 text-[10px] px-1.5 py-0.5 rounded font-bold uppercase tracking-wide">Inativo</span>' : ''}${getDocumentList(item).length ? `<span class="bg-blue-100 text-blue-700 text-[10px] px-1.5 py-0.5 rounded font-bold uppercase tracking-wide"><i class="fa-regular fa-image mr-1"></i>${getDocumentList(item).length} Doc</span>` : ''}</div>
+            ${tab === 'farmacias' ? `<p class="text-xs sm:text-sm ${isOff ? 'text-red-600' : 'text-slate-500'} font-bold wrap-two-lines mt-0.5"><i class="fa-solid fa-location-dot mr-1 text-slate-400"></i>${item.bairro || 'Bairro não informado'}</p>` : ''}
             <p class="text-xs sm:text-sm ${isOff ? 'text-red-600' : 'text-slate-500'} font-medium wrap-two-lines">${item[cfg.s] || '---'}</p>
             <p class="text-[10px] mt-1 font-bold text-slate-400 uppercase tracking-wide"><i class="fa-solid fa-clock-rotate-left mr-1"></i>Última Compra: <span class="${isOff ? 'text-red-500' : 'text-blue-500'}">${calcularDiasAtrasLastPurchase(item.id, idFieldMap[tab])}</span></p>
           </div>
@@ -1880,7 +1917,7 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
       ];
       if (tab === 'medicos') return [{ name: 'nome', label: 'Nome' }, { name: 'especialidade', label: 'Especialidade' }, { name: 'crm', label: 'CRM' }, { name: 'uf', label: 'UF do CRM' }, { name: 'rqe', label: 'RQE' }, ...b];
       if (tab === 'clinicas') return [{ name: 'nome', label: 'Nome' }, { name: 'especialidade', label: 'Especialidade' }, { name: 'medicoResponsavelId', label: 'Méd. Responsável', type: 'db-select', collection: 'medicos' }, ...b];
-      if (tab === 'farmacias') return [{ name: 'nome', label: 'Nome' }, { name: 'rede', label: 'Rede', type: 'select', options: [{val:'Droga Raia', label:'Droga Raia'}, {val:'Drogaria São Paulo', label:'Drogaria São Paulo'}, {val:'Nissei', label:'Nissei'}, {val:'Farma Conde', label:'Farma Conde'}, {val:'Outros', label:'Outros'}] }, { name: 'cep', label: 'CEP', type: 'cep' }, { name: 'logradouro', label: 'Endereço' }, { name: 'telefone', label: 'Telefone' }, ...b];
+      if (tab === 'farmacias') return [{ name: 'nome', label: 'Nome' }, { name: 'bairro', label: 'Bairro' }, { name: 'rede', label: 'Rede', type: 'select', options: [{val:'Droga Raia', label:'Droga Raia'}, {val:'Drogaria São Paulo', label:'Drogaria São Paulo'}, {val:'Nissei', label:'Nissei'}, {val:'Farma Conde', label:'Farma Conde'}, {val:'Outros', label:'Outros'}] }, { name: 'cep', label: 'CEP', type: 'cep' }, { name: 'logradouro', label: 'Endereço' }, { name: 'telefone', label: 'Telefone' }, ...b];
       if (tab === 'remedios') return [{ name: 'nome', label: 'Nome' }, { name: 'tipo', label: 'Tipo' }, { name: 'dosagem', label: 'Dosagem' }, { name: 'preco', label: 'Preço (R$)' }, ...b];
       return [];
     }
