@@ -384,7 +384,7 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
             <div class="space-y-2">
               <label class="text-xs font-black text-slate-600 uppercase tracking-wider">Bairro</label>
               <select id="filter-bairro" multiple onchange="handleCompraFilterChange()" class="multi-filter-select w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm font-bold outline-none focus:ring-2 focus:ring-blue-500"></select>
-              <span class="multi-filter-hint">Selecione um ou mais bairros. Para remover, toque novamente na opção selecionada.</span>
+              <span class="multi-filter-hint">Selecione um ou mais bairros cadastrados nas farmácias.</span>
             </div>
             <div class="space-y-2">
               <label class="text-xs font-black text-slate-600 uppercase tracking-wider">Farmácia</label>
@@ -779,8 +779,9 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
         pagamento: c.pagamento,
         obs: c.obs,
         farmacia: farm.nome,
-        farmaciaBairro: farm.bairro,
         farmaciaRede: farm.rede,
+        farmaciaBairro: farm.bairro,
+        bairro: farm.bairro,
         paciente: pac.nome,
         pacienteCpf: pac.cpf,
         pacienteRg: pac.rg,
@@ -1436,22 +1437,24 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
       setMultiSelectValues(id, currentValues.filter(value => sorted.some(item => item.id === value)));
     }
 
+    function getFarmaciaBairroValue(farmacia = {}) {
+      return String(farmacia.bairro || '').trim();
+    }
+
+    function getFarmaciaBairros() {
+      return [...new Set(AppState.data.farmacias
+        .map(getFarmaciaBairroValue)
+        .filter(Boolean))]
+        .sort((a, b) => a.localeCompare(b, 'pt-BR'));
+    }
+
     function fillBairroFilterSelect() {
       const el = document.getElementById('filter-bairro');
       if (!el) return;
-
       const currentValues = getMultiSelectValues('filter-bairro');
-      const bairrosMap = new Map();
-      AppState.data.farmacias.forEach(farmacia => {
-        const bairro = String(farmacia.bairro || '').trim();
-        if (!bairro) return;
-        const key = normalizeSearchText(bairro);
-        if (!bairrosMap.has(key)) bairrosMap.set(key, bairro);
-      });
-
-      const bairros = Array.from(bairrosMap.entries()).sort((a, b) => a[1].localeCompare(b[1], 'pt-BR'));
-      el.innerHTML = bairros.map(([key, bairro]) => `<option value="${key}">${bairro}</option>`).join('');
-      setMultiSelectValues('filter-bairro', currentValues.filter(value => bairrosMap.has(value)));
+      const bairros = getFarmaciaBairros();
+      el.innerHTML = bairros.map(bairro => `<option value="${bairro}">${bairro}</option>`).join('');
+      setMultiSelectValues('filter-bairro', currentValues.filter(value => bairros.includes(value)));
     }
 
     function renderCompraFilterOptions() {
@@ -1632,7 +1635,7 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
         compras = compras.filter(c => c.status === 'cancelada');
       }
 
-      const bairroFilters = getMultiSelectValues('filter-bairro');
+      const bairroValues = getMultiSelectValues('filter-bairro');
       const farmaciaIds = getMultiSelectValues('filter-farmacia');
       const pacienteIds = getMultiSelectValues('filter-paciente');
       const clinicaIds = getMultiSelectValues('filter-clinica');
@@ -1641,8 +1644,8 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
 
       compras = compras.filter(c => {
         const farmacia = AppState.data.farmacias.find(f => f.id === c.farmaciaId) || {};
-        const farmaciaBairroKey = normalizeSearchText(farmacia.bairro || '');
-        return (!bairroFilters.length || bairroFilters.includes(farmaciaBairroKey)) &&
+        const farmaciaBairro = getFarmaciaBairroValue(farmacia);
+        return (!bairroValues.length || bairroValues.includes(farmaciaBairro)) &&
         (!farmaciaIds.length || farmaciaIds.includes(c.farmaciaId)) &&
         (!pacienteIds.length || pacienteIds.includes(c.pacienteId)) &&
         (!clinicaIds.length || clinicaIds.includes(c.clinicaId)) &&
@@ -1670,9 +1673,9 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
       }
 
       cont.innerHTML = compras.map(c => {
-        const farmacia = AppState.data.farmacias.find(f => f.id === c.farmaciaId) || {};
-        const farmName = farmacia.nome || 'Farmácia não informada';
-        const farmBairro = farmacia.bairro || 'Bairro não informado';
+        const farmaciaRecord = AppState.data.farmacias.find(f => f.id === c.farmaciaId) || {};
+        const farmName = farmaciaRecord.nome || 'Farmácia não informada';
+        const farmBairro = getFarmaciaBairroValue(farmaciaRecord);
         const pacName = AppState.data.pacientes.find(p => p.id === c.pacienteId)?.nome || '-';
         const remName = AppState.data.remedios.find(r => r.id === c.remedioId)?.nome || '-';
         const clinName = AppState.data.clinicas.find(cl => cl.id === c.clinicaId)?.nome || '-';
@@ -1694,7 +1697,7 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
                 ${compraCode ? `<span class="bg-slate-100 text-slate-600 text-[10px] px-1.5 py-0.5 rounded font-black uppercase tracking-wide"><i class="fa-solid fa-hashtag mr-1"></i>${compraCode}</span>` : ''}
                 ${getDocumentList(c).length ? `<span class="bg-blue-100 text-blue-700 text-[10px] px-1.5 py-0.5 rounded font-bold uppercase tracking-wide"><i class="fa-regular fa-image mr-1"></i>${getDocumentList(c).length} Doc</span>` : ''}
               </div>
-              <p class="text-xs text-slate-500 wrap-two-lines mt-1"><i class="fa-solid fa-location-dot mr-1 text-slate-400"></i>${farmBairro}</p>
+              ${farmBairro ? `<p class="text-xs text-blue-600 font-bold wrap-two-lines mt-0.5"><i class="fa-solid fa-location-dot mr-1 text-blue-400"></i>${farmBairro}</p>` : ''}
               <p class="text-xs text-slate-500 wrap-two-lines mt-0.5"><i class="fa-regular fa-user mr-1 text-slate-400"></i>${pacName}</p>
             </div>
             <div class="text-right shrink-0">
@@ -1738,9 +1741,9 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
       const c = AppState.data.compras.find(x => x.id === id);
       if (!c) return;
 
-      const farmacia = AppState.data.farmacias.find(f => f.id === c.farmaciaId) || {};
-      const farmName = farmacia.nome || '-';
-      const farmBairro = farmacia.bairro || '-';
+      const farmaciaRecord = AppState.data.farmacias.find(f => f.id === c.farmaciaId) || {};
+      const farmName = farmaciaRecord.nome || '-';
+      const farmBairro = getFarmaciaBairroValue(farmaciaRecord);
       const pacName = AppState.data.pacientes.find(p => p.id === c.pacienteId)?.nome || '-';
       const remName = AppState.data.remedios.find(r => r.id === c.remedioId)?.nome || '-';
       const clinName = AppState.data.clinicas.find(cl => cl.id === c.clinicaId)?.nome || '-';
@@ -1761,7 +1764,6 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
           <div><span class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">Código da Compra</span><span class="block font-black text-blue-600 break-words">${compraCode}</span></div>
           <div><span class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">Data da Compra</span><span class="block font-medium text-slate-800 break-words">${formattedDate} — ${calcularDiasAtras(c.data)}</span></div>
           <div><span class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">Farmácia</span><span class="block font-medium text-slate-800 break-words">${farmName}</span></div>
-          <div><span class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">Bairro da Farmácia</span><span class="block font-medium text-slate-800 break-words">${farmBairro}</span></div>
           <div><span class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">Remédio</span><span class="block font-medium text-slate-800 break-words">${remName}</span></div>
           <div><span class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">Qtd de Caixas</span><span class="block font-medium text-slate-800 break-words">${c.qtd || '-'}</span></div>
           <div><span class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">Paciente</span><span class="block font-medium text-slate-800 break-words">${pacName}</span></div>
@@ -1851,7 +1853,7 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
           <div class="w-12 h-12 rounded-full ${isOff ? 'bg-red-200 text-red-700' : (inc ? 'bg-orange-200 text-orange-700' : 'bg-blue-100 text-blue-600')} flex items-center justify-center shrink-0 text-xl"><i class="fa-solid ${cfg.i}"></i></div>
           <div class="flex-1 min-w-0">
             <div class="flex items-center gap-2 flex-wrap"><h4 class="font-bold text-[14px] sm:text-base leading-tight text-slate-800 wrap-two-lines">${item.nome || '-'}</h4>${inc ? '<span class="bg-orange-500 text-white text-[10px] px-1.5 py-0.5 rounded font-bold uppercase tracking-wide">Incompleto</span>' : ''}${isOff ? '<span class="bg-red-100 text-red-700 text-[10px] px-1.5 py-0.5 rounded font-bold uppercase tracking-wide">Inativo</span>' : ''}${getDocumentList(item).length ? `<span class="bg-blue-100 text-blue-700 text-[10px] px-1.5 py-0.5 rounded font-bold uppercase tracking-wide"><i class="fa-regular fa-image mr-1"></i>${getDocumentList(item).length} Doc</span>` : ''}</div>
-            ${tab === 'farmacias' ? `<p class="text-xs sm:text-sm ${isOff ? 'text-red-600' : 'text-slate-500'} font-bold wrap-two-lines mt-0.5"><i class="fa-solid fa-location-dot mr-1 text-slate-400"></i>${item.bairro || 'Bairro não informado'}</p>` : ''}
+            ${tab === 'farmacias' && item.bairro ? `<p class="text-xs sm:text-sm ${isOff ? 'text-red-600' : 'text-blue-600'} font-bold wrap-two-lines"><i class="fa-solid fa-location-dot mr-1"></i>${item.bairro}</p>` : ''}
             <p class="text-xs sm:text-sm ${isOff ? 'text-red-600' : 'text-slate-500'} font-medium wrap-two-lines">${item[cfg.s] || '---'}</p>
             <p class="text-[10px] mt-1 font-bold text-slate-400 uppercase tracking-wide"><i class="fa-solid fa-clock-rotate-left mr-1"></i>Última Compra: <span class="${isOff ? 'text-red-500' : 'text-blue-500'}">${calcularDiasAtrasLastPurchase(item.id, idFieldMap[tab])}</span></p>
           </div>
@@ -1949,6 +1951,7 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
       }
       const fields = [
         { name: 'data', label: 'Data da Compra', type: 'date' },
+        { name: 'bairroCompra', label: 'Bairro', type: 'bairro-select' },
         { name: 'farmaciaId', label: 'Farmácia', type: 'db-select', collection: 'farmacias' },
         { name: 'remedioId', label: 'Remédio', type: 'db-select', collection: 'remedios' },
         { name: 'qtd', label: 'Qtd de Caixas', type: 'number' },
@@ -1980,6 +1983,7 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
 
       openModal(id ? 'Editar Compra' : (isDuplicate ? 'Duplicar Compra' : 'Nova Compra'), compraFormHtml, footerHtml);
 
+      setupCompraBairroFarmaciaFilter(data?.farmaciaId || '');
       setupCompraClinicaAutoFill();
 
       if (isDuplicate) {
@@ -2015,6 +2019,45 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
       openCompraForm(null, duplicated);
     };
 
+    function setupCompraBairroFarmaciaFilter(defaultFarmaciaId = '') {
+      const bairroSelect = document.getElementById('field-bairroCompra');
+      const farmaciaSelect = document.getElementById('field-farmaciaId');
+      if (!bairroSelect || !farmaciaSelect) return;
+
+      const originalFarmaciaId = defaultFarmaciaId || farmaciaSelect.value || '';
+      const originalFarmacia = AppState.data.farmacias.find(f => f.id === originalFarmaciaId);
+      const originalBairro = getFarmaciaBairroValue(originalFarmacia || {});
+      if (!bairroSelect.value && originalBairro) bairroSelect.value = originalBairro;
+
+      const renderFarmaciasByBairro = (selectedFarmaciaId = '') => {
+        const selectedBairro = bairroSelect.value;
+        const farmacias = [...AppState.data.farmacias]
+          .filter(f => !selectedBairro || getFarmaciaBairroValue(f) === selectedBairro)
+          .sort((a, b) => (a.nome || '').localeCompare(b.nome || '', 'pt-BR'));
+
+        const previousValue = selectedFarmaciaId || farmaciaSelect.value;
+        farmaciaSelect.innerHTML = '<option value="">Selecione...</option>' + farmacias.map(f => {
+          const status = f.status === 'inativo' ? ' (Inativo)' : '';
+          const bairro = getFarmaciaBairroValue(f);
+          const label = bairro ? `${f.nome || 'Sem nome'} — ${bairro}` : (f.nome || 'Sem nome');
+          return `<option value="${f.id}">${label}${status}</option>`;
+        }).join('');
+
+        if (previousValue && farmacias.some(f => f.id === previousValue)) {
+          farmaciaSelect.value = previousValue;
+        } else {
+          farmaciaSelect.value = '';
+        }
+      };
+
+      renderFarmaciasByBairro(originalFarmaciaId);
+
+      bairroSelect.addEventListener('change', () => {
+        renderFarmaciasByBairro('');
+        if (bairroSelect.value) showToast(`Farmácias filtradas por bairro: ${bairroSelect.value}`, 'info');
+      });
+    }
+
     function setupCompraClinicaAutoFill() {
       const clinicaSelect = document.getElementById('field-clinicaId');
       const medicoSelect = document.getElementById('field-medicoId');
@@ -2039,6 +2082,14 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
         if (f.type === 'select') return `<div class="mb-4"><label class="${lClass}">${f.label}</label><select id="field-${f.name}" class="${iClass}">${f.options.map(o => `<option value="${o.val}" ${val === o.val ? 'selected' : ''}>${o.label}</option>`).join('')}</select></div>`;
 
         if (f.type === 'textarea') return `<div class="mb-4"><label class="${lClass}">${f.label}</label><textarea id="field-${f.name}" rows="3" class="${iClass}">${val}</textarea></div>`;
+
+        if (f.type === 'bairro-select') {
+          const farmacias = [...AppState.data.farmacias];
+          const selectedFarmacia = data.farmaciaId ? farmacias.find(farmacia => farmacia.id === data.farmaciaId) : null;
+          const selectedBairro = val || getFarmaciaBairroValue(selectedFarmacia || {});
+          const bairros = getFarmaciaBairros();
+          return `<div class="mb-4"><label class="${lClass}">${f.label}</label><select id="field-${f.name}" class="${iClass}"><option value="">Selecione o bairro...</option>${bairros.map(bairro => `<option value="${bairro}" ${selectedBairro === bairro ? 'selected' : ''}>${bairro}</option>`).join('')}</select><p class="text-[11px] text-slate-400 font-bold mt-1 ml-1">A lista de farmácias será filtrada pelo bairro escolhido.</p></div>`;
+        }
 
         if (f.type === 'db-select') {
           const items = [...AppState.data[f.collection]].sort((a,b) => (a.nome || '').localeCompare(b.nome || '', 'pt-BR'));
@@ -2115,6 +2166,7 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
           let k = i.id.replace('field-', '');
           let v = i.value;
           if (k === 'valor') v = parseFloat(v.replace(/\./g, '').replace(',', '.')) || 0;
+          if (k === 'bairroCompra') return;
           dataObj[k] = v;
         }
       });
