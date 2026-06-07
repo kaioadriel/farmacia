@@ -1678,6 +1678,7 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
 
           <div class="flex justify-end gap-2 flex-wrap">
             ${getDocumentList(c).length ? `<button onclick="viewCompraDocument('${c.id}')" class="px-4 py-2 text-xs font-bold text-blue-700 bg-blue-100 rounded-lg hover:bg-blue-200 transition active:scale-95"><i class="fa-regular fa-image mr-1"></i> Docs</button>` : ''}
+            <button onclick="duplicateCompra('${c.id}')" class="px-4 py-2 text-xs font-bold text-purple-700 bg-purple-100 rounded-lg hover:bg-purple-200 transition active:scale-95"><i class="fa-solid fa-copy mr-1"></i> Duplicar</button>
             <button onclick="viewCompraDetails('${c.id}')" class="px-4 py-2 text-xs font-bold text-slate-600 bg-slate-100 rounded-lg hover:bg-slate-200 transition active:scale-95">Ver Mais</button>
             ${isAgendada ? `<button onclick="confirmarCompra('${c.id}')" class="px-4 py-2 text-xs font-bold text-white bg-green-500 rounded-lg hover:bg-green-600 shadow-sm transition active:scale-95"><i class="fa-solid fa-check mr-1"></i> Confirmar</button>` : ''}
           </div>
@@ -1898,8 +1899,17 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
       if (tab === 'pacientes') setTimeout(calcPacienteData, 100);
     };
 
-    window.openCompraForm = (id = null) => {
-      const data = id ? AppState.data.compras.find(i => i.id === id) : { status: 'confirmada', data: new Date().toISOString().split('T')[0] };
+    window.openCompraForm = (id = null, duplicateData = null) => {
+      const isDuplicate = Boolean(duplicateData) && !id;
+      const data = id
+        ? AppState.data.compras.find(i => i.id === id)
+        : (isDuplicate ? { ...duplicateData } : { status: 'confirmada', data: new Date().toISOString().split('T')[0] });
+
+      if (!data) return showToast('Compra não encontrada.', 'error');
+      if (isDuplicate) {
+        delete data.id;
+        delete data.codigoCompra;
+      }
       const fields = [
         { name: 'data', label: 'Data da Compra', type: 'date' },
         { name: 'farmaciaId', label: 'Farmácia', type: 'db-select', collection: 'farmacias' },
@@ -1913,24 +1923,37 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
         { name: 'obs', label: 'Observações', type: 'textarea' },
       ];
 
-      if (id) {
+      if (id || isDuplicate) {
         fields.push({ name: 'status', label: 'Status da Compra', type: 'select', options: [{val:'confirmada', label:'Confirmada'}, {val:'agendada', label:'Agendada'}, {val:'cancelada', label:'Cancelada'}] });
       }
 
       let footerHtml = '';
       if (id) {
         footerHtml += `<button onclick="deleteErpConfirm('compras', '${id}')" class="px-4 py-2.5 bg-red-100 text-red-600 rounded-xl font-bold hover:bg-red-200 mr-auto"><i class="fa-solid fa-trash"></i></button><button onclick="viewCompraDetails('${id}')" class="px-5 py-2.5 bg-slate-200 text-slate-700 rounded-xl font-bold">Cancelar</button><button onclick="saveCompra('${id}', '${data.status}')" class="px-6 py-2.5 bg-blue-600 text-white rounded-xl font-bold shadow-md">Atualizar</button>`;
+      } else if (isDuplicate) {
+        footerHtml += `<button onclick="closeModal()" class="px-5 py-2.5 bg-slate-200 text-slate-700 rounded-xl font-bold mr-auto">Cancelar</button><button onclick="saveCompra('', '${data.status || 'confirmada'}')" class="px-6 py-2.5 bg-purple-600 text-white rounded-xl font-bold shadow-md hover:bg-purple-700 transition"><i class="fa-solid fa-copy mr-2"></i>Salvar Duplicata</button>`;
       } else {
         footerHtml += `<button onclick="closeModal()" class="px-5 py-2.5 bg-slate-200 text-slate-700 rounded-xl font-bold mr-auto">Cancelar</button><button onclick="saveCompra('', 'agendada')" class="px-5 py-2.5 bg-orange-100 text-orange-700 border border-orange-300 rounded-xl font-bold shadow-sm">Agendar</button><button onclick="saveCompra('', 'confirmada')" class="px-6 py-2.5 bg-blue-600 text-white rounded-xl font-bold shadow-md">Confirmar</button>`;
       }
 
       const compraCode = id ? (getCompraDisplayCode(data) || '-') : 'Será gerado ao salvar';
-      let compraFormHtml = `<div class="mb-5 bg-blue-50 border border-blue-100 rounded-2xl p-4"><span class="block text-[10px] font-bold text-blue-500 uppercase tracking-wider mb-1">Código da Compra</span><span class="block font-black text-blue-700 text-lg">${compraCode}</span><p class="text-[11px] text-blue-500 font-bold mt-1">Número automático, não editável.</p></div>` + generateFormFields(fields, data);
+      const duplicateNotice = isDuplicate ? `<div class="mb-5 bg-purple-50 border border-purple-100 rounded-2xl p-4 text-purple-800 text-sm font-bold"><i class="fa-solid fa-copy mr-2"></i>Registro duplicado. Revise a data e salve para criar uma nova compra.</div>` : '';
+      let compraFormHtml = duplicateNotice + `<div class="mb-5 bg-blue-50 border border-blue-100 rounded-2xl p-4"><span class="block text-[10px] font-bold text-blue-500 uppercase tracking-wider mb-1">Código da Compra</span><span class="block font-black text-blue-700 text-lg">${compraCode}</span><p class="text-[11px] text-blue-500 font-bold mt-1">Número automático, não editável.</p></div>` + generateFormFields(fields, data);
       compraFormHtml += renderDocumentUploadSection(data);
 
-      openModal(id ? 'Editar Compra' : 'Nova Compra', compraFormHtml, footerHtml);
+      openModal(id ? 'Editar Compra' : (isDuplicate ? 'Duplicar Compra' : 'Nova Compra'), compraFormHtml, footerHtml);
 
       setupCompraClinicaAutoFill();
+
+      if (isDuplicate) {
+        setTimeout(() => {
+          const dateInput = document.getElementById('field-data');
+          if (dateInput) {
+            dateInput.focus();
+            try { dateInput.showPicker?.(); } catch (e) {}
+          }
+        }, 100);
+      }
 
       const valInp = document.getElementById('field-valor');
       if (valInp) valInp.addEventListener('input', e => {
@@ -1943,6 +1966,17 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
     };
 
     window.editCompra = (id) => openCompraForm(id);
+
+    window.duplicateCompra = (id) => {
+      const original = AppState.data.compras.find(c => c.id === id);
+      if (!original) return showToast('Compra não encontrada para duplicar.', 'error');
+
+      const duplicated = { ...original };
+      delete duplicated.id;
+      delete duplicated.codigoCompra;
+
+      openCompraForm(null, duplicated);
+    };
 
     function setupCompraClinicaAutoFill() {
       const clinicaSelect = document.getElementById('field-clinicaId');
