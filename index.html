@@ -241,6 +241,25 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
       .utility-action-card i { font-size: 20px; }
     }
 
+    /* ==== Visualizador de fotos em tela inteira com controles por toque ==== */
+    #image-viewer .image-viewer-ui {
+      opacity: 1;
+      transition: opacity .2s ease, transform .2s ease;
+    }
+    #image-viewer.viewer-controls-hidden .image-viewer-ui {
+      opacity: 0;
+      pointer-events: none;
+    }
+    #image-viewer.viewer-controls-hidden #image-viewer-controls {
+      transform: translateY(-10px);
+    }
+    #image-viewer.viewer-controls-hidden #image-viewer-prev {
+      transform: translate(-10px, -50%);
+    }
+    #image-viewer.viewer-controls-hidden #image-viewer-next {
+      transform: translate(10px, -50%);
+    }
+
   </style>
 </head>
 
@@ -667,8 +686,8 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
   </div>
 
   <!-- Fullscreen Image Viewer -->
-  <div id="image-viewer" class="fixed inset-0 bg-black z-[90] hidden flex-col items-center justify-center overflow-hidden">
-    <div class="absolute top-4 left-4 right-4 flex items-center justify-between gap-3 z-10 pointer-events-none">
+  <div id="image-viewer" class="fixed inset-0 bg-black z-[90] hidden flex-col items-center justify-center overflow-hidden viewer-controls-hidden">
+    <div id="image-viewer-controls" class="image-viewer-ui absolute top-4 left-4 right-4 flex items-center justify-between gap-3 z-10 pointer-events-none">
       <div class="bg-white/15 text-white px-3 py-2 rounded-full text-xs font-black backdrop-blur-md pointer-events-auto" id="image-viewer-counter">1/1</div>
       <div class="flex gap-2 pointer-events-auto">
         <button onclick="resetDocumentZoom()" class="w-11 h-11 flex items-center justify-center rounded-full bg-white/20 text-white text-lg backdrop-blur-md hover:bg-white/30 transition" title="Resetar posição"><i class="fa-solid fa-rotate-left"></i></button>
@@ -677,10 +696,10 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
         <button onclick="closeImageViewer()" class="w-11 h-11 flex items-center justify-center rounded-full bg-white text-slate-800 text-lg backdrop-blur-md hover:bg-slate-100 transition shadow-lg" title="Fechar"><i class="fa-solid fa-times"></i></button>
       </div>
     </div>
-    <button onclick="navigateDocument(-1)" class="absolute left-3 top-1/2 -translate-y-1/2 z-10 w-12 h-12 flex items-center justify-center rounded-full bg-white/20 text-white text-xl backdrop-blur-md hover:bg-white/30 transition" id="image-viewer-prev"><i class="fa-solid fa-chevron-left"></i></button>
-    <button onclick="navigateDocument(1)" class="absolute right-3 top-1/2 -translate-y-1/2 z-10 w-12 h-12 flex items-center justify-center rounded-full bg-white/20 text-white text-xl backdrop-blur-md hover:bg-white/30 transition" id="image-viewer-next"><i class="fa-solid fa-chevron-right"></i></button>
-    <div id="image-viewer-stage" class="w-full h-full flex items-center justify-center overflow-hidden p-4 pt-20 pb-8" style="touch-action: none; cursor: grab;">
-      <img id="image-viewer-img" src="" draggable="false" class="max-w-full max-h-full object-contain origin-center select-none" style="transform: translate3d(0px, 0px, 0) scale(1); touch-action: none; user-select: none; -webkit-user-drag: none;">
+    <button onclick="navigateDocument(-1)" class="image-viewer-ui absolute left-3 top-1/2 -translate-y-1/2 z-10 w-12 h-12 flex items-center justify-center rounded-full bg-white/20 text-white text-xl backdrop-blur-md hover:bg-white/30 transition" id="image-viewer-prev"><i class="fa-solid fa-chevron-left"></i></button>
+    <button onclick="navigateDocument(1)" class="image-viewer-ui absolute right-3 top-1/2 -translate-y-1/2 z-10 w-12 h-12 flex items-center justify-center rounded-full bg-white/20 text-white text-xl backdrop-blur-md hover:bg-white/30 transition" id="image-viewer-next"><i class="fa-solid fa-chevron-right"></i></button>
+    <div id="image-viewer-stage" class="w-full h-full flex items-center justify-center overflow-hidden p-0" style="touch-action: none; cursor: grab;">
+      <img id="image-viewer-img" src="" draggable="false" class="w-full h-full object-contain origin-center select-none" style="transform: translate3d(0px, 0px, 0) scale(1); touch-action: none; user-select: none; -webkit-user-drag: none;">
     </div>
   </div>
 
@@ -1708,16 +1727,38 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
     let imageSwipeStartX = 0;
     let imageSwipeStartY = 0;
     let imageSwipeTriggered = false;
+    let imageViewerControlsVisible = false;
+    let imageViewerTapPointerId = null;
+    let imageViewerTapStartX = 0;
+    let imageViewerTapStartY = 0;
+    let imageViewerTapStartTime = 0;
+    let imageViewerTapMoved = false;
 
     function canDeleteDocumentFromCurrentContext() {
       return Boolean(document.getElementById('field-documentosBase64') || document.getElementById('field-documentoBase64'));
     }
+
+    function setImageViewerControlsVisible(visible) {
+      const viewer = document.getElementById('image-viewer');
+      if (!viewer) return;
+      imageViewerControlsVisible = Boolean(visible);
+      viewer.classList.toggle('viewer-controls-hidden', !imageViewerControlsVisible);
+      viewer.classList.toggle('viewer-controls-visible', imageViewerControlsVisible);
+      viewer.querySelectorAll('.image-viewer-ui').forEach(element => {
+        element.setAttribute('aria-hidden', imageViewerControlsVisible ? 'false' : 'true');
+      });
+    }
+
+    window.toggleImageViewerControls = () => {
+      setImageViewerControlsVisible(!imageViewerControlsVisible);
+    };
 
     function openImageViewerWithList(docs, index = 0) {
       currentDocumentList = (docs || []).filter(Boolean);
       if (!currentDocumentList.length) return showToast('Nenhum documento anexado.', 'error');
       currentDocumentIndex = Math.min(Math.max(index, 0), currentDocumentList.length - 1);
       resetDocumentTransformState();
+      setImageViewerControlsVisible(false);
       updateImageViewer();
       document.getElementById('image-viewer').classList.remove('hidden');
       document.getElementById('image-viewer').classList.add('flex');
@@ -1743,6 +1784,8 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
       currentDocumentPanX = 0;
       currentDocumentPanY = 0;
       imageViewerPointers.clear();
+      imageViewerTapPointerId = null;
+      imageViewerTapMoved = false;
     }
 
     function getPointerDistance(a, b) {
@@ -1785,8 +1828,14 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
           imageSwipeStartX = ev.clientX;
           imageSwipeStartY = ev.clientY;
           imageSwipeTriggered = false;
+          imageViewerTapPointerId = ev.pointerId;
+          imageViewerTapStartX = ev.clientX;
+          imageViewerTapStartY = ev.clientY;
+          imageViewerTapStartTime = Date.now();
+          imageViewerTapMoved = false;
         } else if (imageViewerPointers.size === 2) {
           imageSwipeTriggered = true;
+          imageViewerTapMoved = true;
           const pts = Array.from(imageViewerPointers.values());
           imageGestureStartDistance = getPointerDistance(pts[0], pts[1]) || 1;
           imageGestureStartZoom = currentDocumentZoom;
@@ -1803,7 +1852,13 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
         ev.preventDefault();
         updatePointer(ev);
 
+        if (imageViewerTapPointerId === ev.pointerId) {
+          const tapDistance = Math.hypot(ev.clientX - imageViewerTapStartX, ev.clientY - imageViewerTapStartY);
+          if (tapDistance > 12) imageViewerTapMoved = true;
+        }
+
         if (imageViewerPointers.size >= 2) {
+          imageViewerTapMoved = true;
           const pts = Array.from(imageViewerPointers.values()).slice(0, 2);
           const distance = getPointerDistance(pts[0], pts[1]) || 1;
           const mid = getPointerMidpoint(pts[0], pts[1]);
@@ -1829,6 +1884,7 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
             const horizontalSwipe = Math.abs(totalDx) > 70 && Math.abs(totalDx) > Math.abs(totalDy) * 1.5;
             if (horizontalSwipe) {
               imageSwipeTriggered = true;
+              imageViewerTapMoved = true;
               navigateDocument(totalDx < 0 ? 1 : -1);
               return;
             }
@@ -1842,7 +1898,13 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
         }
       }, { passive: false });
 
-      const finishPointer = (ev) => {
+      const finishPointer = (ev, allowTap = false) => {
+        const shouldToggleControls = allowTap
+          && imageViewerPointers.size === 1
+          && imageViewerTapPointerId === ev.pointerId
+          && !imageViewerTapMoved
+          && !imageSwipeTriggered
+          && Date.now() - imageViewerTapStartTime <= 500;
         if (imageViewerPointers.has(ev.pointerId)) imageViewerPointers.delete(ev.pointerId);
         try { stage.releasePointerCapture?.(ev.pointerId); } catch(e) {}
         stage.style.cursor = imageViewerPointers.size ? 'grabbing' : 'grab';
@@ -1851,12 +1913,14 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
           imageDragLastX = p.x;
           imageDragLastY = p.y;
         }
+        if (!imageViewerPointers.size) imageViewerTapPointerId = null;
+        if (shouldToggleControls) window.toggleImageViewerControls();
       };
 
-      stage.addEventListener('pointerup', finishPointer);
-      stage.addEventListener('pointercancel', finishPointer);
+      stage.addEventListener('pointerup', (ev) => finishPointer(ev, true));
+      stage.addEventListener('pointercancel', (ev) => finishPointer(ev, false));
       stage.addEventListener('pointerleave', (ev) => {
-        if (ev.pointerType === 'mouse') finishPointer(ev);
+        if (ev.pointerType === 'mouse') finishPointer(ev, false);
       });
 
       stage.addEventListener('wheel', (ev) => {
@@ -3272,6 +3336,7 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
     window.closeImageViewer = () => {
       document.getElementById('image-viewer').classList.add('hidden');
       document.getElementById('image-viewer').classList.remove('flex');
+      setImageViewerControlsVisible(false);
       resetDocumentTransformState();
     };
 
