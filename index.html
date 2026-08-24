@@ -253,7 +253,7 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
         <img src="https://farmacia.kaioadriel.com.br/icone/images.png" alt="Logo Controle de Farmácias" class="w-full h-full object-contain">
       </div>
       <h1 class="text-2xl font-black text-slate-800 mb-2 text-center">Controle de Farmácias</h1>
-      <p class="text-sm text-slate-500 mb-8 text-center font-medium">Faça login para acessar e sincronizar seus dados.</p>
+      <p class="text-sm text-slate-500 mb-8 text-center font-medium">Faça login para desbloquear seus dados armazenados neste aparelho.</p>
 
       <div class="w-full space-y-4">
         <div>
@@ -313,7 +313,7 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
       </div>
     </div>
     <div class="bg-blue-50 border border-blue-100 text-blue-800 rounded-2xl p-3 text-xs font-bold mb-4">
-      <i class="fa-solid fa-lock mr-1"></i> Acesso restrito ao e-mail autorizado.
+      <i class="fa-solid fa-lock mr-1"></i> Login protegido pelo Firebase. Dados e fotos ficam somente neste aparelho.
     </div>
     <button onclick="handleAccountLogout()" class="w-full bg-slate-100 text-slate-700 font-black py-3 rounded-2xl hover:bg-slate-200 active:scale-95 transition flex items-center justify-center gap-2">
       <i class="fa-solid fa-right-from-bracket"></i> Sair da conta
@@ -693,7 +693,6 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
     import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut, deleteUser } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-    import { getFirestore, collection, onSnapshot, doc, setDoc, deleteDoc, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
     function injectPWA() {
       const manifest = {
@@ -751,10 +750,14 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
       erpSort: 'alpha'
     };
 
-    let app, db, auth, provider, listeners = [];
+    let app, auth, provider;
     let myChart = null;
 
     const ALLOWED_EMAIL = 'kaioadrielguimaraes@gmail.com';
+    const LOCAL_DATA_DB_NAME = 'controle-farmacias-local-data';
+    const LOCAL_DATA_DB_VERSION = 1;
+    const LOCAL_DATA_RECORDS_STORE = 'records';
+    const LOCAL_DATA_META_STORE = 'metadata';
     const AUTOMATIC_BACKUP_FILE_NAME = 'backup-controle-farmacias-automatico.json';
     const BACKUP_SETTINGS_DB_NAME = 'controle-farmacias-backup-settings';
     const BACKUP_SETTINGS_STORE_NAME = 'settings';
@@ -775,6 +778,8 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
     let automaticBackupLoadedCollections = new Set();
     let automaticBackupRunId = 0;
     let automaticBackupSuspended = false;
+    let localDataReady = false;
+    let localDataInitialized = false;
 
     function openBackupSettingsDb() {
       return new Promise((resolve, reject) => {
@@ -836,6 +841,177 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
         });
       } finally {
         settingsDb.close();
+      }
+    }
+
+    function openLocalDataDb() {
+      return new Promise((resolve, reject) => {
+        if (!('indexedDB' in window)) {
+          reject(new Error('IndexedDB indisponível.'));
+          return;
+        }
+        const request = window.indexedDB.open(LOCAL_DATA_DB_NAME, LOCAL_DATA_DB_VERSION);
+        request.onupgradeneeded = () => {
+          const localDb = request.result;
+          let recordsStore;
+          if (!localDb.objectStoreNames.contains(LOCAL_DATA_RECORDS_STORE)) {
+            recordsStore = localDb.createObjectStore(LOCAL_DATA_RECORDS_STORE, { keyPath: 'key' });
+          } else {
+            recordsStore = request.transaction.objectStore(LOCAL_DATA_RECORDS_STORE);
+          }
+          if (!recordsStore.indexNames.contains('by_user_collection')) {
+            recordsStore.createIndex('by_user_collection', ['userId', 'collectionName'], { unique: false });
+          }
+          if (!localDb.objectStoreNames.contains(LOCAL_DATA_META_STORE)) {
+            localDb.createObjectStore(LOCAL_DATA_META_STORE, { keyPath: 'key' });
+          }
+        };
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = () => reject(request.error || new Error('Não foi possível abrir o banco de dados local.'));
+        request.onblocked = () => reject(new Error('A atualização do banco local foi bloqueada por outra aba aberta.'));
+      });
+    }
+
+    function getLocalRecordKey(userId, collectionName, recordId) {
+      return JSON.stringify([userId, collectionName, recordId]);
+    }
+
+    function getLocalMetaKey(userId, name) {
+      return JSON.stringify([userId, name]);
+    }
+
+    function waitForLocalTransaction(transaction, fallbackMessage) {
+      return new Promise((resolve, reject) => {
+        transaction.oncomplete = () => resolve();
+        transaction.onerror = () => reject(transaction.error || new Error(fallbackMessage));
+        transaction.onabort = () => reject(transaction.error || new Error(fallbackMessage));
+      });
+    }
+
+    async function readLocalCollection(userId, collectionName) {
+      const localDb = await openLocalDataDb();
+      try {
+        return await new Promise((resolve, reject) => {
+          const transaction = localDb.transaction(LOCAL_DATA_RECORDS_STORE, 'readonly');
+          const index = transaction.objectStore(LOCAL_DATA_RECORDS_STORE).index('by_user_collection');
+          const request = index.getAll(IDBKeyRange.only([userId, collectionName]));
+          request.onsuccess = () => {
+            const records = (request.result || []).map(item => ({ id: item.id, ...(item.record || {}) }));
+            resolve(records);
+          };
+          request.onerror = () => reject(request.error || new Error(`Não foi possível ler ${collectionName}.`));
+        });
+      } finally {
+        localDb.close();
+      }
+    }
+
+    async function writeLocalRecord(userId, collectionName, recordId, record) {
+      const localDb = await openLocalDataDb();
+      try {
+        const transaction = localDb.transaction(LOCAL_DATA_RECORDS_STORE, 'readwrite');
+        transaction.objectStore(LOCAL_DATA_RECORDS_STORE).put({
+          key: getLocalRecordKey(userId, collectionName, recordId),
+          userId,
+          collectionName,
+          id: recordId,
+          record: { ...(record || {}) },
+          updatedAt: new Date().toISOString()
+        });
+        await waitForLocalTransaction(transaction, `Não foi possível salvar em ${collectionName}.`);
+      } finally {
+        localDb.close();
+      }
+    }
+
+    async function deleteLocalRecord(userId, collectionName, recordId) {
+      const localDb = await openLocalDataDb();
+      try {
+        const transaction = localDb.transaction(LOCAL_DATA_RECORDS_STORE, 'readwrite');
+        transaction.objectStore(LOCAL_DATA_RECORDS_STORE).delete(getLocalRecordKey(userId, collectionName, recordId));
+        await waitForLocalTransaction(transaction, `Não foi possível excluir de ${collectionName}.`);
+      } finally {
+        localDb.close();
+      }
+    }
+
+    async function replaceLocalCollection(userId, collectionName, records = []) {
+      const localDb = await openLocalDataDb();
+      try {
+        const keys = await new Promise((resolve, reject) => {
+          const transaction = localDb.transaction(LOCAL_DATA_RECORDS_STORE, 'readonly');
+          const index = transaction.objectStore(LOCAL_DATA_RECORDS_STORE).index('by_user_collection');
+          const request = index.getAllKeys(IDBKeyRange.only([userId, collectionName]));
+          request.onsuccess = () => resolve(request.result || []);
+          request.onerror = () => reject(request.error || new Error(`Não foi possível preparar ${collectionName} para restauração.`));
+        });
+
+        const transaction = localDb.transaction(LOCAL_DATA_RECORDS_STORE, 'readwrite');
+        const store = transaction.objectStore(LOCAL_DATA_RECORDS_STORE);
+        keys.forEach(key => store.delete(key));
+        records.forEach(sourceRecord => {
+          const clean = { ...(sourceRecord || {}) };
+          const recordId = clean.id || crypto.randomUUID();
+          delete clean.id;
+          store.put({
+            key: getLocalRecordKey(userId, collectionName, recordId),
+            userId,
+            collectionName,
+            id: recordId,
+            record: clean,
+            updatedAt: new Date().toISOString()
+          });
+        });
+        await waitForLocalTransaction(transaction, `Não foi possível restaurar ${collectionName}.`);
+      } finally {
+        localDb.close();
+      }
+    }
+
+    async function readLocalMeta(userId, name) {
+      const localDb = await openLocalDataDb();
+      try {
+        return await new Promise((resolve, reject) => {
+          const request = localDb.transaction(LOCAL_DATA_META_STORE, 'readonly')
+            .objectStore(LOCAL_DATA_META_STORE)
+            .get(getLocalMetaKey(userId, name));
+          request.onsuccess = () => resolve(request.result?.value ?? null);
+          request.onerror = () => reject(request.error || new Error('Não foi possível ler as configurações locais.'));
+        });
+      } finally {
+        localDb.close();
+      }
+    }
+
+    async function writeLocalMeta(userId, name, value) {
+      const localDb = await openLocalDataDb();
+      try {
+        const transaction = localDb.transaction(LOCAL_DATA_META_STORE, 'readwrite');
+        transaction.objectStore(LOCAL_DATA_META_STORE).put({
+          key: getLocalMetaKey(userId, name),
+          userId,
+          name,
+          value,
+          updatedAt: new Date().toISOString()
+        });
+        await waitForLocalTransaction(transaction, 'Não foi possível salvar as configurações locais.');
+      } finally {
+        localDb.close();
+      }
+    }
+
+    function hasAnyLocalRecord() {
+      return AUTOMATIC_BACKUP_COLLECTIONS.some(key => (AppState.data[key] || []).length > 0);
+    }
+
+    async function requestPersistentLocalStorage() {
+      if (!navigator.storage?.persist) return false;
+      try {
+        if (await navigator.storage.persisted?.()) return true;
+        return await navigator.storage.persist();
+      } catch (error) {
+        console.warn('Não foi possível solicitar armazenamento local persistente:', error);
+        return false;
       }
     }
 
@@ -984,7 +1160,6 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
     }
 
     async function initializeAutomaticBackupsForUser(userId) {
-      resetAutomaticBackupRuntime();
       const runId = automaticBackupRunId;
       const scopedUserId = userId;
 
@@ -992,6 +1167,19 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
         try {
           const savedSnapshot = await readBackupSetting(getInternalBackupSettingKey(scopedUserId));
           if (runId !== automaticBackupRunId || scopedUserId !== AppState.userId) return;
+
+          if (!localDataInitialized) {
+            if (savedSnapshot?.data && !hasAnyLocalRecord()) {
+              automaticBackupSuspended = true;
+              const collectionsData = savedSnapshot.data.collections || savedSnapshot.data.data || savedSnapshot.data;
+              await restoreCollectionsFromBackup(collectionsData);
+              showToast('Dados anteriores migrados para o banco local!', 'success');
+            }
+            await writeLocalMeta(scopedUserId, 'initialized', true);
+            localDataInitialized = true;
+            automaticBackupSuspended = false;
+          }
+
           if (savedSnapshot?.savedAt && savedSnapshot?.data) {
             lastInternalBackupAt = savedSnapshot.savedAt;
             internalBackupStatus = 'saved';
@@ -1000,6 +1188,7 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
           }
         } catch (error) {
           console.error('Erro ao carregar a cópia interna:', error);
+          automaticBackupSuspended = false;
           if (runId === automaticBackupRunId) internalBackupStatus = 'error';
         } finally {
           if (runId === automaticBackupRunId && scopedUserId === AppState.userId) {
@@ -1136,7 +1325,7 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
     }
 
     function scheduleAutomaticBackups() {
-      if (automaticBackupSuspended || !AppState.userId) return;
+      if (automaticBackupSuspended || !AppState.userId || !localDataReady) return;
       if (automaticBackupLoadedCollections.size < AUTOMATIC_BACKUP_COLLECTIONS.length) return;
       scheduleInternalBackup();
       scheduleFolderBackup();
@@ -1205,11 +1394,11 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
           showToast('Ainda não existe uma cópia interna para restaurar.', 'error');
           return;
         }
-        if (!confirm('Restaurar a cópia interna substituirá os dados atuais do Firebase. Deseja continuar?')) return;
+        if (!confirm('Restaurar a cópia interna substituirá os dados locais atuais. Deseja continuar?')) return;
         automaticBackupSuspended = true;
         const collectionsData = savedSnapshot.data.collections || savedSnapshot.data.data || savedSnapshot.data;
         await restoreCollectionsFromBackup(collectionsData);
-        showToast('Cópia interna restaurada no Firebase!', 'success');
+        showToast('Cópia interna restaurada no banco local!', 'success');
       } catch (error) {
         console.error('Erro ao restaurar cópia interna:', error);
         showToast('Não foi possível restaurar a cópia interna.', 'error');
@@ -1235,8 +1424,8 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
       AppState.user = null;
       AppState.userId = null;
       AppState.data = { pacientes: [], medicos: [], clinicas: [], farmacias: [], remedios: [], compras: [] };
-      listeners.forEach(unsub => unsub());
-      listeners = [];
+      localDataReady = false;
+      localDataInitialized = false;
       resetAutomaticBackupRuntime();
       try {
         document.getElementById('auth-screen')?.classList.remove('hidden');
@@ -1480,7 +1669,7 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
         <label class="document-upload-card flex flex-col items-center justify-center w-full border-slate-300 cursor-pointer transition">
           <i class="fa-solid fa-cloud-arrow-up text-5xl text-slate-400 mb-3"></i>
           <span class="text-lg font-black text-slate-700">Adicionar Documento(s)</span>
-          <span class="text-xs text-slate-400 font-bold mt-1">Você pode selecionar mais de uma imagem.</span>
+          <span class="text-xs text-slate-400 font-bold mt-1">Imagens salvas localmente na qualidade original, sem compressão.</span>
           <input type="file" class="hidden" accept="image/*" multiple onchange="handleImageUpload(event)" />
         </label>
       </div>`;
@@ -1704,10 +1893,13 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
       compraCodeSyncRunning = true;
       try {
         for (const { compra, expected } of updates) {
-          const cleanData = JSON.parse(JSON.stringify({ ...compra, codigoCompra: expected }));
+          const cleanData = { ...compra, codigoCompra: expected };
           delete cleanData.id;
-          await setDoc(doc(db, 'users', AppState.userId, 'compras', compra.id), cleanData);
+          await writeLocalRecord(AppState.userId, 'compras', compra.id, cleanData);
+          compra.codigoCompra = expected;
         }
+        updateUI();
+        scheduleAutomaticBackups();
       } catch (error) {
         console.error('Erro ao numerar compras:', error);
       } finally {
@@ -1738,7 +1930,6 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
 
 
         auth = getAuth(app);
-        db = getFirestore(app);
         provider = new GoogleAuthProvider();
         provider.setCustomParameters({ prompt: 'select_account' });
 
@@ -1762,16 +1953,22 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
             document.getElementById('sidebar-avatar').innerText = name.substring(0, 2).toUpperCase();
             refreshAccountMenuInfo();
 
-            initializeAutomaticBackupsForUser(user.uid);
-            setupDatabaseListeners();
-            updateUI();
+            resetAutomaticBackupRuntime();
+            requestPersistentLocalStorage();
+            try {
+              await loadLocalDatabaseForUser(user.uid);
+              await initializeAutomaticBackupsForUser(user.uid);
+            } catch (localError) {
+              console.error('Erro ao carregar banco de dados local:', localError);
+              showToast('Não foi possível carregar o banco de dados local.', 'error');
+            }
           } else {
             clearAppSessionState();
           }
         });
       } catch (error) {
         console.error('Erro ao inicializar app:', error);
-        showToast("Erro ao inicializar banco de dados.", "error");
+        showToast("Erro ao inicializar o aplicativo.", "error");
       }
     }
 
@@ -1815,48 +2012,79 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
 
     window.logoutApp = () => { closeAccountMenu(); signOut(auth); showToast("Você saiu.", "success"); };
 
-    function setupDatabaseListeners() {
-      listeners.forEach(unsub => unsub());
-      listeners = [];
+    async function loadLocalDatabaseForUser(userId) {
+      localDataReady = false;
       automaticBackupLoadedCollections = new Set();
+      const loadedCollections = await Promise.all(
+        AUTOMATIC_BACKUP_COLLECTIONS.map(async collectionName => [
+          collectionName,
+          await readLocalCollection(userId, collectionName)
+        ])
+      );
+      if (AppState.userId !== userId) return;
 
-      ['pacientes', 'medicos', 'clinicas', 'farmacias', 'remedios', 'compras'].forEach(colName => {
-        const colRef = collection(db, 'users', AppState.userId, colName);
-        listeners.push(onSnapshot(colRef, (snapshot) => {
-          const items = [];
-          snapshot.forEach(doc => items.push({ id: doc.id, ...doc.data() }));
-          AppState.data[colName] = items;
-          automaticBackupLoadedCollections.add(colName);
-          if (colName === 'compras') ensureCompraCodes();
-          renderCompraFilterOptions();
-          updateUI();
-          scheduleAutomaticBackups();
-        }, (error) => console.error("Sync error:", error)));
+      loadedCollections.forEach(([collectionName, records]) => {
+        AppState.data[collectionName] = records;
+        automaticBackupLoadedCollections.add(collectionName);
       });
+      localDataInitialized = Boolean(await readLocalMeta(userId, 'initialized'));
+      localDataReady = true;
+      await ensureCompraCodes();
+      renderCompraFilterOptions();
+      updateUI();
+      scheduleAutomaticBackups();
+    }
+
+    function updateLocalCollectionState(collectionName, recordId, cleanData) {
+      const records = AppState.data[collectionName] || [];
+      const nextRecord = { id: recordId, ...(cleanData || {}) };
+      const existingIndex = records.findIndex(item => item.id === recordId);
+      if (existingIndex >= 0) records.splice(existingIndex, 1, nextRecord);
+      else records.push(nextRecord);
+      AppState.data[collectionName] = records;
     }
 
     window.dbSave = async (colName, dataObj, id = null) => {
       if (!AppState.userId) return false;
+      if (!localDataReady) {
+        showToast('Aguarde o carregamento dos dados locais.', 'error');
+        return false;
+      }
       try {
-        const cleanData = JSON.parse(JSON.stringify(dataObj));
+        const cleanData = { ...(dataObj || {}) };
+        delete cleanData.id;
         if (colName === 'compras') cleanData.salvoEm = new Date().toISOString();
-        const docId = id || crypto.randomUUID();
-        await setDoc(doc(db, 'users', AppState.userId, colName, docId), cleanData);
+        const recordId = id || crypto.randomUUID();
+        await writeLocalRecord(AppState.userId, colName, recordId, cleanData);
+        updateLocalCollectionState(colName, recordId, cleanData);
+        renderCompraFilterOptions();
+        updateUI();
+        scheduleAutomaticBackups();
         showToast(id ? "Atualizado!" : "Salvo!", "success");
-        return docId;
+        return recordId;
       } catch (error) {
-        showToast("Erro ao salvar (verifique as Regras do Firestore).", "error");
+        console.error('Erro ao salvar no banco local:', error);
+        const message = error?.name === 'QuotaExceededError'
+          ? 'Armazenamento local cheio. Faça um backup e libere espaço no aparelho.'
+          : 'Erro ao salvar no banco de dados local.';
+        showToast(message, "error");
         return false;
       }
     };
 
     window.dbDelete = async (colName, id) => {
       if (!AppState.userId) return;
+      if (!localDataReady) return showToast('Aguarde o carregamento dos dados locais.', 'error');
       try {
-        await deleteDoc(doc(db, 'users', AppState.userId, colName, id));
+        await deleteLocalRecord(AppState.userId, colName, id);
+        AppState.data[colName] = (AppState.data[colName] || []).filter(item => item.id !== id);
+        renderCompraFilterOptions();
+        updateUI();
+        scheduleAutomaticBackups();
         showToast("Excluído com sucesso.", "success");
       } catch (error) {
-        showToast("Erro ao excluir.", "error");
+        console.error('Erro ao excluir do banco local:', error);
+        showToast("Erro ao excluir do banco de dados local.", "error");
       }
     };
 
@@ -2979,29 +3207,10 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
 
     function processImageFile(file) {
       return new Promise((resolve, reject) => {
-        const r = new FileReader();
-        r.onload = function(ev) {
-          const img = new Image();
-          img.onload = function() {
-            const canvas = document.createElement('canvas');
-            const ctx = canvas.getContext('2d');
-            let w = img.width;
-            let h = img.height;
-            if (w > h) {
-              if (w > 1000) { h *= 1000 / w; w = 1000; }
-            } else {
-              if (h > 1000) { w *= 1000 / h; h = 1000; }
-            }
-            canvas.width = w;
-            canvas.height = h;
-            ctx.drawImage(img, 0, 0, w, h);
-            resolve(canvas.toDataURL('image/jpeg', 0.72));
-          };
-          img.onerror = reject;
-          img.src = ev.target.result;
-        };
-        r.onerror = reject;
-        r.readAsDataURL(file);
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = () => reject(reader.error || new Error('Não foi possível ler a imagem.'));
+        reader.readAsDataURL(file);
       });
     }
 
@@ -3018,7 +3227,7 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
         if (!newDocs.length) return showToast('Selecione imagens válidas.', 'error');
         setCurrentFormDocumentList([...existingDocs, ...newDocs]);
         e.target.value = '';
-        showToast(newDocs.length > 1 ? `${newDocs.length} documentos processados!` : 'Documento processado!', 'success');
+        showToast(newDocs.length > 1 ? `${newDocs.length} imagens adicionadas sem compressão!` : 'Imagem adicionada sem compressão!', 'success');
       } catch (error) {
         showToast('Erro ao processar documento.', 'error');
       }
@@ -3121,10 +3330,15 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
       return {
         app: 'Controle de Farmácias',
         generatedAt: new Date().toISOString(),
-        mode: 'autenticacao-firebase',
+        mode: 'firebase-auth-banco-local-indexeddb',
         userId: AppState.userId,
+        storageInfo: {
+          authentication: 'Firebase Authentication',
+          primaryDatabase: 'IndexedDB local',
+          photos: 'qualidade original sem compressao'
+        },
         collections: REPORT_COLLECTIONS.reduce((acc, key) => {
-          acc[key] = JSON.parse(JSON.stringify(AppState.data[key] || []));
+          acc[key] = (AppState.data[key] || []).map(item => ({ ...item }));
           return acc;
         }, {})
       };
@@ -3141,17 +3355,14 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
     };
 
     async function replaceCollectionFromBackup(collectionName, records = []) {
-      const colRef = collection(db, 'users', AppState.userId, collectionName);
-      const currentDocs = await getDocs(colRef);
-      for (const itemDoc of currentDocs.docs) {
-        await deleteDoc(doc(db, 'users', AppState.userId, collectionName, itemDoc.id));
-      }
-      for (const record of records) {
-        const clean = JSON.parse(JSON.stringify(record || {}));
+      const normalizedRecords = records.map(record => {
+        const clean = { ...(record || {}) };
         const id = clean.id || crypto.randomUUID();
         delete clean.id;
-        await setDoc(doc(db, 'users', AppState.userId, collectionName, id), clean);
-      }
+        return { id, ...clean };
+      });
+      await replaceLocalCollection(AppState.userId, collectionName, normalizedRecords);
+      AppState.data[collectionName] = normalizedRecords;
     }
 
     async function restoreCollectionsFromBackup(collectionsData) {
@@ -3163,6 +3374,9 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
         restoredCollections += 1;
       }
       if (!restoredCollections) throw new Error('O arquivo não contém coleções válidas.');
+      await ensureCompraCodes();
+      renderCompraFilterOptions();
+      updateUI();
     }
 
     window.restoreManualBackup = async (event) => {
