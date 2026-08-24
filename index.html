@@ -4,13 +4,20 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <meta name="theme-color" content="#2563eb">
+  <meta name="description" content="Controle de compras, pacientes, médicos, clínicas, farmácias e remédios.">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Farmácias">
   <title>Controle de Farmácias</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="manifest" href="./manifest.json">
+  <link rel="icon" type="image/png" sizes="192x192" href="./icons/icon-192.png">
+  <link rel="apple-touch-icon" href="./icons/icon-192.png">
+  <script src="./vendor/tailwindcss.js"></script>
+  <script src="./vendor/chart.js"></script>
+  <script src="./vendor/jszip.min.js"></script>
+  <script src="./vendor/jspdf.umd.min.js"></script>
+  <script src="./vendor/jspdf.plugin.autotable.min.js"></script>
+  <link rel="stylesheet" href="./vendor/fontawesome/css/all.min.css">
   <style>
     ::-webkit-scrollbar { width: 6px; height: 6px; }
     ::-webkit-scrollbar-track { background: #f1f1f1; }
@@ -18,6 +25,8 @@
     ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
     body { -webkit-tap-highlight-color: transparent; }
     html, body { overflow-x: hidden; max-width: 100%; }
+    .pb-safe { padding-bottom: max(0.75rem, env(safe-area-inset-bottom)); }
+    .multi-filter-hint { display: block; margin-top: .35rem; color: #94a3b8; font-size: 11px; line-height: 1.35; font-weight: 700; }
     .hide-scroll::-webkit-scrollbar { display: none; }
     .hide-scroll { -ms-overflow-style: none; scrollbar-width: none; }
     .auth-bg { background: linear-gradient(135deg, #eff6ff 0%, #bfdbfe 100%); }
@@ -151,7 +160,7 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
   <div id="auth-screen" class="fixed inset-0 z-[100] auth-bg flex items-center justify-center p-4">
     <div class="bg-white p-8 rounded-3xl shadow-2xl w-full max-w-md flex flex-col items-center">
       <div class="w-24 h-24 mb-4 rounded-3xl overflow-hidden flex items-center justify-center bg-white shadow-sm p-1 border-2 border-slate-100">
-        <img src="https://farmacia.kaioadriel.com.br/icone/images.png" alt="Logo Controle de Farmácias" class="w-full h-full object-contain">
+        <img src="./icons/icon-192.png" alt="Logo Controle de Farmácias" class="w-full h-full object-contain">
       </div>
       <h1 class="text-2xl font-black text-slate-800 mb-2 text-center">Controle de Farmácias</h1>
       <p class="text-sm text-slate-500 mb-8 text-center font-medium">Faça login para acessar e sincronizar seus dados.</p>
@@ -178,7 +187,7 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
         </div>
 
         <button onclick="handleLoginGoogle()" class="w-full bg-white border-2 border-slate-100 text-slate-700 font-bold py-3.5 rounded-xl shadow-sm hover:bg-slate-50 transition active:scale-95 flex items-center justify-center gap-3">
-          <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" class="w-5 h-5"> Entrar com Google
+          <img src="./icons/google.svg" alt="" class="w-5 h-5"> Entrar com Google
         </button>
       </div>
     </div>
@@ -187,7 +196,7 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
   <!-- Header -->
   <header id="main-header" class="bg-white text-blue-700 p-4 shadow-sm md:fixed md:top-0 md:w-full md:z-40 flex justify-between items-center border-b border-slate-200 hidden">
     <div class="flex items-center gap-3">
-      <img src="https://farmacia.kaioadriel.com.br/icone/images.png" alt="Logo" class="h-8 w-8 object-contain rounded-md">
+      <img src="./icons/icon-192.png" alt="Logo" class="h-8 w-8 object-contain rounded-md">
       <h1 class="text-base sm:text-lg font-bold text-slate-800 leading-tight break-words max-w-[200px] sm:max-w-xs">Controle de Farmácias</h1>
     </div>
     <div class="flex items-center gap-2">
@@ -557,29 +566,16 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
   </div>
 
   <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-    import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut, deleteUser } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-    import { getFirestore, collection, onSnapshot, doc, setDoc, deleteDoc, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+    import { initializeApp } from "./vendor/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut, deleteUser } from "./vendor/firebase-auth.js";
+    import { getFirestore, initializeFirestore, persistentLocalCache, persistentMultipleTabManager, collection, onSnapshot, doc, setDoc, deleteDoc, getDocs, writeBatch, serverTimestamp } from "./vendor/firebase-firestore.js";
 
-    function injectPWA() {
-      const manifest = {
-        "name": "Controle de Farmácias - PharmaSync",
-        "short_name": "Controle de Farmácias",
-        "start_url": ".",
-        "display": "standalone",
-        "background_color": "#f8fafc",
-        "theme_color": "#2563eb",
-        "icons": [{"src": "https://farmacia.kaioadriel.com.br/icone/images.png", "sizes": "512x512", "type": "image/png", "purpose": "any"}]
-      };
-      const manifestBlob = new Blob([JSON.stringify(manifest)], {type: 'application/json'});
-      const link = document.createElement('link');
-      link.rel = 'manifest';
-      link.href = URL.createObjectURL(manifestBlob);
-      document.head.appendChild(link);
-
-      const swCode = `self.addEventListener('install', (e) => self.skipWaiting()); self.addEventListener('activate', (e) => e.waitUntil(clients.claim())); self.addEventListener('fetch', (e) => {});`;
-      const swBlob = new Blob([swCode], {type: 'text/javascript'});
-      if ('serviceWorker' in navigator) navigator.serviceWorker.register(URL.createObjectURL(swBlob)).catch(err => console.log('SW falhou', err));
+    function setupPWA() {
+      if ('serviceWorker' in navigator && ['http:', 'https:'].includes(location.protocol)) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('./service-worker.js').catch(error => console.error('Falha ao registrar o service worker:', error));
+        });
+      }
 
       let deferredPrompt;
       window.addEventListener('beforeinstallprompt', (e) => {
@@ -596,7 +592,7 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
         }
       };
     }
-    injectPWA();
+    setupPWA();
 
     const firebaseConfig = {
       apiKey: "AIzaSyB1HRg4rqLgyGMQ8GL6wP6zq9GSHUZlIZc",
@@ -606,6 +602,8 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
       messagingSenderId: "999252393322",
       appId: "1:999252393322:web:2cd640bc6deac648cfb913"
     };
+
+    const DATA_COLLECTIONS = Object.freeze(['pacientes', 'medicos', 'clinicas', 'farmacias', 'remedios', 'compras']);
 
     window.AppState = {
       user: null,
@@ -632,6 +630,28 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
 
     function getRestrictedAccessMessage() {
       return `Acesso restrito. Somente o e-mail ${ALLOWED_EMAIL} pode usar este app.`;
+    }
+
+    function escapeHtml(value) {
+      return String(value ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    const escapeAttribute = escapeHtml;
+
+    function localDateISO(date = new Date()) {
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    }
+
+    function isSafeRecordId(value) {
+      return /^[A-Za-z0-9_-]{1,160}$/.test(String(value || ''));
     }
 
     function clearAppSessionState() {
@@ -830,18 +850,22 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
 
     function safeParseDocumentList(value) {
       if (!value) return [];
-      if (Array.isArray(value)) return value.filter(Boolean);
+      if (Array.isArray(value)) return value.filter(isSafeDocumentSource);
       try {
         const parsed = JSON.parse(String(value));
-        return Array.isArray(parsed) ? parsed.filter(Boolean) : [];
+        return Array.isArray(parsed) ? parsed.filter(isSafeDocumentSource) : [];
       } catch (e) {
         return [];
       }
     }
 
+    function isSafeDocumentSource(value) {
+      return /^data:image\/(?:jpeg|jpg|png|webp);base64,[a-z0-9+/=\s]+$/i.test(String(value || ''));
+    }
+
     function getDocumentList(record = {}) {
       const docs = safeParseDocumentList(record.documentosBase64);
-      if (record.documentoBase64 && !docs.includes(record.documentoBase64)) docs.unshift(record.documentoBase64);
+      if (isSafeDocumentSource(record.documentoBase64) && !docs.includes(record.documentoBase64)) docs.unshift(record.documentoBase64);
       return docs.filter(Boolean);
     }
 
@@ -849,7 +873,7 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
       const multi = document.getElementById('field-documentosBase64');
       const legacy = document.getElementById('field-documentoBase64');
       const docs = safeParseDocumentList(multi?.value);
-      if (legacy?.value && !docs.includes(legacy.value)) docs.unshift(legacy.value);
+      if (isSafeDocumentSource(legacy?.value) && !docs.includes(legacy.value)) docs.unshift(legacy.value);
       return docs.filter(Boolean);
     }
 
@@ -873,7 +897,7 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
       const countText = docs.length ? `${docs.length} documento${docs.length > 1 ? 's' : ''} anexado${docs.length > 1 ? 's' : ''}` : 'Nenhum documento anexado';
       return `<div class="mt-6 border-t border-slate-200 pt-5">
         <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-3">Documentos Anexos</label>
-        <input type="hidden" id="field-documentoBase64" value="${legacyDoc}">
+        <input type="hidden" id="field-documentoBase64" value="${escapeAttribute(legacyDoc)}">
         <textarea id="field-documentosBase64" class="hidden">${docsJson}</textarea>
         <div id="doc-list-summary" class="mb-3 text-sm font-bold ${docs.length ? 'text-blue-700 bg-blue-50 border-blue-100' : 'text-slate-500 bg-slate-50 border-slate-100'} border rounded-2xl p-3 flex items-center justify-between gap-3">
           <span><i class="fa-regular fa-images mr-2"></i>${countText}</span>
@@ -898,7 +922,7 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
 
     function normalizeDocumentFields(dataObj) {
       const docs = safeParseDocumentList(dataObj.documentosBase64);
-      if (dataObj.documentoBase64 && !docs.includes(dataObj.documentoBase64)) docs.unshift(dataObj.documentoBase64);
+      if (isSafeDocumentSource(dataObj.documentoBase64) && !docs.includes(dataObj.documentoBase64)) docs.unshift(dataObj.documentoBase64);
       dataObj.documentosBase64 = JSON.stringify(docs.filter(Boolean));
       dataObj.documentoBase64 = docs[0] || '';
       return dataObj;
@@ -1106,9 +1130,11 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
       compraCodeSyncRunning = true;
       try {
         for (const { compra, expected } of updates) {
-          const cleanData = JSON.parse(JSON.stringify({ ...compra, codigoCompra: expected }));
-          delete cleanData.id;
-          await setDoc(doc(db, 'users', AppState.userId, 'compras', compra.id), cleanData);
+          await setDoc(doc(db, 'users', AppState.userId, 'compras', compra.id), {
+            codigoCompra: expected,
+            updatedAt: serverTimestamp(),
+            updatedAtLocal: new Date().toISOString()
+          }, { merge: true });
         }
       } catch (error) {
         console.error('Erro ao numerar compras:', error);
@@ -1119,7 +1145,7 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
 
     function isTodayOrFuture(dateStr) {
       if (!dateStr) return false;
-      const today = new Date().toISOString().split('T')[0];
+      const today = localDateISO();
       return dateStr >= today;
     }
 
@@ -1140,7 +1166,15 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
 
 
         auth = getAuth(app);
-        db = getFirestore(app);
+        try {
+          // O Firestore continua sendo o banco principal; este é apenas o cache oficial para uso com conexão instável.
+          db = initializeFirestore(app, {
+            localCache: persistentLocalCache({ tabManager: persistentMultipleTabManager() })
+          });
+        } catch (cacheError) {
+          console.warn('Cache persistente do Firestore indisponível; usando configuração padrão.', cacheError);
+          db = getFirestore(app);
+        }
         provider = new GoogleAuthProvider();
         provider.setCustomParameters({ prompt: 'select_account' });
 
@@ -1220,11 +1254,17 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
       listeners.forEach(unsub => unsub());
       listeners = [];
 
-      ['pacientes', 'medicos', 'clinicas', 'farmacias', 'remedios', 'compras'].forEach(colName => {
+      DATA_COLLECTIONS.forEach(colName => {
         const colRef = collection(db, 'users', AppState.userId, colName);
         listeners.push(onSnapshot(colRef, (snapshot) => {
           const items = [];
-          snapshot.forEach(doc => items.push({ id: doc.id, ...doc.data() }));
+          snapshot.forEach(itemDoc => {
+            if (!isSafeRecordId(itemDoc.id)) {
+              console.warn(`Registro ignorado por possuir identificador inválido em ${colName}.`);
+              return;
+            }
+            items.push({ ...itemDoc.data(), id: itemDoc.id });
+          });
           AppState.data[colName] = items;
           if (colName === 'compras') ensureCompraCodes();
           renderCompraFilterOptions();
@@ -1235,9 +1275,19 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
 
     window.dbSave = async (colName, dataObj, id = null) => {
       if (!AppState.userId) return false;
+      if (!DATA_COLLECTIONS.includes(colName)) return showToast('Coleção inválida.', 'error'), false;
       try {
         const cleanData = JSON.parse(JSON.stringify(dataObj));
         const docId = id || crypto.randomUUID();
+        if (!isSafeRecordId(docId)) return showToast('Identificador inválido.', 'error'), false;
+        const existing = id ? AppState.data[colName]?.find(item => item.id === id) : null;
+        delete cleanData.id;
+        delete cleanData.createdAt;
+        delete cleanData.updatedAt;
+        delete cleanData.updatedAtLocal;
+        cleanData.createdAt = existing?.createdAt || serverTimestamp();
+        cleanData.updatedAt = serverTimestamp();
+        cleanData.updatedAtLocal = new Date().toISOString();
         await setDoc(doc(db, 'users', AppState.userId, colName, docId), cleanData);
         showToast(id ? "Atualizado!" : "Salvo!", "success");
         return docId;
@@ -1249,6 +1299,7 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
 
     window.dbDelete = async (colName, id) => {
       if (!AppState.userId) return;
+      if (!DATA_COLLECTIONS.includes(colName) || !isSafeRecordId(id)) return showToast('Registro inválido.', 'error');
       try {
         await deleteDoc(doc(db, 'users', AppState.userId, colName, id));
         showToast("Excluído com sucesso.", "success");
@@ -1310,6 +1361,25 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
 
     function formatCurrency(val) {
       return (parseFloat(val) || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+    }
+
+    function parseCurrencyBR(value) {
+      const raw = String(value ?? '').trim().replace(/\s/g, '').replace(/^R\$/i, '');
+      if (!raw) return 0;
+      let normalized;
+      if (raw.includes(',')) normalized = raw.replace(/\./g, '').replace(',', '.');
+      else if (/^-?\d+\.\d{1,2}$/.test(raw)) normalized = raw;
+      else normalized = raw.replace(/\./g, '');
+      const parsed = Number.parseFloat(normalized);
+      return Number.isFinite(parsed) ? parsed : 0;
+    }
+
+    function formatCurrencyInput(value) {
+      if (value === '' || value === null || value === undefined) return '';
+      const number = typeof value === 'number' ? value : parseCurrencyBR(value);
+      return Number.isFinite(number)
+        ? number.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+        : '';
     }
 
     window.toggleChartType = () => {
@@ -1391,13 +1461,13 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
         const clin = AppState.data.clinicas.find(cl => cl.id === c.clinicaId)?.nome || '-';
         return `<div class="p-3 bg-white hover:bg-slate-50 rounded-xl border border-slate-100 mb-2 shadow-[0_1px_3px_rgba(0,0,0,0.02)] transition flex flex-col gap-1.5">
           <div class="flex justify-between items-start gap-2">
-            <h4 class="font-black text-slate-800 text-[13px] wrap-two-lines flex-1 min-w-0"><i class="fa-solid fa-shop text-purple-600 mr-1.5"></i>${farm}</h4>
+            <h4 class="font-black text-slate-800 text-[13px] wrap-two-lines flex-1 min-w-0"><i class="fa-solid fa-shop text-purple-600 mr-1.5"></i>${escapeHtml(farm)}</h4>
             <span class="text-[10px] font-black text-blue-700 bg-blue-100 px-2 py-0.5 rounded-md shrink-0 uppercase tracking-wide">${calcularDiasAtras(c.data)}</span>
           </div>
           <div class="flex flex-wrap gap-x-3 gap-y-1 text-[11px] font-medium text-slate-500">
-            <span class="flex items-center gap-1 min-w-0"><i class="fa-solid fa-user text-slate-300"></i><span class="wrap-two-lines">${pac}</span></span>
-            <span class="flex items-center gap-1 min-w-0"><i class="fa-solid fa-user-doctor text-slate-300"></i><span class="wrap-two-lines">${med}</span></span>
-            <span class="flex items-center gap-1 min-w-0"><i class="fa-solid fa-house-medical text-slate-300"></i><span class="wrap-two-lines">${clin}</span></span>
+            <span class="flex items-center gap-1 min-w-0"><i class="fa-solid fa-user text-slate-300"></i><span class="wrap-two-lines">${escapeHtml(pac)}</span></span>
+            <span class="flex items-center gap-1 min-w-0"><i class="fa-solid fa-user-doctor text-slate-300"></i><span class="wrap-two-lines">${escapeHtml(med)}</span></span>
+            <span class="flex items-center gap-1 min-w-0"><i class="fa-solid fa-house-medical text-slate-300"></i><span class="wrap-two-lines">${escapeHtml(clin)}</span></span>
           </div>
         </div>`;
       }).join('') : '<div class="text-center py-6 text-slate-400"><i class="fa-solid fa-box-open text-3xl mb-2"></i><p class="text-sm">Nenhuma compra registrada.</p></div>';
@@ -1459,7 +1529,7 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
       if (!el) return;
       const currentValues = getMultiSelectValues('filter-bairro');
       const bairros = getBairroOptionsFromFarmacias();
-      el.innerHTML = bairros.map(bairro => `<option value="${bairro.id}">${bairro.nome}</option>`).join('');
+      el.innerHTML = bairros.map(bairro => `<option value="${escapeAttribute(bairro.id)}">${escapeHtml(bairro.nome)}</option>`).join('');
       setMultiSelectValues('filter-bairro', currentValues.filter(value => bairros.some(bairro => bairro.id === value)));
     }
 
@@ -1479,7 +1549,7 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
         const status = item.status === 'inativo' ? ' (Inativo)' : '';
         const incomplete = item.incomplete ? ' (Incompleto)' : '';
         const displayName = id === 'filter-farmacia' ? getFarmaciaOptionLabel(item) : (item.nome || 'Sem nome');
-        return `<option value="${item.id}">${displayName}${status}${incomplete}</option>`;
+        return `<option value="${escapeAttribute(item.id)}">${escapeHtml(displayName)}${status}${incomplete}</option>`;
       }).join('');
 
       setMultiSelectValues(id, currentValues.filter(value => sorted.some(item => item.id === value)));
@@ -1588,8 +1658,8 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
         summary.classList.remove('hidden');
         summary.innerHTML = activeBadges.map(badge => `
           <div class="inline-flex items-center gap-2 bg-blue-100 text-blue-700 px-3 py-1.5 rounded-full text-xs font-bold">
-            <span>${badge.label}: ${badge.text}</span>
-            <button onclick="removeFilterBadge('${badge.id}', '${badge.value}')" class="ml-1 hover:text-blue-900 transition">
+            <span>${escapeHtml(badge.label)}: ${escapeHtml(badge.text)}</span>
+            <button data-filter-id="${escapeAttribute(badge.id)}" data-filter-value="${escapeAttribute(badge.value)}" onclick="removeFilterBadge(this.dataset.filterId, this.dataset.filterValue)" class="ml-1 hover:text-blue-900 transition">
               <i class="fa-solid fa-times"></i>
             </button>
           </div>
@@ -1721,26 +1791,26 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
           <div class="flex justify-between items-start mb-2 gap-3">
             <div class="min-w-0 pr-2 flex-1">
               <div class="flex flex-col items-start gap-1.5">
-                <h4 class="font-black text-slate-800 text-[14px] sm:text-base wrap-two-lines">${farmName}</h4>
-                ${farmBairro ? `<p class="font-black text-slate-800 text-[14px] sm:text-base wrap-two-lines leading-tight"><i class="fa-solid fa-location-dot mr-1 text-slate-700"></i>${farmBairro}</p>` : ''}
+                <h4 class="font-black text-slate-800 text-[14px] sm:text-base wrap-two-lines">${escapeHtml(farmName)}</h4>
+                ${farmBairro ? `<p class="font-black text-slate-800 text-[14px] sm:text-base wrap-two-lines leading-tight"><i class="fa-solid fa-location-dot mr-1 text-slate-700"></i>${escapeHtml(farmBairro)}</p>` : ''}
                 <div class="flex items-center gap-2 flex-wrap">
                   <span class="status-chip ${statusChipClass}">${statusLabel}</span>
-                  ${compraCode ? `<span class="bg-slate-100 text-slate-600 text-[10px] px-1.5 py-0.5 rounded font-black uppercase tracking-wide"><i class="fa-solid fa-hashtag mr-1"></i>${compraCode}</span>` : ''}
+                  ${compraCode ? `<span class="bg-slate-100 text-slate-600 text-[10px] px-1.5 py-0.5 rounded font-black uppercase tracking-wide"><i class="fa-solid fa-hashtag mr-1"></i>${escapeHtml(compraCode)}</span>` : ''}
                   ${getDocumentList(c).length ? `<span class="bg-blue-100 text-blue-700 text-[10px] px-1.5 py-0.5 rounded font-bold uppercase tracking-wide"><i class="fa-regular fa-image mr-1"></i>${getDocumentList(c).length} Doc</span>` : ''}
                 </div>
               </div>
-              <p class="text-xs text-slate-500 wrap-two-lines mt-1"><i class="fa-regular fa-user mr-1 text-slate-400"></i>${pacName}</p>
+              <p class="text-xs text-slate-500 wrap-two-lines mt-1"><i class="fa-regular fa-user mr-1 text-slate-400"></i>${escapeHtml(pacName)}</p>
             </div>
             <div class="text-right shrink-0">
               <span class="block font-black ${timeColorClass} text-base">${calcularDiasAtras(c.data)}</span>
-              <span class="text-[10px] text-slate-400 font-bold">${(c.data || '').split('-').reverse().join('/')}</span>
+              <span class="text-[10px] text-slate-400 font-bold">${escapeHtml((c.data || '').split('-').reverse().join('/'))}</span>
             </div>
           </div>
 
           <div class="flex flex-col gap-1.5 text-[11px] text-slate-600 bg-slate-50/80 p-2.5 rounded-lg mb-3 font-medium border border-slate-100/80">
-            <div class="flex items-center gap-2 min-w-0"><i class="fa-solid fa-pills w-3.5 text-center text-slate-400"></i> <span class="font-bold text-slate-700 wrap-two-lines">${remName}</span></div>
-            <div class="flex items-center gap-2 min-w-0"><i class="fa-solid fa-house-medical w-3.5 text-center text-slate-400"></i> <span class="wrap-two-lines">${clinName}</span></div>
-            <div class="flex items-center gap-2 min-w-0"><i class="fa-solid fa-user-doctor w-3.5 text-center text-slate-400"></i> <span class="wrap-two-lines">${medName}</span></div>
+            <div class="flex items-center gap-2 min-w-0"><i class="fa-solid fa-pills w-3.5 text-center text-slate-400"></i> <span class="font-bold text-slate-700 wrap-two-lines">${escapeHtml(remName)}</span></div>
+            <div class="flex items-center gap-2 min-w-0"><i class="fa-solid fa-house-medical w-3.5 text-center text-slate-400"></i> <span class="wrap-two-lines">${escapeHtml(clinName)}</span></div>
+            <div class="flex items-center gap-2 min-w-0"><i class="fa-solid fa-user-doctor w-3.5 text-center text-slate-400"></i> <span class="wrap-two-lines">${escapeHtml(medName)}</span></div>
           </div>
 
           <div class="flex justify-end gap-2 flex-wrap">
@@ -1757,7 +1827,7 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
       const c = AppState.data.compras.find(x => x.id === id);
       if (c) {
         c.status = 'confirmada';
-        c.data = new Date().toISOString().split('T')[0];
+        c.data = localDateISO();
         if (!c.codigoCompra) c.codigoCompra = getCompraDisplayCode(c) || getNextCompraCode();
         await dbSave('compras', c, id);
       }
@@ -1792,19 +1862,19 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
           <i class="fa-solid ${statusIcon}"></i> Compra ${statusLabel}
         </div>
         <div class="bg-slate-50 p-5 rounded-2xl border border-slate-100 grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div><span class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">Código da Compra</span><span class="block font-black text-blue-600 break-words">${compraCode}</span></div>
-          <div><span class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">Data da Compra</span><span class="block font-medium text-slate-800 break-words">${formattedDate} — ${calcularDiasAtras(c.data)}</span></div>
-          <div><span class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">Farmácia</span><span class="block font-medium text-slate-800 break-words">${farmName}</span>${farmBairro ? `<span class="block text-sm font-black text-black break-words mt-0.5"><i class="fa-solid fa-location-dot mr-1 text-slate-700"></i>${farmBairro}</span>` : ''}</div>
-          <div><span class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">Remédio</span><span class="block font-medium text-slate-800 break-words">${remName}</span></div>
-          <div><span class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">Qtd de Caixas</span><span class="block font-medium text-slate-800 break-words">${c.qtd || '-'}</span></div>
-          <div><span class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">Paciente</span><span class="block font-medium text-slate-800 break-words">${pacName}</span></div>
-          <div><span class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">Clínica</span><span class="block font-medium text-slate-800 break-words">${clinName}</span></div>
-          <div><span class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">Médico</span><span class="block font-medium text-slate-800 break-words">${medName}</span></div>
+          <div><span class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">Código da Compra</span><span class="block font-black text-blue-600 break-words">${escapeHtml(compraCode)}</span></div>
+          <div><span class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">Data da Compra</span><span class="block font-medium text-slate-800 break-words">${escapeHtml(formattedDate)} — ${calcularDiasAtras(c.data)}</span></div>
+          <div><span class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">Farmácia</span><span class="block font-medium text-slate-800 break-words">${escapeHtml(farmName)}</span>${farmBairro ? `<span class="block text-sm font-black text-black break-words mt-0.5"><i class="fa-solid fa-location-dot mr-1 text-slate-700"></i>${escapeHtml(farmBairro)}</span>` : ''}</div>
+          <div><span class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">Remédio</span><span class="block font-medium text-slate-800 break-words">${escapeHtml(remName)}</span></div>
+          <div><span class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">Qtd de Caixas</span><span class="block font-medium text-slate-800 break-words">${escapeHtml(c.qtd || '-')}</span></div>
+          <div><span class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">Paciente</span><span class="block font-medium text-slate-800 break-words">${escapeHtml(pacName)}</span></div>
+          <div><span class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">Clínica</span><span class="block font-medium text-slate-800 break-words">${escapeHtml(clinName)}</span></div>
+          <div><span class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">Médico</span><span class="block font-medium text-slate-800 break-words">${escapeHtml(medName)}</span></div>
           <div><span class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">Valor Total</span><span class="block font-medium text-slate-800 break-words">${formatCurrency(c.valor)}</span></div>
-          <div><span class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">Forma de Pagto</span><span class="block font-medium text-slate-800 break-words">${c.pagamento || '-'}</span></div>
+          <div><span class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">Forma de Pagto</span><span class="block font-medium text-slate-800 break-words">${escapeHtml(c.pagamento || '-')}</span></div>
         </div>`;
 
-      if (c.obs) html += `<div class="bg-amber-50 p-4 rounded-2xl border border-amber-100"><span class="block text-[10px] font-bold text-amber-600 uppercase tracking-wider mb-1">Observações</span><p class="text-sm font-medium text-slate-700 whitespace-pre-wrap break-words">${c.obs}</p></div>`;
+      if (c.obs) html += `<div class="bg-amber-50 p-4 rounded-2xl border border-amber-100"><span class="block text-[10px] font-bold text-amber-600 uppercase tracking-wider mb-1">Observações</span><p class="text-sm font-medium text-slate-700 whitespace-pre-wrap break-words">${escapeHtml(c.obs)}</p></div>`;
       if (getDocumentList(c).length) html += `<div class="mt-4"><button onclick="viewCompraDocument('${id}')" class="w-full bg-slate-800 text-white font-bold py-3.5 rounded-xl shadow-md hover:bg-slate-700 transition"><i class="fa-regular fa-images mr-2"></i> Ver Documentos Anexos (${getDocumentList(c).length})</button></div>`;
       html += `</div>`;
 
@@ -1883,9 +1953,9 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
         return `<div class="${bg} p-4 rounded-2xl shadow-sm border mb-3 flex items-center gap-4 cursor-pointer hover:shadow-md transition active:scale-[0.98]" onclick="viewErpDetails('${tab}', '${item.id}')">
           <div class="w-12 h-12 rounded-full ${isOff ? 'bg-red-200 text-red-700' : (inc ? 'bg-orange-200 text-orange-700' : 'bg-blue-100 text-blue-600')} flex items-center justify-center shrink-0 text-xl"><i class="fa-solid ${cfg.i}"></i></div>
           <div class="flex-1 min-w-0">
-            <div class="flex items-center gap-2 flex-wrap"><h4 class="font-bold text-[14px] sm:text-base leading-tight text-slate-800 wrap-two-lines">${item.nome || '-'}</h4>${inc ? '<span class="bg-orange-500 text-white text-[10px] px-1.5 py-0.5 rounded font-bold uppercase tracking-wide">Incompleto</span>' : ''}${isOff ? '<span class="bg-red-100 text-red-700 text-[10px] px-1.5 py-0.5 rounded font-bold uppercase tracking-wide">Inativo</span>' : ''}${getDocumentList(item).length ? `<span class="bg-blue-100 text-blue-700 text-[10px] px-1.5 py-0.5 rounded font-bold uppercase tracking-wide"><i class="fa-regular fa-image mr-1"></i>${getDocumentList(item).length} Doc</span>` : ''}</div>
-            <p class="text-xs sm:text-sm ${isOff ? 'text-red-600' : 'text-slate-500'} font-medium wrap-two-lines">${item[cfg.s] || '---'}</p>
-            ${tab === 'farmacias' && item.bairro ? `<p class="text-xs sm:text-sm ${isOff ? 'text-red-600' : 'text-slate-700'} font-black wrap-two-lines mt-0.5"><i class="fa-solid fa-location-dot mr-1 text-slate-500"></i>${item.bairro}</p>` : ''}
+            <div class="flex items-center gap-2 flex-wrap"><h4 class="font-bold text-[14px] sm:text-base leading-tight text-slate-800 wrap-two-lines">${escapeHtml(item.nome || '-')}</h4>${inc ? '<span class="bg-orange-500 text-white text-[10px] px-1.5 py-0.5 rounded font-bold uppercase tracking-wide">Incompleto</span>' : ''}${isOff ? '<span class="bg-red-100 text-red-700 text-[10px] px-1.5 py-0.5 rounded font-bold uppercase tracking-wide">Inativo</span>' : ''}${getDocumentList(item).length ? `<span class="bg-blue-100 text-blue-700 text-[10px] px-1.5 py-0.5 rounded font-bold uppercase tracking-wide"><i class="fa-regular fa-image mr-1"></i>${getDocumentList(item).length} Doc</span>` : ''}</div>
+            <p class="text-xs sm:text-sm ${isOff ? 'text-red-600' : 'text-slate-500'} font-medium wrap-two-lines">${escapeHtml(item[cfg.s] || '---')}</p>
+            ${tab === 'farmacias' && item.bairro ? `<p class="text-xs sm:text-sm ${isOff ? 'text-red-600' : 'text-slate-700'} font-black wrap-two-lines mt-0.5"><i class="fa-solid fa-location-dot mr-1 text-slate-500"></i>${escapeHtml(item.bairro)}</p>` : ''}
             <p class="text-[10px] mt-1 font-bold text-slate-400 uppercase tracking-wide"><i class="fa-solid fa-clock-rotate-left mr-1"></i>Última Compra: <span class="${isOff ? 'text-red-500' : 'text-blue-500'}">${calcularDiasAtrasLastPurchase(item.id, idFieldMap[tab])}</span></p>
           </div>
           <button class="px-3 py-1.5 bg-slate-100 text-slate-600 rounded-lg text-xs font-bold hover:bg-slate-200 shadow-[0_1px_2px_rgba(0,0,0,0.05)]">Ver Mais</button>
@@ -1915,12 +1985,12 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
         if (f.type === 'db-select' && data[f.name]) val = AppState.data[f.collection].find(x => x.id === data[f.name])?.nome || '-';
         if (f.name === 'dataNascimento' && val !== '-') val = val.split('-').reverse().join('/');
         if (f.name === 'status' && val !== '-') val = val.charAt(0).toUpperCase() + val.slice(1);
-        html += `<div><span class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">${f.label}</span><span class="block font-medium text-slate-800 break-words">${val}</span></div>`;
+        html += `<div><span class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">${escapeHtml(f.label)}</span><span class="block font-medium text-slate-800 break-words">${escapeHtml(val)}</span></div>`;
       });
       html += `</div>`;
 
-      if (data.obs) html += `<div class="bg-amber-50 p-4 rounded-2xl border border-amber-100"><span class="block text-[10px] font-bold text-amber-600 uppercase tracking-wider mb-1">Observações</span><p class="text-sm font-medium text-slate-700">${data.obs}</p></div>`;
-      if (tab === 'medicos' && data.crm) html += `<button onclick="consultarCRM('${data.crm}')" class="w-full bg-blue-100 text-blue-700 font-bold py-3.5 rounded-xl shadow-sm hover:bg-blue-200 transition mt-2"><i class="fa-solid fa-magnifying-glass mr-2"></i> Consultar CRM no CREMESP</button>`;
+      if (data.obs) html += `<div class="bg-amber-50 p-4 rounded-2xl border border-amber-100"><span class="block text-[10px] font-bold text-amber-600 uppercase tracking-wider mb-1">Observações</span><p class="text-sm font-medium text-slate-700 whitespace-pre-wrap break-words">${escapeHtml(data.obs)}</p></div>`;
+      if (tab === 'medicos' && data.crm) html += `<button data-crm="${escapeAttribute(data.crm)}" onclick="consultarCRM(this.dataset.crm)" class="w-full bg-blue-100 text-blue-700 font-bold py-3.5 rounded-xl shadow-sm hover:bg-blue-200 transition mt-2"><i class="fa-solid fa-magnifying-glass mr-2"></i> Consultar CRM no CREMESP</button>`;
       if (['pacientes','medicos','clinicas','farmacias','remedios'].includes(tab) && getDocumentList(data).length) html += `<div class="mt-4"><button onclick="viewDocumentFromDetails('${tab}', '${id}')" class="w-full bg-slate-800 text-white font-bold py-3.5 rounded-xl shadow-md hover:bg-slate-700 transition"><i class="fa-regular fa-images mr-2"></i> Ver Documentos Anexos (${getDocumentList(data).length})</button></div>`;
       html += `</div>`;
 
@@ -1946,7 +2016,10 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
         { name: 'nome', label: 'Nome Completo' }, { name: 'cpf', label: 'CPF' }, { name: 'rg', label: 'RG' }, { name: 'dataNascimento', label: 'Data Nasc.', type: 'date-calc' },
         { name: 'signo', label: 'Signo', readonly: true }, { name: 'cep', label: 'CEP', type: 'cep' }, { name: 'logradouro', label: 'Endereço' }, { name: 'numero', label: 'Número' },
         { name: 'complemento', label: 'Complemento' }, { name: 'bairro', label: 'Bairro' }, { name: 'cidade', label: 'Cidade' }, { name: 'uf', label: 'UF' },
-        { name: 'telefone', label: 'Telefone' }, { name: 'email', label: 'E-mail' }, ...b
+        { name: 'telefone', label: 'Telefone' }, { name: 'email', label: 'E-mail' },
+        { name: 'clinicaPrincipalId', label: 'Clínica Principal', type: 'db-select', collection: 'clinicas' },
+        { name: 'medicoPrincipalId', label: 'Médico Principal', type: 'db-select', collection: 'medicos' },
+        ...b
       ];
       if (tab === 'medicos') return [{ name: 'nome', label: 'Nome' }, { name: 'especialidade', label: 'Especialidade' }, { name: 'crm', label: 'CRM' }, { name: 'uf', label: 'UF do CRM' }, { name: 'rqe', label: 'RQE' }, ...b];
       if (tab === 'clinicas') return [{ name: 'nome', label: 'Nome' }, { name: 'especialidade', label: 'Especialidade' }, { name: 'medicoResponsavelId', label: 'Méd. Responsável', type: 'db-select', collection: 'medicos' }, ...b];
@@ -1973,13 +2046,15 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
       const isDuplicate = Boolean(duplicateData) && !id;
       const data = id
         ? AppState.data.compras.find(i => i.id === id)
-        : (isDuplicate ? { ...duplicateData } : { status: 'confirmada', data: new Date().toISOString().split('T')[0] });
+        : (isDuplicate ? { ...duplicateData } : { status: 'confirmada', data: localDateISO() });
 
       if (!data) return showToast('Compra não encontrada.', 'error');
       if (isDuplicate) {
         delete data.id;
         delete data.codigoCompra;
       }
+      const safeCompraStatus = ['confirmada', 'agendada', 'cancelada'].includes(data.status) ? data.status : 'confirmada';
+      data.status = safeCompraStatus;
       const fields = [
         { name: 'data', label: 'Data da Compra', type: 'date' },
         { name: 'bairroCompra', label: 'Bairro', type: 'bairro-select' },
@@ -1989,7 +2064,7 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
         { name: 'pacienteId', label: 'Paciente', type: 'db-select', collection: 'pacientes' },
         { name: 'clinicaId', label: 'Clínica', type: 'db-select', collection: 'clinicas' },
         { name: 'medicoId', label: 'Médico', type: 'db-select', collection: 'medicos' },
-        { name: 'valor', label: 'Valor Total (R$)' },
+        { name: 'valor', label: 'Valor Total (R$)', type: 'currency' },
         { name: 'pagamento', label: 'Forma de Pagto' },
         { name: 'obs', label: 'Observações', type: 'textarea' },
       ];
@@ -2000,22 +2075,23 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
 
       let footerHtml = '';
       if (id) {
-        footerHtml += `<button onclick="deleteErpConfirm('compras', '${id}')" class="px-4 py-2.5 bg-red-100 text-red-600 rounded-xl font-bold hover:bg-red-200 mr-auto"><i class="fa-solid fa-trash"></i></button><button onclick="viewCompraDetails('${id}')" class="px-5 py-2.5 bg-slate-200 text-slate-700 rounded-xl font-bold">Cancelar</button><button onclick="saveCompra('${id}', '${data.status}')" class="px-6 py-2.5 bg-blue-600 text-white rounded-xl font-bold shadow-md">Atualizar</button>`;
+        footerHtml += `<button onclick="deleteErpConfirm('compras', '${id}')" class="px-4 py-2.5 bg-red-100 text-red-600 rounded-xl font-bold hover:bg-red-200 mr-auto"><i class="fa-solid fa-trash"></i></button><button onclick="viewCompraDetails('${id}')" class="px-5 py-2.5 bg-slate-200 text-slate-700 rounded-xl font-bold">Cancelar</button><button onclick="saveCompra('${id}', '${safeCompraStatus}')" class="px-6 py-2.5 bg-blue-600 text-white rounded-xl font-bold shadow-md">Atualizar</button>`;
       } else if (isDuplicate) {
-        footerHtml += `<button onclick="closeModal()" class="px-5 py-2.5 bg-slate-200 text-slate-700 rounded-xl font-bold mr-auto">Cancelar</button><button onclick="saveCompra('', '${data.status || 'confirmada'}')" class="px-6 py-2.5 bg-purple-600 text-white rounded-xl font-bold shadow-md hover:bg-purple-700 transition"><i class="fa-solid fa-copy mr-2"></i>Salvar Duplicata</button>`;
+        footerHtml += `<button onclick="closeModal()" class="px-5 py-2.5 bg-slate-200 text-slate-700 rounded-xl font-bold mr-auto">Cancelar</button><button onclick="saveCompra('', '${safeCompraStatus}')" class="px-6 py-2.5 bg-purple-600 text-white rounded-xl font-bold shadow-md hover:bg-purple-700 transition"><i class="fa-solid fa-copy mr-2"></i>Salvar Duplicata</button>`;
       } else {
         footerHtml += `<button onclick="closeModal()" class="px-5 py-2.5 bg-slate-200 text-slate-700 rounded-xl font-bold mr-auto">Cancelar</button><button onclick="saveCompra('', 'agendada')" class="px-5 py-2.5 bg-orange-100 text-orange-700 border border-orange-300 rounded-xl font-bold shadow-sm">Agendar</button><button onclick="saveCompra('', 'confirmada')" class="px-6 py-2.5 bg-blue-600 text-white rounded-xl font-bold shadow-md">Confirmar</button>`;
       }
 
       const compraCode = id ? (getCompraDisplayCode(data) || '-') : 'Será gerado ao salvar';
       const duplicateNotice = isDuplicate ? `<div class="mb-5 bg-purple-50 border border-purple-100 rounded-2xl p-4 text-purple-800 text-sm font-bold"><i class="fa-solid fa-copy mr-2"></i>Registro duplicado. Revise a data e salve para criar uma nova compra.</div>` : '';
-      let compraFormHtml = duplicateNotice + `<div class="mb-5 bg-blue-50 border border-blue-100 rounded-2xl p-4"><span class="block text-[10px] font-bold text-blue-500 uppercase tracking-wider mb-1">Código da Compra</span><span class="block font-black text-blue-700 text-lg">${compraCode}</span><p class="text-[11px] text-blue-500 font-bold mt-1">Número automático, não editável.</p></div>` + generateFormFields(fields, data);
+      let compraFormHtml = duplicateNotice + `<div class="mb-5 bg-blue-50 border border-blue-100 rounded-2xl p-4"><span class="block text-[10px] font-bold text-blue-500 uppercase tracking-wider mb-1">Código da Compra</span><span class="block font-black text-blue-700 text-lg">${escapeHtml(compraCode)}</span><p class="text-[11px] text-blue-500 font-bold mt-1">Número automático, não editável.</p></div>` + generateFormFields(fields, data);
       compraFormHtml += renderDocumentUploadSection(data);
 
       openModal(id ? 'Editar Compra' : (isDuplicate ? 'Duplicar Compra' : 'Nova Compra'), compraFormHtml, footerHtml);
 
-      setupCompraBairroFarmaciaFilter(data.farmaciaId || '');
+      setupCompraBairroFarmaciaFilter(data.farmaciaId || '', !id);
       setupCompraClinicaAutoFill();
+      setupCompraPacienteMainAutoFill();
 
       if (isDuplicate) {
         setTimeout(() => {
@@ -2050,7 +2126,7 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
       openCompraForm(null, duplicated);
     };
 
-    function setupCompraBairroFarmaciaFilter(defaultFarmaciaId = '') {
+    function setupCompraBairroFarmaciaFilter(defaultFarmaciaId = '', autoFillPatient = true) {
       const bairroSelect = document.getElementById('field-bairroCompra');
       const farmaciaSelect = document.getElementById('field-farmaciaId');
       if (!bairroSelect || !farmaciaSelect) return;
@@ -2071,7 +2147,7 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
         farmaciaSelect.innerHTML = '<option value="">Selecione...</option>' + farmacias.map(farmacia => {
           const status = farmacia.status === 'inativo' ? ' (Inativo)' : '';
           const incomplete = farmacia.incomplete ? ' (Incompleto)' : '';
-          return `<option value="${farmacia.id}">${getFarmaciaOptionLabel(farmacia)}${status}${incomplete}</option>`;
+          return `<option value="${escapeAttribute(farmacia.id)}">${escapeHtml(getFarmaciaOptionLabel(farmacia))}${status}${incomplete}</option>`;
         }).join('');
 
         if (previousValue && farmacias.some(farmacia => farmacia.id === previousValue)) {
@@ -2088,9 +2164,83 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
       });
 
       farmaciaSelect.addEventListener('change', () => {
-        if (bairroSelect.value) return;
-        renderFarmaciasByBairro(farmaciaSelect.value);
+        const selectedFarmaciaId = farmaciaSelect.value;
+        if (!bairroSelect.value) renderFarmaciasByBairro(selectedFarmaciaId);
+        if (autoFillPatient) fillPatientFromLastFarmacia(selectedFarmaciaId);
       });
+    }
+
+    function firestoreTimeToMillis(value) {
+      if (!value) return 0;
+      if (typeof value.toMillis === 'function') return value.toMillis();
+      if (Number.isFinite(value.seconds)) return value.seconds * 1000 + Math.floor((value.nanoseconds || 0) / 1000000);
+      const parsed = Date.parse(value);
+      return Number.isFinite(parsed) ? parsed : 0;
+    }
+
+    function getCompraLastSavedTime(compra) {
+      return firestoreTimeToMillis(compra.updatedAt)
+        || firestoreTimeToMillis(compra.updatedAtLocal)
+        || firestoreTimeToMillis(compra.createdAt)
+        || firestoreTimeToMillis(compra.data ? `${compra.data}T12:00:00` : '');
+    }
+
+    function getLastSavedCompraForFarmacia(farmaciaId) {
+      if (!farmaciaId) return null;
+      return AppState.data.compras
+        .filter(compra => compra.farmaciaId === farmaciaId && compra.pacienteId)
+        .sort((a, b) => {
+          const savedDiff = getCompraLastSavedTime(b) - getCompraLastSavedTime(a);
+          if (savedDiff) return savedDiff;
+          return parseCompraCode(b.codigoCompra) - parseCompraCode(a.codigoCompra);
+        })[0] || null;
+    }
+
+    function fillPatientMainData(pacienteId, showFeedback = true) {
+      const clinicaSelect = document.getElementById('field-clinicaId');
+      const medicoSelect = document.getElementById('field-medicoId');
+      let clinicaPreenchida = false;
+      let medicoPreenchido = false;
+
+      if (clinicaSelect) clinicaSelect.value = '';
+      if (medicoSelect) medicoSelect.value = '';
+
+      const paciente = AppState.data.pacientes.find(item => item.id === pacienteId);
+      if (!paciente) return false;
+
+      if (clinicaSelect && paciente.clinicaPrincipalId && Array.from(clinicaSelect.options).some(option => option.value === paciente.clinicaPrincipalId)) {
+        clinicaSelect.value = paciente.clinicaPrincipalId;
+        clinicaPreenchida = true;
+      }
+
+      if (medicoSelect && paciente.medicoPrincipalId && Array.from(medicoSelect.options).some(option => option.value === paciente.medicoPrincipalId)) {
+        medicoSelect.value = paciente.medicoPrincipalId;
+        medicoPreenchido = true;
+      }
+
+      if (showFeedback && (clinicaPreenchida || medicoPreenchido)) {
+        const preenchidos = [clinicaPreenchida ? 'clínica' : '', medicoPreenchido ? 'médico' : ''].filter(Boolean).join(' e ');
+        showToast(`Dados principais preenchidos: ${preenchidos}.`, 'success');
+      }
+      return clinicaPreenchida || medicoPreenchido;
+    }
+
+    function fillPatientFromLastFarmacia(farmaciaId) {
+      const lastCompra = getLastSavedCompraForFarmacia(farmaciaId);
+      if (!lastCompra) return;
+      const pacienteSelect = document.getElementById('field-pacienteId');
+      if (!pacienteSelect || !Array.from(pacienteSelect.options).some(option => option.value === lastCompra.pacienteId)) return;
+
+      pacienteSelect.value = lastCompra.pacienteId;
+      const paciente = AppState.data.pacientes.find(item => item.id === lastCompra.pacienteId);
+      fillPatientMainData(lastCompra.pacienteId, false);
+      showToast(`Paciente preenchido pela última compra: ${paciente?.nome || 'cadastro encontrado'}.`, 'success');
+    }
+
+    function setupCompraPacienteMainAutoFill() {
+      const pacienteSelect = document.getElementById('field-pacienteId');
+      if (!pacienteSelect) return;
+      pacienteSelect.addEventListener('change', () => fillPatientMainData(pacienteSelect.value, true));
     }
 
     function setupCompraClinicaAutoFill() {
@@ -2110,35 +2260,37 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
 
     function generateFormFields(fields, data = {}) {
       return fields.map(f => {
-        const val = data[f.name] || '';
+        const rawVal = data[f.name] ?? '';
+        const val = f.type === 'currency' ? formatCurrencyInput(rawVal) : rawVal;
         const lClass = "block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1.5";
         const iClass = "w-full bg-slate-50 border border-slate-200 rounded-xl p-3.5 text-sm font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition shadow-[inset_0_1px_2px_rgba(0,0,0,0.02)]";
 
-        if (f.type === 'select') return `<div class="mb-4"><label class="${lClass}">${f.label}</label><select id="field-${f.name}" class="${iClass}">${f.options.map(o => `<option value="${o.val}" ${val === o.val ? 'selected' : ''}>${o.label}</option>`).join('')}</select></div>`;
+        if (f.type === 'select') return `<div class="mb-4"><label class="${lClass}">${escapeHtml(f.label)}</label><select id="field-${escapeAttribute(f.name)}" class="${iClass}">${f.options.map(o => `<option value="${escapeAttribute(o.val)}" ${val === o.val ? 'selected' : ''}>${escapeHtml(o.label)}</option>`).join('')}</select></div>`;
 
-        if (f.type === 'textarea') return `<div class="mb-4"><label class="${lClass}">${f.label}</label><textarea id="field-${f.name}" rows="3" class="${iClass}">${val}</textarea></div>`;
+        if (f.type === 'textarea') return `<div class="mb-4"><label class="${lClass}">${escapeHtml(f.label)}</label><textarea id="field-${escapeAttribute(f.name)}" rows="3" class="${iClass}">${escapeHtml(val)}</textarea></div>`;
 
         if (f.type === 'bairro-select') {
           const farmacias = [...AppState.data.farmacias];
           const selectedFarmacia = data.farmaciaId ? farmacias.find(farmacia => farmacia.id === data.farmaciaId) : null;
           const selectedBairro = val || (selectedFarmacia ? normalizeBairroValue(selectedFarmacia.bairro) : '');
           const bairros = getBairroOptionsFromFarmacias();
-          return `<div class="mb-4"><label class="${lClass}">${f.label}</label><select id="field-${f.name}" class="${iClass}"><option value="">Todos os bairros</option>${bairros.map(bairro => `<option value="${bairro.id}" ${selectedBairro === bairro.id ? 'selected' : ''}>${bairro.nome}</option>`).join('')}</select><p class="text-[11px] text-slate-400 font-bold mt-1 ml-1">Sem bairro selecionado, a lista abaixo mostra todas as farmácias com o bairro ao lado.</p></div>`;
+          return `<div class="mb-4"><label class="${lClass}">${escapeHtml(f.label)}</label><select id="field-${escapeAttribute(f.name)}" class="${iClass}"><option value="">Todos os bairros</option>${bairros.map(bairro => `<option value="${escapeAttribute(bairro.id)}" ${selectedBairro === bairro.id ? 'selected' : ''}>${escapeHtml(bairro.nome)}</option>`).join('')}</select><p class="text-[11px] text-slate-400 font-bold mt-1 ml-1">Sem bairro selecionado, a lista abaixo mostra todas as farmácias com o bairro ao lado.</p></div>`;
         }
 
         if (f.type === 'db-select') {
           const items = [...AppState.data[f.collection]].sort((a,b) => (a.nome || '').localeCompare(b.nome || '', 'pt-BR'));
-          return `<div class="mb-4"><label class="${lClass}">${f.label}</label><div class="flex gap-2"><select id="field-${f.name}" class="${iClass} flex-1"><option value="">Selecione...</option>${items.map(i => {
+          return `<div class="mb-4"><label class="${lClass}">${escapeHtml(f.label)}</label><div class="flex gap-2"><select id="field-${escapeAttribute(f.name)}" class="${iClass} flex-1"><option value="">Selecione...</option>${items.map(i => {
             const displayName = f.collection === 'farmacias' ? getFarmaciaOptionLabel(i) : (i.nome || 'Sem nome');
-            return `<option value="${i.id}" ${val === i.id ? 'selected' : ''}>${displayName}</option>`;
+            return `<option value="${escapeAttribute(i.id)}" ${val === i.id ? 'selected' : ''}>${escapeHtml(displayName)}</option>`;
           }).join('')}</select><button type="button" onclick="openQuickAdd('${f.collection}', 'field-${f.name}')" class="w-12 bg-blue-100 text-blue-600 rounded-xl hover:bg-blue-200 transition font-bold shrink-0 shadow-sm border border-blue-200 text-lg"><i class="fa-solid fa-plus"></i></button></div></div>`;
         }
 
-        if (f.type === 'cep') return `<div class="mb-4"><label class="${lClass}">${f.label}</label><input type="text" id="field-${f.name}" value="${val}" placeholder="00000-000" class="${iClass}" onblur="buscarCEP(this.value)"></div>`;
+        if (f.type === 'cep') return `<div class="mb-4"><label class="${lClass}">${escapeHtml(f.label)}</label><input type="text" id="field-${escapeAttribute(f.name)}" value="${escapeAttribute(val)}" placeholder="00000-000" class="${iClass}" onblur="buscarCEP(this.value)"></div>`;
 
-        if (f.type === 'date-calc') return `<div class="mb-4"><label class="${lClass}">${f.label}</label><input type="date" id="field-${f.name}" value="${val}" class="${iClass}" onchange="calcPacienteData()"><div id="calc-result-dataNascimento" class="text-xs text-blue-600 font-bold mt-1.5 ml-1 h-4"></div></div>`;
+        if (f.type === 'date-calc') return `<div class="mb-4"><label class="${lClass}">${escapeHtml(f.label)}</label><input type="date" id="field-${escapeAttribute(f.name)}" value="${escapeAttribute(val)}" class="${iClass}" onchange="calcPacienteData()"><div id="calc-result-dataNascimento" class="text-xs text-blue-600 font-bold mt-1.5 ml-1 h-4"></div></div>`;
 
-        return `<div class="mb-4"><label class="${lClass}">${f.label}</label><input type="${f.type || 'text'}" id="field-${f.name}" value="${val}" ${f.readonly ? 'readonly' : ''} class="${iClass} ${f.readonly ? 'bg-slate-100 text-slate-500' : ''}"></div>`;
+        const inputType = f.type === 'currency' ? 'text' : (f.type || 'text');
+        return `<div class="mb-4"><label class="${lClass}">${escapeHtml(f.label)}</label><input type="${escapeAttribute(inputType)}" id="field-${escapeAttribute(f.name)}" value="${escapeAttribute(val)}" ${f.readonly ? 'readonly' : ''} ${f.type === 'currency' ? 'inputmode="decimal"' : ''} class="${iClass} ${f.readonly ? 'bg-slate-100 text-slate-500' : ''}"></div>`;
       }).join('');
     }
 
@@ -2203,7 +2355,7 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
         if (i.id?.startsWith('field-')) {
           let k = i.id.replace('field-', '');
           let v = i.value;
-          if (k === 'valor') v = parseFloat(v.replace(/\./g, '').replace(',', '.')) || 0;
+          if (k === 'valor') v = parseCurrencyBR(v);
           if (k === 'bairroCompra') return;
           dataObj[k] = v;
         }
@@ -2466,14 +2618,15 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
     }
 
     function getTodayFileStamp() {
-      return new Date().toISOString().slice(0, 10);
+      return localDateISO();
     }
 
     function buildBackupPayload() {
       return {
         app: 'Controle de Farmácias',
+        schemaVersion: 2,
         generatedAt: new Date().toISOString(),
-        mode: 'autenticacao-firebase',
+        mode: 'firebase-auth-firestore',
         userId: AppState.userId,
         collections: REPORT_COLLECTIONS.reduce((acc, key) => {
           acc[key] = JSON.parse(JSON.stringify(AppState.data[key] || []));
@@ -2492,18 +2645,97 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
       document.getElementById('manual-restore-input')?.click();
     };
 
-    async function replaceCollectionFromBackup(collectionName, records = []) {
-      const colRef = collection(db, 'users', AppState.userId, collectionName);
-      const currentDocs = await getDocs(colRef);
-      for (const itemDoc of currentDocs.docs) {
-        await deleteDoc(doc(db, 'users', AppState.userId, collectionName, itemDoc.id));
+    function validateBackupRecord(record, collectionName, index) {
+      if (!record || Object.prototype.toString.call(record) !== '[object Object]') {
+        throw new Error(`Registro inválido em ${collectionName}, posição ${index + 1}.`);
       }
-      for (const record of records) {
-        const clean = JSON.parse(JSON.stringify(record || {}));
-        const id = clean.id || crypto.randomUUID();
-        delete clean.id;
-        await setDoc(doc(db, 'users', AppState.userId, collectionName, id), clean);
+
+      const clean = {};
+      const forbiddenKeys = new Set(['__proto__', 'prototype', 'constructor']);
+      Object.entries(record).forEach(([key, value]) => {
+        if (!forbiddenKeys.has(key)) clean[key] = JSON.parse(JSON.stringify(value));
+      });
+
+      clean.id = clean.id || crypto.randomUUID();
+      if (!isSafeRecordId(clean.id)) throw new Error(`Identificador inválido em ${collectionName}, posição ${index + 1}.`);
+
+      const relationKeys = ['farmaciaId', 'pacienteId', 'remedioId', 'clinicaId', 'medicoId', 'clinicaPrincipalId', 'medicoPrincipalId', 'medicoResponsavelId'];
+      relationKeys.forEach(key => {
+        if (clean[key] && !isSafeRecordId(clean[key])) throw new Error(`Referência inválida em ${collectionName}, posição ${index + 1}.`);
+      });
+
+      if (collectionName === 'compras') {
+        if (clean.data && !/^\d{4}-\d{2}-\d{2}$/.test(String(clean.data))) throw new Error(`Data inválida em compras, posição ${index + 1}.`);
+        clean.status = ['confirmada', 'agendada', 'cancelada'].includes(clean.status) ? clean.status : 'confirmada';
+        clean.valor = parseCurrencyBR(clean.valor);
+      } else {
+        clean.status = clean.status === 'inativo' ? 'inativo' : 'ativo';
       }
+
+      normalizeDocumentFields(clean);
+      return clean;
+    }
+
+    function prepareRestoreCollections(collectionsData) {
+      if (!collectionsData || Object.prototype.toString.call(collectionsData) !== '[object Object]') {
+        throw new Error('Estrutura de backup inválida.');
+      }
+
+      const prepared = {};
+      REPORT_COLLECTIONS.forEach(key => {
+        if (!Array.isArray(collectionsData[key])) return;
+        const ids = new Set();
+        prepared[key] = collectionsData[key].map((record, index) => {
+          const clean = validateBackupRecord(record, key, index);
+          if (ids.has(clean.id)) throw new Error(`Identificador duplicado na coleção ${key}.`);
+          ids.add(clean.id);
+          return clean;
+        });
+      });
+
+      if (!Object.keys(prepared).length) throw new Error('O arquivo não contém coleções reconhecidas.');
+      return prepared;
+    }
+
+    async function restoreFirestoreAtomically(prepared) {
+      const collectionNames = Object.keys(prepared);
+      const currentSnapshots = await Promise.all(
+        collectionNames.map(name => getDocs(collection(db, 'users', AppState.userId, name)))
+      );
+      const preparedIds = Object.fromEntries(collectionNames.map(name => [name, new Set(prepared[name].map(record => record.id))]));
+      const deleteCount = currentSnapshots.reduce((total, snapshot, index) => {
+        const name = collectionNames[index];
+        return total + snapshot.docs.filter(itemDoc => !preparedIds[name].has(itemDoc.id)).length;
+      }, 0);
+      const operationCount = deleteCount
+        + collectionNames.reduce((total, name) => total + prepared[name].length, 0);
+
+      if (operationCount > 450) {
+        throw new Error('backup grande demais para restauração atômica; reduza-o para até 450 operações');
+      }
+
+      const batch = writeBatch(db);
+      currentSnapshots.forEach((snapshot, index) => {
+        const name = collectionNames[index];
+        snapshot.docs.forEach(itemDoc => {
+          if (!preparedIds[name].has(itemDoc.id)) batch.delete(doc(db, 'users', AppState.userId, name, itemDoc.id));
+        });
+      });
+
+      const restoredAtLocal = new Date().toISOString();
+      collectionNames.forEach(name => {
+        prepared[name].forEach(record => {
+          const payload = JSON.parse(JSON.stringify(record));
+          const id = payload.id;
+          delete payload.id;
+          payload.createdAt = payload.createdAt || serverTimestamp();
+          payload.updatedAt = serverTimestamp();
+          payload.updatedAtLocal = restoredAtLocal;
+          batch.set(doc(db, 'users', AppState.userId, name, id), payload);
+        });
+      });
+
+      await batch.commit();
     }
 
     window.restoreManualBackup = async (event) => {
@@ -2515,13 +2747,12 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
         const text = await file.text();
         const parsed = JSON.parse(text);
         const collectionsData = parsed.collections || parsed.data || parsed;
-        for (const key of REPORT_COLLECTIONS) {
-          if (Array.isArray(collectionsData[key])) await replaceCollectionFromBackup(key, collectionsData[key]);
-        }
+        const prepared = prepareRestoreCollections(collectionsData);
+        await restoreFirestoreAtomically(prepared);
         showToast('Backup restaurado!', 'success');
       } catch (error) {
         console.error('Erro ao restaurar backup:', error);
-        showToast('Erro ao restaurar backup.', 'error');
+        showToast(`Backup não restaurado: ${error.message || 'arquivo inválido'}.`, 'error');
       }
     };
 
@@ -2578,10 +2809,48 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
           Nome: record.nome || '',
           Status: getRecordStatusValue(record)
         };
+        const ignoredFields = new Set([
+          'id', 'nome', 'status', 'ativo', 'situacao', 'documentoBase64', 'documentosBase64',
+          'createdAt', 'updatedAt', 'updatedAtLocal'
+        ]);
+        const relationFields = {
+          clinicaPrincipalId: { label: 'Clínica Principal', collection: 'clinicas' },
+          medicoPrincipalId: { label: 'Médico Principal', collection: 'medicos' },
+          medicoResponsavelId: { label: 'Médico Responsável', collection: 'medicos' }
+        };
+        const fieldLabels = {
+          dataNascimento: 'Data de Nascimento',
+          telefone: 'Telefone',
+          email: 'E-mail',
+          cpf: 'CPF',
+          rg: 'RG',
+          signo: 'Signo',
+          cep: 'CEP',
+          logradouro: 'Logradouro',
+          numero: 'Número',
+          complemento: 'Complemento',
+          bairro: 'Bairro',
+          cidade: 'Cidade',
+          uf: 'UF',
+          endereco: 'Endereço',
+          contato: 'Contato',
+          especialidade: 'Especialidade',
+          crm: 'CRM',
+          cnpj: 'CNPJ',
+          fabricante: 'Fabricante',
+          dosagem: 'Dosagem',
+          apresentacao: 'Apresentação',
+          obs: 'Observações'
+        };
         Object.entries(record).forEach(([key, value]) => {
-          if (['id', 'nome', 'status', 'ativo', 'situacao', 'documentoBase64', 'documentosBase64'].includes(key)) return;
+          if (ignoredFields.has(key)) return;
           if (value === null || value === undefined || typeof value === 'object') return;
-          const label = key.charAt(0).toUpperCase() + key.slice(1);
+          if (relationFields[key]) {
+            const relation = relationFields[key];
+            base[relation.label] = getRelatedName(relation.collection, value);
+            return;
+          }
+          const label = fieldLabels[key] || (key.charAt(0).toUpperCase() + key.slice(1));
           base[label] = String(value);
         });
         return base;
@@ -2680,6 +2949,8 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
         const email = firstReportValue(record, ['email', 'Email']);
         const nascimento = formatReportDateBR(firstReportValue(record, ['dataNascimento', 'dataNascimento', 'nascimento', 'DataNascimento']));
         const signo = firstReportValue(record, ['signo', 'Signo']);
+        const clinicaPrincipal = getRelatedName('clinicas', record.clinicaPrincipalId);
+        const medicoPrincipal = getRelatedName('medicos', record.medicoPrincipalId);
         const cidade = firstReportValue(record, ['cidade', 'Cidade']);
         const uf = firstReportValue(record, ['uf', 'Uf', 'UF']);
         const bairro = firstReportValue(record, ['bairro', 'Bairro']);
@@ -2694,7 +2965,15 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
         const endereco = [endereco1, endereco2, endereco3].filter(Boolean).join('\n');
 
         const obsLines = obs ? docPdf.splitTextToSize(obs, cardWidth - 28) : [];
-        const baseHeight = 156;
+        const colGap = 16;
+        const colW = (cardWidth - 28 - colGap) / 2;
+        const measureColumnHeight = values => values.reduce((height, value, valueIndex) => {
+          const lines = docPdf.splitTextToSize(reportCleanValue(value) || '-', colW);
+          return height + (valueIndex ? 7 : 0) + 12 + (lines.length * 10);
+        }, 0);
+        const leftValues = [cpf, rg, nascimento, ...(signo ? [signo] : []), clinicaPrincipal];
+        const rightValues = [telefone, email, medicoPrincipal, endereco];
+        const baseHeight = Math.max(218, 58 + Math.max(measureColumnHeight(leftValues), measureColumnHeight(rightValues)) + 20);
         const obsHeight = obs ? Math.max(30, 22 + obsLines.length * 10) : 0;
         const cardHeight = baseHeight + obsHeight;
 
@@ -2721,8 +3000,6 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
         docPdf.setTextColor(status === 'Inativo' ? 185 : 21, status === 'Inativo' ? 28 : 128, status === 'Inativo' ? 28 : 61);
         docPdf.text(status.toUpperCase(), margin + cardWidth - statusWidth - 7, y + 24);
 
-        const colGap = 16;
-        const colW = (cardWidth - 28 - colGap) / 2;
         let leftY = y + 58;
         let rightY = y + 58;
         const leftX = margin + 14;
@@ -2732,9 +3009,11 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
         leftY = drawField('RG', rg, leftX, leftY + 7, colW);
         leftY = drawField('Nascimento', nascimento, leftX, leftY + 7, colW);
         if (signo) leftY = drawField('Signo', signo, leftX, leftY + 7, colW);
+        leftY = drawField('Clínica Principal', clinicaPrincipal, leftX, leftY + 7, colW);
 
         rightY = drawField('Telefone', telefone, rightX, rightY, colW);
         rightY = drawField('E-mail', email, rightX, rightY + 7, colW);
+        rightY = drawField('Médico Principal', medicoPrincipal, rightX, rightY + 7, colW);
         rightY = drawField('Endereço', endereco, rightX, rightY + 7, colW);
 
         if (obs) {
