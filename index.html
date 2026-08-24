@@ -130,11 +130,110 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
       font-weight: 700;
       color: #64748b;
     }
+    .automatic-backup-panel {
+      margin-top: 16px;
+      padding: 14px;
+      border: 1px solid rgba(226,232,240,.96);
+      border-radius: 24px;
+      background: rgba(255,255,255,.72);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.9);
+    }
+    .automatic-backup-internal {
+      padding: 14px;
+      border: 1px solid #bfdbfe;
+      border-radius: 20px;
+      background: rgba(239,246,255,.9);
+    }
+    .automatic-backup-heading {
+      font-size: 11px;
+      line-height: 1.25;
+      font-weight: 950;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+    .automatic-backup-status-row {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .automatic-backup-status {
+      margin-top: 5px;
+      font-size: 11px;
+      line-height: 1.4;
+      font-weight: 800;
+    }
+    .automatic-backup-help {
+      margin-top: 10px;
+      color: #94a3b8;
+      font-size: 10px;
+      line-height: 1.5;
+      font-weight: 700;
+    }
+    .automatic-backup-dot {
+      width: 11px;
+      height: 11px;
+      margin-top: 3px;
+      border-radius: 999px;
+      flex: 0 0 auto;
+      background: #cbd5e1;
+      box-shadow: 0 0 0 4px rgba(203,213,225,.18);
+    }
+    .automatic-backup-dot.is-ok { background: #14b8a6; box-shadow: 0 0 0 4px rgba(20,184,166,.12); }
+    .automatic-backup-dot.is-waiting { background: #f59e0b; box-shadow: 0 0 0 4px rgba(245,158,11,.12); }
+    .automatic-backup-dot.is-error { background: #f43f5e; box-shadow: 0 0 0 4px rgba(244,63,94,.12); }
+    .automatic-backup-button {
+      width: 100%;
+      min-height: 46px;
+      margin-top: 12px;
+      padding: 10px 12px;
+      border: 1px solid #dbeafe;
+      border-radius: 16px;
+      background: #fff;
+      color: #1d4ed8;
+      font-size: 11px;
+      font-weight: 950;
+      text-transform: uppercase;
+      box-shadow: 0 7px 16px rgba(15,23,42,.04);
+    }
+    .automatic-backup-button:disabled { color: #cbd5e1; background: #f8fafc; cursor: not-allowed; box-shadow: none; }
+    .automatic-backup-folder {
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px solid #e2e8f0;
+    }
+    .automatic-backup-folder-box {
+      margin-top: 12px;
+      padding: 11px 13px;
+      border: 1px solid #e2e8f0;
+      border-radius: 17px;
+      background: rgba(255,255,255,.9);
+    }
+    .automatic-backup-folder-actions {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      gap: 10px;
+      margin-top: 12px;
+    }
+    .automatic-backup-folder-actions.has-folder { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .automatic-backup-folder-actions .automatic-backup-button { margin-top: 0; }
+    .automatic-backup-button.is-save { color: #0f766e; border-color: #ccfbf1; background: #f0fdfa; }
+    .automatic-backup-disable {
+      width: 100%;
+      margin-top: 10px;
+      padding: 7px 8px;
+      color: #fb7185;
+      font-size: 10px;
+      font-weight: 950;
+      text-transform: uppercase;
+    }
     @media (max-width: 430px) {
       .utility-panel-minimal { padding: 14px; border-radius: 28px; }
       .utility-action-grid { gap: 10px; }
       .utility-action-card { min-height: 58px; border-radius: 18px; gap: 8px; padding: 8px 8px; font-size: 12px; }
       .utility-action-card i { font-size: 22px; }
+      .automatic-backup-panel { padding: 11px; border-radius: 21px; }
+      .automatic-backup-internal { padding: 12px; border-radius: 18px; }
     }
     @media (max-width: 330px) {
       .utility-action-grid { gap: 8px; }
@@ -305,6 +404,41 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
               <i class="fa-solid fa-download utility-pink"></i>
               <span>Gerar PDF</span>
             </button>
+          </div>
+          <div id="automatic-backup-panel" class="automatic-backup-panel">
+            <div class="automatic-backup-internal">
+              <div class="automatic-backup-status-row">
+                <div class="min-w-0">
+                  <h4 class="automatic-backup-heading text-blue-800">Cópia interna automática</h4>
+                  <p id="internal-backup-status-text" class="automatic-backup-status text-blue-600">Verificando a cópia interna...</p>
+                </div>
+                <span id="internal-backup-status-dot" class="automatic-backup-dot is-waiting" aria-hidden="true"></span>
+              </div>
+              <p class="automatic-backup-help">Salva uma cópia no armazenamento interno do navegador e não pede nova autorização quando o app é reaberto.</p>
+              <button id="restore-internal-backup-button" class="automatic-backup-button" type="button" onclick="restoreInternalBackup()" disabled>Restaurar cópia interna</button>
+            </div>
+
+            <div class="automatic-backup-folder">
+              <div class="automatic-backup-status-row">
+                <div class="min-w-0">
+                  <h4 id="folder-backup-heading" class="automatic-backup-heading text-slate-600">Backup automático em pasta</h4>
+                  <p id="folder-backup-status-text" class="automatic-backup-status text-slate-400">Verificando pasta salva...</p>
+                </div>
+                <span id="folder-backup-status-dot" class="automatic-backup-dot" aria-hidden="true"></span>
+              </div>
+
+              <div id="selected-backup-folder" class="automatic-backup-folder-box hidden">
+                <p class="text-[9px] font-black uppercase tracking-wide text-slate-400">Pasta selecionada</p>
+                <p id="selected-backup-folder-name" class="mt-1 text-xs font-black text-slate-700 truncate">--</p>
+              </div>
+
+              <div id="folder-backup-actions" class="automatic-backup-folder-actions">
+                <button id="select-backup-folder-button" class="automatic-backup-button text-slate-700" type="button" onclick="selectBackupFolder()">Selecionar pasta</button>
+                <button id="save-folder-backup-button" class="automatic-backup-button is-save hidden" type="button" onclick="saveFolderBackupNow()">Salvar agora</button>
+              </div>
+              <button id="disable-folder-backup-button" class="automatic-backup-disable hidden" type="button" onclick="disableFolderBackup()">Desativar pasta selecionada</button>
+              <p id="folder-backup-help" class="automatic-backup-help text-center">O arquivo de backup será atualizado automaticamente após cada alteração.</p>
+            </div>
           </div>
           <div class="utility-copyright">
             © 2026 Kaio Adriel<br>
@@ -621,6 +755,469 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
     let myChart = null;
 
     const ALLOWED_EMAIL = 'kaioadrielguimaraes@gmail.com';
+    const AUTOMATIC_BACKUP_FILE_NAME = 'backup-controle-farmacias-automatico.json';
+    const BACKUP_SETTINGS_DB_NAME = 'controle-farmacias-backup-settings';
+    const BACKUP_SETTINGS_STORE_NAME = 'settings';
+    const AUTOMATIC_BACKUP_COLLECTIONS = ['compras', 'pacientes', 'medicos', 'clinicas', 'farmacias', 'remedios'];
+    const isAndroidDevice = /Android/i.test(navigator.userAgent || '');
+    const folderBackupSupported = typeof window.showDirectoryPicker === 'function' && window.isSecureContext;
+
+    let backupDirectoryHandle = null;
+    let internalBackupStatus = 'loading';
+    let folderBackupStatus = folderBackupSupported ? 'loading' : 'unsupported';
+    let lastInternalBackupAt = '';
+    let lastFolderBackupAt = '';
+    let internalBackupReady = false;
+    let folderBackupReady = false;
+    let internalBackupTimer = null;
+    let folderBackupTimer = null;
+    let folderBackupWriteChain = Promise.resolve(false);
+    let automaticBackupLoadedCollections = new Set();
+    let automaticBackupRunId = 0;
+    let automaticBackupSuspended = false;
+
+    function openBackupSettingsDb() {
+      return new Promise((resolve, reject) => {
+        if (!('indexedDB' in window)) {
+          reject(new Error('IndexedDB indisponível.'));
+          return;
+        }
+        const request = window.indexedDB.open(BACKUP_SETTINGS_DB_NAME, 1);
+        request.onupgradeneeded = () => {
+          const settingsDb = request.result;
+          if (!settingsDb.objectStoreNames.contains(BACKUP_SETTINGS_STORE_NAME)) {
+            settingsDb.createObjectStore(BACKUP_SETTINGS_STORE_NAME);
+          }
+        };
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = () => reject(request.error || new Error('Não foi possível abrir as configurações de backup.'));
+      });
+    }
+
+    async function readBackupSetting(key) {
+      const settingsDb = await openBackupSettingsDb();
+      try {
+        return await new Promise((resolve, reject) => {
+          const request = settingsDb.transaction(BACKUP_SETTINGS_STORE_NAME, 'readonly')
+            .objectStore(BACKUP_SETTINGS_STORE_NAME)
+            .get(key);
+          request.onsuccess = () => resolve(request.result || null);
+          request.onerror = () => reject(request.error || new Error('Não foi possível ler a configuração de backup.'));
+        });
+      } finally {
+        settingsDb.close();
+      }
+    }
+
+    async function writeBackupSetting(key, value) {
+      const settingsDb = await openBackupSettingsDb();
+      try {
+        await new Promise((resolve, reject) => {
+          const transaction = settingsDb.transaction(BACKUP_SETTINGS_STORE_NAME, 'readwrite');
+          transaction.objectStore(BACKUP_SETTINGS_STORE_NAME).put(value, key);
+          transaction.oncomplete = () => resolve();
+          transaction.onerror = () => reject(transaction.error || new Error('Não foi possível gravar a configuração de backup.'));
+          transaction.onabort = () => reject(transaction.error || new Error('A gravação da configuração foi cancelada.'));
+        });
+      } finally {
+        settingsDb.close();
+      }
+    }
+
+    async function deleteBackupSetting(key) {
+      const settingsDb = await openBackupSettingsDb();
+      try {
+        await new Promise((resolve, reject) => {
+          const transaction = settingsDb.transaction(BACKUP_SETTINGS_STORE_NAME, 'readwrite');
+          transaction.objectStore(BACKUP_SETTINGS_STORE_NAME).delete(key);
+          transaction.oncomplete = () => resolve();
+          transaction.onerror = () => reject(transaction.error || new Error('Não foi possível remover a configuração de backup.'));
+          transaction.onabort = () => reject(transaction.error || new Error('A remoção da configuração foi cancelada.'));
+        });
+      } finally {
+        settingsDb.close();
+      }
+    }
+
+    function getBackupDirectorySettingKey(userId = AppState.userId) {
+      return `auto_backup_directory_${userId || 'sem-usuario'}`;
+    }
+
+    function getInternalBackupSettingKey(userId = AppState.userId) {
+      return `automatic_internal_backup_${userId || 'sem-usuario'}`;
+    }
+
+    function formatBackupTimestamp(value) {
+      if (!value) return '';
+      const date = new Date(value);
+      return Number.isNaN(date.getTime()) ? '' : date.toLocaleString('pt-BR');
+    }
+
+    function setBackupStatusDot(element, state) {
+      if (!element) return;
+      element.className = 'automatic-backup-dot';
+      if (state === 'ok') element.classList.add('is-ok');
+      if (state === 'waiting') element.classList.add('is-waiting');
+      if (state === 'error') element.classList.add('is-error');
+    }
+
+    function renderAutomaticBackupPanel() {
+      const internalStatusText = {
+        unsupported: 'Armazenamento interno indisponível neste navegador',
+        loading: 'Verificando a cópia interna...',
+        waiting: 'Preparando a primeira cópia...',
+        saving: 'Atualizando a cópia interna...',
+        saved: lastInternalBackupAt ? `Protegido em ${formatBackupTimestamp(lastInternalBackupAt)}` : 'Cópia interna atualizada',
+        error: 'Não foi possível atualizar a cópia interna'
+      }[internalBackupStatus] || 'Cópia interna automática ativa';
+
+      const internalTextEl = document.getElementById('internal-backup-status-text');
+      if (internalTextEl) {
+        internalTextEl.textContent = internalStatusText;
+        internalTextEl.className = `automatic-backup-status ${internalBackupStatus === 'error' || internalBackupStatus === 'unsupported' ? 'text-rose-500' : 'text-blue-600'}`;
+      }
+      setBackupStatusDot(
+        document.getElementById('internal-backup-status-dot'),
+        internalBackupStatus === 'error' || internalBackupStatus === 'unsupported'
+          ? 'error'
+          : internalBackupStatus === 'loading' || internalBackupStatus === 'waiting' || internalBackupStatus === 'saving'
+            ? 'waiting'
+            : 'ok'
+      );
+      const restoreInternalButton = document.getElementById('restore-internal-backup-button');
+      if (restoreInternalButton) restoreInternalButton.disabled = !lastInternalBackupAt || internalBackupStatus === 'unsupported';
+
+      const folderStatusText = {
+        unsupported: 'Indisponível neste navegador ou fora de HTTPS',
+        loading: 'Verificando pasta salva...',
+        'not-configured': 'Nenhuma pasta selecionada',
+        'permission-needed': isAndroidDevice
+          ? 'O Android exige nova autorização após fechar o app'
+          : 'Toque em “Salvar agora” para autorizar novamente',
+        ready: isAndroidDevice ? 'Pasta autorizada durante esta sessão' : 'Pasta pronta para backup automático',
+        saving: 'Salvando backup...',
+        saved: lastFolderBackupAt
+          ? `Último backup${isAndroidDevice ? ' nesta sessão' : ''}: ${formatBackupTimestamp(lastFolderBackupAt)}`
+          : 'Backup automático atualizado',
+        error: 'Não foi possível acessar a pasta'
+      }[folderBackupStatus] || 'Nenhuma pasta selecionada';
+
+      const folderHeading = document.getElementById('folder-backup-heading');
+      if (folderHeading) folderHeading.textContent = isAndroidDevice ? 'Backup em pasta — sessão atual' : 'Backup automático em pasta';
+      const folderTextEl = document.getElementById('folder-backup-status-text');
+      if (folderTextEl) {
+        folderTextEl.textContent = folderStatusText;
+        const colorClass = ['ready', 'saving', 'saved'].includes(folderBackupStatus)
+          ? 'text-teal-600'
+          : folderBackupStatus === 'permission-needed'
+            ? 'text-amber-600'
+            : ['error', 'unsupported'].includes(folderBackupStatus)
+              ? 'text-rose-500'
+              : 'text-slate-400';
+        folderTextEl.className = `automatic-backup-status ${colorClass}`;
+      }
+      setBackupStatusDot(
+        document.getElementById('folder-backup-status-dot'),
+        ['ready', 'saving', 'saved'].includes(folderBackupStatus)
+          ? 'ok'
+          : folderBackupStatus === 'permission-needed'
+            ? 'waiting'
+            : folderBackupStatus === 'error' || folderBackupStatus === 'unsupported'
+              ? 'error'
+              : ''
+      );
+
+      const hasFolder = Boolean(backupDirectoryHandle);
+      const selectedFolderEl = document.getElementById('selected-backup-folder');
+      const selectedFolderNameEl = document.getElementById('selected-backup-folder-name');
+      const actionsEl = document.getElementById('folder-backup-actions');
+      const selectButton = document.getElementById('select-backup-folder-button');
+      const saveButton = document.getElementById('save-folder-backup-button');
+      const disableButton = document.getElementById('disable-folder-backup-button');
+      selectedFolderEl?.classList.toggle('hidden', !hasFolder);
+      if (selectedFolderNameEl) selectedFolderNameEl.textContent = backupDirectoryHandle?.name || '--';
+      actionsEl?.classList.toggle('has-folder', hasFolder);
+      if (selectButton) {
+        selectButton.textContent = hasFolder ? 'Trocar pasta' : 'Selecionar pasta';
+        selectButton.disabled = !folderBackupSupported;
+      }
+      saveButton?.classList.toggle('hidden', !hasFolder);
+      disableButton?.classList.toggle('hidden', !hasFolder);
+
+      const helpEl = document.getElementById('folder-backup-help');
+      if (helpEl) {
+        helpEl.textContent = isAndroidDevice
+          ? `No Android, o arquivo “${AUTOMATIC_BACKUP_FILE_NAME}” é atualizado automaticamente enquanto o app permanece aberto. Ao reabrir, o Chrome exige nova autorização. A cópia interna acima não depende dessa permissão.`
+          : `O arquivo “${AUTOMATIC_BACKUP_FILE_NAME}” será atualizado automaticamente após cada alteração. O backup manual continua disponível acima.`;
+      }
+    }
+
+    function resetAutomaticBackupRuntime() {
+      automaticBackupRunId += 1;
+      if (internalBackupTimer) clearTimeout(internalBackupTimer);
+      if (folderBackupTimer) clearTimeout(folderBackupTimer);
+      internalBackupTimer = null;
+      folderBackupTimer = null;
+      backupDirectoryHandle = null;
+      lastInternalBackupAt = '';
+      lastFolderBackupAt = '';
+      internalBackupReady = false;
+      folderBackupReady = false;
+      internalBackupStatus = 'indexedDB' in window ? 'loading' : 'unsupported';
+      folderBackupStatus = folderBackupSupported ? 'loading' : 'unsupported';
+      folderBackupWriteChain = Promise.resolve(false);
+      automaticBackupLoadedCollections = new Set();
+      automaticBackupSuspended = false;
+      renderAutomaticBackupPanel();
+    }
+
+    async function getDirectoryWritePermission(directoryHandle, requestIfNeeded = false) {
+      if (!directoryHandle) return false;
+      if (typeof directoryHandle.queryPermission !== 'function') return true;
+      const options = { mode: 'readwrite' };
+      let permission = await directoryHandle.queryPermission(options);
+      if (permission === 'granted') return true;
+      if (requestIfNeeded && typeof directoryHandle.requestPermission === 'function') {
+        permission = await directoryHandle.requestPermission(options);
+      }
+      return permission === 'granted';
+    }
+
+    async function initializeAutomaticBackupsForUser(userId) {
+      resetAutomaticBackupRuntime();
+      const runId = automaticBackupRunId;
+      const scopedUserId = userId;
+
+      if ('indexedDB' in window) {
+        try {
+          const savedSnapshot = await readBackupSetting(getInternalBackupSettingKey(scopedUserId));
+          if (runId !== automaticBackupRunId || scopedUserId !== AppState.userId) return;
+          if (savedSnapshot?.savedAt && savedSnapshot?.data) {
+            lastInternalBackupAt = savedSnapshot.savedAt;
+            internalBackupStatus = 'saved';
+          } else {
+            internalBackupStatus = 'waiting';
+          }
+        } catch (error) {
+          console.error('Erro ao carregar a cópia interna:', error);
+          if (runId === automaticBackupRunId) internalBackupStatus = 'error';
+        } finally {
+          if (runId === automaticBackupRunId && scopedUserId === AppState.userId) {
+            internalBackupReady = true;
+            renderAutomaticBackupPanel();
+            scheduleAutomaticBackups();
+          }
+        }
+      } else {
+        internalBackupStatus = 'unsupported';
+        internalBackupReady = true;
+      }
+
+      if (!folderBackupSupported) {
+        folderBackupStatus = 'unsupported';
+        folderBackupReady = true;
+        renderAutomaticBackupPanel();
+        return;
+      }
+
+      try {
+        const savedHandle = 'indexedDB' in window
+          ? await readBackupSetting(getBackupDirectorySettingKey(scopedUserId))
+          : null;
+        if (runId !== automaticBackupRunId || scopedUserId !== AppState.userId) return;
+        if (!savedHandle) {
+          folderBackupStatus = 'not-configured';
+        } else {
+          backupDirectoryHandle = savedHandle;
+          const granted = await getDirectoryWritePermission(savedHandle, false);
+          if (runId !== automaticBackupRunId || scopedUserId !== AppState.userId) return;
+          folderBackupStatus = granted ? 'ready' : 'permission-needed';
+        }
+      } catch (error) {
+        console.error('Erro ao recuperar a pasta de backup:', error);
+        if (runId === automaticBackupRunId) folderBackupStatus = 'error';
+      } finally {
+        if (runId === automaticBackupRunId && scopedUserId === AppState.userId) {
+          folderBackupReady = true;
+          renderAutomaticBackupPanel();
+          scheduleAutomaticBackups();
+        }
+      }
+    }
+
+    function scheduleInternalBackup() {
+      if (!internalBackupReady || !AppState.userId || !('indexedDB' in window) || automaticBackupSuspended) return;
+      if (internalBackupTimer) clearTimeout(internalBackupTimer);
+      internalBackupStatus = 'saving';
+      renderAutomaticBackupPanel();
+      const runId = automaticBackupRunId;
+      const scopedUserId = AppState.userId;
+      internalBackupTimer = setTimeout(async () => {
+        const savedAt = new Date().toISOString();
+        try {
+          const payload = buildBackupPayload();
+          await writeBackupSetting(getInternalBackupSettingKey(scopedUserId), { savedAt, data: payload });
+          if (runId !== automaticBackupRunId || scopedUserId !== AppState.userId) return;
+          lastInternalBackupAt = savedAt;
+          internalBackupStatus = 'saved';
+        } catch (error) {
+          console.error('Erro ao salvar a cópia interna:', error);
+          if (runId === automaticBackupRunId) internalBackupStatus = 'error';
+        } finally {
+          if (runId === automaticBackupRunId) renderAutomaticBackupPanel();
+        }
+      }, 500);
+    }
+
+    function queueFolderBackupWrite(directoryHandle, backupJson, notifyUser = false) {
+      const runId = automaticBackupRunId;
+      const scopedUserId = AppState.userId;
+      const writeTask = async () => {
+        if (!directoryHandle || runId !== automaticBackupRunId || scopedUserId !== AppState.userId) return false;
+        try {
+          folderBackupStatus = 'saving';
+          renderAutomaticBackupPanel();
+          const fileHandle = await directoryHandle.getFileHandle(AUTOMATIC_BACKUP_FILE_NAME, { create: true });
+          const writable = await fileHandle.createWritable();
+          await writable.write(backupJson);
+          await writable.close();
+          if (runId !== automaticBackupRunId || scopedUserId !== AppState.userId) return false;
+          lastFolderBackupAt = new Date().toISOString();
+          folderBackupStatus = 'saved';
+          renderAutomaticBackupPanel();
+          if (notifyUser) showToast('Backup salvo na pasta selecionada!', 'success');
+          return true;
+        } catch (error) {
+          console.error('Erro no backup automático em pasta:', error);
+          if (runId === automaticBackupRunId) {
+            folderBackupStatus = error?.name === 'NotAllowedError' ? 'permission-needed' : 'error';
+            renderAutomaticBackupPanel();
+          }
+          if (notifyUser) showToast('Não foi possível gravar na pasta selecionada.', 'error');
+          return false;
+        }
+      };
+
+      const queuedTask = folderBackupWriteChain.catch(() => false).then(writeTask);
+      folderBackupWriteChain = queuedTask;
+      return queuedTask;
+    }
+
+    async function saveFolderBackup({ directoryHandle = backupDirectoryHandle, requestPermission = false, notifyUser = false } = {}) {
+      if (!directoryHandle) {
+        if (notifyUser) showToast('Selecione primeiro uma pasta de backup.', 'error');
+        return false;
+      }
+      try {
+        const granted = await getDirectoryWritePermission(directoryHandle, requestPermission);
+        if (!granted) {
+          folderBackupStatus = 'permission-needed';
+          renderAutomaticBackupPanel();
+          if (notifyUser) showToast('Autorize o acesso à pasta para continuar.', 'error');
+          return false;
+        }
+        return queueFolderBackupWrite(directoryHandle, JSON.stringify(buildBackupPayload(), null, 2), notifyUser);
+      } catch (error) {
+        console.error('Erro ao verificar a pasta de backup:', error);
+        folderBackupStatus = error?.name === 'NotAllowedError' ? 'permission-needed' : 'error';
+        renderAutomaticBackupPanel();
+        if (notifyUser) showToast('Não foi possível acessar a pasta selecionada.', 'error');
+        return false;
+      }
+    }
+
+    function scheduleFolderBackup() {
+      if (!folderBackupReady || !folderBackupSupported || !backupDirectoryHandle || !AppState.userId || automaticBackupSuspended) return;
+      if (!['ready', 'saving', 'saved'].includes(folderBackupStatus)) return;
+      if (folderBackupTimer) clearTimeout(folderBackupTimer);
+      folderBackupTimer = setTimeout(() => {
+        saveFolderBackup({ directoryHandle: backupDirectoryHandle, requestPermission: false, notifyUser: false });
+      }, 700);
+    }
+
+    function scheduleAutomaticBackups() {
+      if (automaticBackupSuspended || !AppState.userId) return;
+      if (automaticBackupLoadedCollections.size < AUTOMATIC_BACKUP_COLLECTIONS.length) return;
+      scheduleInternalBackup();
+      scheduleFolderBackup();
+    }
+
+    window.selectBackupFolder = async () => {
+      if (!folderBackupSupported) {
+        showToast('A seleção de pasta exige Chrome ou Edge atualizado e o app aberto por HTTPS.', 'error');
+        return;
+      }
+      try {
+        const directoryHandle = await window.showDirectoryPicker({
+          id: 'controle-farmacias-auto-backup',
+          mode: 'readwrite'
+        });
+        const granted = await getDirectoryWritePermission(directoryHandle, true);
+        if (!granted) {
+          folderBackupStatus = 'permission-needed';
+          renderAutomaticBackupPanel();
+          showToast('A pasta foi selecionada, mas a gravação não foi autorizada.', 'error');
+          return;
+        }
+        try {
+          await writeBackupSetting(getBackupDirectorySettingKey(), directoryHandle);
+        } catch (storageError) {
+          console.warn('A pasta funcionará nesta sessão, mas não pôde ser memorizada:', storageError);
+        }
+        backupDirectoryHandle = directoryHandle;
+        folderBackupReady = true;
+        folderBackupStatus = 'ready';
+        renderAutomaticBackupPanel();
+        await saveFolderBackup({ directoryHandle, requestPermission: false, notifyUser: true });
+      } catch (error) {
+        if (error?.name === 'AbortError') return;
+        console.error('Erro ao selecionar pasta de backup:', error);
+        folderBackupStatus = 'error';
+        renderAutomaticBackupPanel();
+        showToast('Não foi possível selecionar a pasta.', 'error');
+      }
+    };
+
+    window.saveFolderBackupNow = async () => {
+      await saveFolderBackup({ requestPermission: true, notifyUser: true });
+    };
+
+    window.disableFolderBackup = async () => {
+      try {
+        if ('indexedDB' in window) await deleteBackupSetting(getBackupDirectorySettingKey());
+      } catch (error) {
+        console.error('Erro ao remover a configuração de backup:', error);
+      }
+      if (folderBackupTimer) clearTimeout(folderBackupTimer);
+      folderBackupTimer = null;
+      backupDirectoryHandle = null;
+      lastFolderBackupAt = '';
+      folderBackupStatus = folderBackupSupported ? 'not-configured' : 'unsupported';
+      renderAutomaticBackupPanel();
+      showToast('Backup automático em pasta desativado.', 'success');
+    };
+
+    window.restoreInternalBackup = async () => {
+      if (!AppState.userId) return;
+      try {
+        const savedSnapshot = await readBackupSetting(getInternalBackupSettingKey());
+        if (!savedSnapshot?.data) {
+          showToast('Ainda não existe uma cópia interna para restaurar.', 'error');
+          return;
+        }
+        if (!confirm('Restaurar a cópia interna substituirá os dados atuais do Firebase. Deseja continuar?')) return;
+        automaticBackupSuspended = true;
+        const collectionsData = savedSnapshot.data.collections || savedSnapshot.data.data || savedSnapshot.data;
+        await restoreCollectionsFromBackup(collectionsData);
+        showToast('Cópia interna restaurada no Firebase!', 'success');
+      } catch (error) {
+        console.error('Erro ao restaurar cópia interna:', error);
+        showToast('Não foi possível restaurar a cópia interna.', 'error');
+      } finally {
+        automaticBackupSuspended = false;
+        scheduleAutomaticBackups();
+      }
+    };
 
     function normalizeAuthEmail(email) {
       return String(email || '').trim().toLowerCase();
@@ -640,6 +1237,7 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
       AppState.data = { pacientes: [], medicos: [], clinicas: [], farmacias: [], remedios: [], compras: [] };
       listeners.forEach(unsub => unsub());
       listeners = [];
+      resetAutomaticBackupRuntime();
       try {
         document.getElementById('auth-screen')?.classList.remove('hidden');
         document.getElementById('main-header')?.classList.add('hidden');
@@ -1164,6 +1762,7 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
             document.getElementById('sidebar-avatar').innerText = name.substring(0, 2).toUpperCase();
             refreshAccountMenuInfo();
 
+            initializeAutomaticBackupsForUser(user.uid);
             setupDatabaseListeners();
             updateUI();
           } else {
@@ -1219,6 +1818,7 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
     function setupDatabaseListeners() {
       listeners.forEach(unsub => unsub());
       listeners = [];
+      automaticBackupLoadedCollections = new Set();
 
       ['pacientes', 'medicos', 'clinicas', 'farmacias', 'remedios', 'compras'].forEach(colName => {
         const colRef = collection(db, 'users', AppState.userId, colName);
@@ -1226,9 +1826,11 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
           const items = [];
           snapshot.forEach(doc => items.push({ id: doc.id, ...doc.data() }));
           AppState.data[colName] = items;
+          automaticBackupLoadedCollections.add(colName);
           if (colName === 'compras') ensureCompraCodes();
           renderCompraFilterOptions();
           updateUI();
+          scheduleAutomaticBackups();
         }, (error) => console.error("Sync error:", error)));
       });
     }
@@ -2552,6 +3154,17 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
       }
     }
 
+    async function restoreCollectionsFromBackup(collectionsData) {
+      if (!collectionsData || typeof collectionsData !== 'object') throw new Error('Backup inválido.');
+      let restoredCollections = 0;
+      for (const key of REPORT_COLLECTIONS) {
+        if (!Array.isArray(collectionsData[key])) continue;
+        await replaceCollectionFromBackup(key, collectionsData[key]);
+        restoredCollections += 1;
+      }
+      if (!restoredCollections) throw new Error('O arquivo não contém coleções válidas.');
+    }
+
     window.restoreManualBackup = async (event) => {
       const file = event.target.files?.[0];
       event.target.value = '';
@@ -2561,13 +3174,15 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
         const text = await file.text();
         const parsed = JSON.parse(text);
         const collectionsData = parsed.collections || parsed.data || parsed;
-        for (const key of REPORT_COLLECTIONS) {
-          if (Array.isArray(collectionsData[key])) await replaceCollectionFromBackup(key, collectionsData[key]);
-        }
+        automaticBackupSuspended = true;
+        await restoreCollectionsFromBackup(collectionsData);
         showToast('Backup restaurado!', 'success');
       } catch (error) {
         console.error('Erro ao restaurar backup:', error);
         showToast('Erro ao restaurar backup.', 'error');
+      } finally {
+        automaticBackupSuspended = false;
+        scheduleAutomaticBackups();
       }
     };
 
@@ -2968,7 +3583,11 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
     };
 
 
-    document.addEventListener('DOMContentLoaded', () => { setupImageViewerGestures(); initApp(); });
+    document.addEventListener('DOMContentLoaded', () => {
+      renderAutomaticBackupPanel();
+      setupImageViewerGestures();
+      initApp();
+    });
   </script>
 </body>
 </html>
