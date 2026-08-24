@@ -1237,6 +1237,7 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
       if (!AppState.userId) return false;
       try {
         const cleanData = JSON.parse(JSON.stringify(dataObj));
+        if (colName === 'compras') cleanData.salvoEm = new Date().toISOString();
         const docId = id || crypto.randomUUID();
         await setDoc(doc(db, 'users', AppState.userId, colName, docId), cleanData);
         showToast(id ? "Atualizado!" : "Salvo!", "success");
@@ -1946,7 +1947,9 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
         { name: 'nome', label: 'Nome Completo' }, { name: 'cpf', label: 'CPF' }, { name: 'rg', label: 'RG' }, { name: 'dataNascimento', label: 'Data Nasc.', type: 'date-calc' },
         { name: 'signo', label: 'Signo', readonly: true }, { name: 'cep', label: 'CEP', type: 'cep' }, { name: 'logradouro', label: 'Endereço' }, { name: 'numero', label: 'Número' },
         { name: 'complemento', label: 'Complemento' }, { name: 'bairro', label: 'Bairro' }, { name: 'cidade', label: 'Cidade' }, { name: 'uf', label: 'UF' },
-        { name: 'telefone', label: 'Telefone' }, { name: 'email', label: 'E-mail' }, ...b
+        { name: 'telefone', label: 'Telefone' }, { name: 'email', label: 'E-mail' },
+        { name: 'clinicaPrincipalId', label: 'Clínica Principal', type: 'db-select', collection: 'clinicas' },
+        { name: 'medicoPrincipalId', label: 'Médico Principal', type: 'db-select', collection: 'medicos' }, ...b
       ];
       if (tab === 'medicos') return [{ name: 'nome', label: 'Nome' }, { name: 'especialidade', label: 'Especialidade' }, { name: 'crm', label: 'CRM' }, { name: 'uf', label: 'UF do CRM' }, { name: 'rqe', label: 'RQE' }, ...b];
       if (tab === 'clinicas') return [{ name: 'nome', label: 'Nome' }, { name: 'especialidade', label: 'Especialidade' }, { name: 'medicoResponsavelId', label: 'Méd. Responsável', type: 'db-select', collection: 'medicos' }, ...b];
@@ -2014,7 +2017,7 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
 
       openModal(id ? 'Editar Compra' : (isDuplicate ? 'Duplicar Compra' : 'Nova Compra'), compraFormHtml, footerHtml);
 
-      setupCompraBairroFarmaciaFilter(data.farmaciaId || '');
+      setupCompraBairroFarmaciaFilter(data.farmaciaId || '', !id && !isDuplicate);
       setupCompraClinicaAutoFill();
 
       if (isDuplicate) {
@@ -2050,7 +2053,7 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
       openCompraForm(null, duplicated);
     };
 
-    function setupCompraBairroFarmaciaFilter(defaultFarmaciaId = '') {
+    function setupCompraBairroFarmaciaFilter(defaultFarmaciaId = '', autoFillPatient = false) {
       const bairroSelect = document.getElementById('field-bairroCompra');
       const farmaciaSelect = document.getElementById('field-farmaciaId');
       if (!bairroSelect || !farmaciaSelect) return;
@@ -2088,9 +2091,52 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
       });
 
       farmaciaSelect.addEventListener('change', () => {
-        if (bairroSelect.value) return;
-        renderFarmaciasByBairro(farmaciaSelect.value);
+        const farmaciaId = farmaciaSelect.value;
+        if (!bairroSelect.value) renderFarmaciasByBairro(farmaciaId);
+        if (autoFillPatient) fillCompraFromLastFarmacia(farmaciaId);
       });
+    }
+
+    function getLastSavedCompraForFarmacia(farmaciaId) {
+      if (!farmaciaId) return null;
+      return [...AppState.data.compras]
+        .filter(compra => compra.farmaciaId === farmaciaId && compra.pacienteId)
+        .sort((a, b) => {
+          const savedA = new Date(a.salvoEm || '').getTime();
+          const savedB = new Date(b.salvoEm || '').getTime();
+          const saveTimeDiff = (Number.isNaN(savedB) ? 0 : savedB) - (Number.isNaN(savedA) ? 0 : savedA);
+          if (saveTimeDiff !== 0) return saveTimeDiff;
+
+          const codeDiff = parseCompraCode(b.codigoCompra) - parseCompraCode(a.codigoCompra);
+          if (codeDiff !== 0) return codeDiff;
+          return compraSequenceTime(b) - compraSequenceTime(a);
+        })[0] || null;
+    }
+
+    function fillCompraFromLastFarmacia(farmaciaId) {
+      const lastCompra = getLastSavedCompraForFarmacia(farmaciaId);
+      if (!lastCompra) return;
+
+      const pacienteSelect = document.getElementById('field-pacienteId');
+      const clinicaSelect = document.getElementById('field-clinicaId');
+      const medicoSelect = document.getElementById('field-medicoId');
+      if (!pacienteSelect || !Array.from(pacienteSelect.options).some(option => option.value === lastCompra.pacienteId)) return;
+
+      pacienteSelect.value = lastCompra.pacienteId;
+      const paciente = AppState.data.pacientes.find(item => item.id === lastCompra.pacienteId);
+      if (!paciente) return;
+
+      if (clinicaSelect) {
+        clinicaSelect.value = Array.from(clinicaSelect.options).some(option => option.value === paciente.clinicaPrincipalId)
+          ? paciente.clinicaPrincipalId
+          : '';
+      }
+
+      if (medicoSelect) {
+        medicoSelect.value = Array.from(medicoSelect.options).some(option => option.value === paciente.medicoPrincipalId)
+          ? paciente.medicoPrincipalId
+          : '';
+      }
     }
 
     function setupCompraClinicaAutoFill() {
