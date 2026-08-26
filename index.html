@@ -3376,15 +3376,33 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
     }
 
     function downloadBlob(content, filename, mimeType) {
-      const blob = content instanceof Blob ? content : new Blob([content], { type: mimeType });
+      const blob = content instanceof Blob
+        ? content
+        : new Blob([content], { type: mimeType || 'application/octet-stream' });
+
+      if (typeof navigator.msSaveOrOpenBlob === 'function') {
+        navigator.msSaveOrOpenBlob(blob, filename);
+        return;
+      }
+
       const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = filename;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      setTimeout(() => URL.revokeObjectURL(url), 500);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = filename;
+      link.style.display = 'none';
+      link.setAttribute('aria-hidden', 'true');
+      document.body.appendChild(link);
+
+      link.dispatchEvent(new MouseEvent('click', {
+        bubbles: true,
+        cancelable: true,
+        view: window
+      }));
+
+      link.remove();
+      // O Chrome no Android pode começar a leitura do Blob depois do clique.
+      // Manter a URL ativa evita a página vazia causada por revogação prematura.
+      setTimeout(() => URL.revokeObjectURL(url), 60000);
     }
 
     function getTodayFileStamp() {
@@ -3806,8 +3824,8 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
         </div>`;
       const footer = `
         <button onclick="closeModal()" class="px-5 py-3 bg-slate-100 text-slate-600 rounded-xl font-bold hover:bg-slate-200 transition">Cancelar</button>
-        <button onclick="generateSelectedReport('${format}')" class="px-5 py-3 bg-blue-600 text-white rounded-xl font-bold shadow-md hover:bg-blue-700 transition">Gerar ${formatLabel}</button>`;
-      openModal(`Gerar ${formatLabel}`, body, footer);
+        <button onclick="generateSelectedReport('${format}')" class="px-5 py-3 bg-blue-600 text-white rounded-xl font-bold shadow-md hover:bg-blue-700 transition">Baixar ${formatLabel}</button>`;
+      openModal(`Baixar ${formatLabel}`, body, footer);
       setTimeout(() => toggleReportDateFilters(), 0);
     };
 
@@ -3818,7 +3836,7 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
       el.classList.toggle('hidden', !['todos', 'compras'].includes(type));
     };
 
-    window.generateSelectedReport = async (format) => {
+    window.generateSelectedReport = (format) => {
       const type = document.getElementById('report-type')?.value || 'todos';
       const startDate = document.getElementById('report-start-date')?.value || '';
       const endDate = document.getElementById('report-end-date')?.value || '';
@@ -3826,29 +3844,13 @@ aside > div { border-radius: 28px !important; border: 1px solid rgba(148,163,184
       try {
         if (format === 'csv') {
           if (type === 'todos') {
-            if (window.JSZip) {
-              const zip = new JSZip();
-              REPORT_COLLECTIONS.forEach(key => zip.file(`relatorio-${sanitizeFileName(REPORT_LABELS[key])}.csv`, rowsToCsv(getReportRows(key, startDate, endDate))));
-              const blob = await zip.generateAsync({ type: 'blob' });
-              downloadBlob(blob, `relatorios-controle-farmacias-csv-${stamp}.zip`, 'application/zip');
-            } else {
-              downloadBlob(buildConsolidatedCsv(startDate, endDate), `relatorio-todos-controle-farmacias-${stamp}.csv`, 'text/csv;charset=utf-8');
-            }
+            downloadBlob(`\uFEFF${buildConsolidatedCsv(startDate, endDate)}`, `relatorio-todos-controle-farmacias-${stamp}.csv`, 'text/csv;charset=utf-8');
           } else {
-            downloadBlob(rowsToCsv(getReportRows(type, startDate, endDate)), `relatorio-${sanitizeFileName(REPORT_LABELS[type])}-${stamp}.csv`, 'text/csv;charset=utf-8');
+            downloadBlob(`\uFEFF${rowsToCsv(getReportRows(type, startDate, endDate))}`, `relatorio-${sanitizeFileName(REPORT_LABELS[type])}-${stamp}.csv`, 'text/csv;charset=utf-8');
           }
         } else {
           if (type === 'todos') {
-            if (window.JSZip) {
-              const zip = new JSZip();
-              for (const key of REPORT_COLLECTIONS) {
-                zip.file(`relatorio-${sanitizeFileName(REPORT_LABELS[key])}.pdf`, createPdfBlob(key, getReportRows(key, startDate, endDate), startDate, endDate));
-              }
-              const blob = await zip.generateAsync({ type: 'blob' });
-              downloadBlob(blob, `relatorios-controle-farmacias-pdf-${stamp}.zip`, 'application/zip');
-            } else {
-              downloadBlob(createConsolidatedPdfBlob(startDate, endDate), `relatorio-todos-controle-farmacias-${stamp}.pdf`, 'application/pdf');
-            }
+            downloadBlob(createConsolidatedPdfBlob(startDate, endDate), `relatorio-todos-controle-farmacias-${stamp}.pdf`, 'application/pdf');
           } else {
             downloadBlob(createPdfBlob(type, getReportRows(type, startDate, endDate), startDate, endDate), `relatorio-${sanitizeFileName(REPORT_LABELS[type])}-${stamp}.pdf`, 'application/pdf');
           }
